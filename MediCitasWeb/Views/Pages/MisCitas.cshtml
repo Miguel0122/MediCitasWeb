@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "Consulta y Cancelación";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Consulta y Cancelación</title>
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/user.css" rel="stylesheet" />
+</head>
+<body>
+
+    <!-- TABS -->
+    <div class="container mt-3">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("AgendarCita","Pages")">
+                    Asignación de citas
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active">
+                    Consulta y cancelación
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="container mt-3 user-container">
+
+        <!-- ENCABEZADO -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold">CONSULTA Y CANCELACIÓN DE CITAS</h4>
+            <a href="@Url.Action("Login","Pages")" class="btn btn-danger btn-sm">
+                Cerrar sesión
+            </a>
+        </div>
+
+        <!-- FILTRO -->
+        <div class="bg-light p-2 mb-3 fw-bold text-secondary">
+            FILTRO DE BÚSQUEDA
+        </div>
+
+        <div class="row align-items-end mb-4">
+            <div class="col-md-4">
+                <label>Tipo y número de identificación</label>
+                <input type="text" class="form-control" value="CC 1043647199" disabled />
+            </div>
+
+            <div class="col-md-4">
+                <label>Nombre</label>
+                <input type="text" class="form-control" value="SAMUEL JAVIER AVILEZ VERBEL" disabled />
+            </div>
+
+            <div class="col-md-4">
+                <button class="btn btn-primary w-100">
+                    Buscar
+                </button>
+            </div>
+        </div>
+
+        <!-- MENSAJE IMPORTANTE -->
+        <div class="alert alert-warning">
+            <strong>IMPORTANTE:</strong><br />
+            Señor usuario, recuerde que a través de este medio solo podrá cancelar
+            citas de medicina general, odontología y médico especialista.
+            Si su cita no aparece aquí, comuníquese con la central de citas de su IPS.
+        </div>
+
+        <!-- RESULTADO -->
+        <div class="bg-light p-2 mb-3 fw-bold text-secondary">
+            RESULTADO LISTA DE CITAS
+        </div>
+
+        <table class="table table-bordered table-hover">
+            <thead class="table-primary">
+                <tr>
+                    <th>Fecha - Hora</th>
+                    <th>IPS</th>
+                    <th>Servicio</th>
+                    <th>Profesional</th>
+                    <th>Estado</th>
+                    <th>Cancelar</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <!-- EJEMPLO CON CITA -->
+                <tr>
+                    <td>21/02/2026 - 20:20</td>
+                    <td>Salud del Caribe</td>
+                    <td>Consulta Medicina General</td>
+                    <td>Dr. Antonio Pérez</td>
+                    <td>
+                        <span class="badge bg-success">Activa</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm">
+                            Cancelar
+                        </button>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <!-- MENSAJE SI NO HAY CITAS (DESCOMENTA CUANDO QUIERAS USARLO)
+        <div class="alert alert-info mt-3">
+            Usted no tiene citas asignadas actualmente.
+        </div>
+        -->
+
+    </div>
+
+</body>
+</html>

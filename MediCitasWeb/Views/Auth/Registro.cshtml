@@ -1,0 +1,97 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Registro de Usuario - MediCitas</title>
+
+    <link href="~/Content/auth.css" rel="stylesheet" />
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-container">
+
+        <h1>MediCitas</h1>
+        <p class="subtitle">Registro de usuario</p>
+
+        <!-- PASO 1 -->
+        <div id="paso1">
+            <label>Nombre</label>
+            <input type="text" id="nombre" placeholder="Ingrese su nombre" oninput="mostrar('paso2')" />
+        </div>
+
+        <!-- PASO 2 -->
+        <div id="paso2" style="display:none;">
+            <label>Apellidos</label>
+            <input type="text" id="apellidos" placeholder="Ingrese sus apellidos" oninput="mostrar('paso3')" />
+        </div>
+
+        <!-- PASO 3 -->
+        <div id="paso3" style="display:none;">
+            <label>Tipo de documento</label>
+            <select id="tipoDoc" onchange="mostrar('paso4')">
+                <option value="">Seleccione una opción</option>
+                <option>Cédula de ciudadanía</option>
+                <option>Tarjeta de identidad</option>
+                <option>Cédula de extranjería</option>
+            </select>
+        </div>
+
+        <!-- PASO 4 -->
+        <div id="paso4" style="display:none;">
+            <label>Número de documento</label>
+            <input type="text" id="numDoc" placeholder="Número de documento" oninput="mostrar('paso5')" />
+        </div>
+
+        <!-- PASO 5 -->
+        <div id="paso5" style="display:none;">
+            <label>Teléfono</label>
+            <input type="text" id="telefono" placeholder="Número de teléfono" oninput="mostrar('paso6')" />
+        </div>
+
+        <!-- PASO 6 -->
+        <div id="paso6" style="display:none;">
+            <label>Correo electrónico</label>
+            <input type="email" id="correo" placeholder="Correo electrónico" oninput="mostrar('paso7')" />
+        </div>
+
+        <!-- PASO 7 -->
+        <div id="paso7" style="display:none;">
+            <label>Contraseña</label>
+            <input type="password" id="password" placeholder="Contraseña" oninput="mostrar('paso8')" />
+        </div>
+
+        <!-- PASO 8 -->
+        <div id="paso8" style="display:none;">
+            <label>Rol</label>
+            <select id="rol" onchange="mostrar('paso9')">
+                <option value="">Seleccione el rol</option>
+                <option>Paciente</option>
+                <option>Administrativo</option>
+                <option>Doctor</option>
+            </select>
+        </div>
+
+        <!-- BOTÓN FINAL -->
+        <div id="paso9" style="display:none;">
+            <button>Registrar</button>
+        </div>
+
+        <div class="auth-links">
+            ¿Ya tienes cuenta? <a href="/Pages/Login">Inicia sesión</a>
+        </div>
+
+    </div>
+
+    <script>
+        function mostrar(id) {
+            document.getElementById(id).style.display = "block";
+        }
+    </script>
+
+</body>
+</html>

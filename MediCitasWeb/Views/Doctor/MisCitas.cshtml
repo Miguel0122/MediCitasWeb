@@ -1,0 +1,169 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "Mis Citas - Doctor";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Mis Citas - MediCitas</title>
+    <link href="@Url.Content("~/Content/doctor.css")" rel="stylesheet" />
+</head>
+
+<body class="doctor-page">
+
+    <header class="doctor-header">
+        <div>
+            <h2>Panel del Doctor</h2>
+            <span class="especialidad">
+                Dr. Juan Pérez | Medicina General
+            </span>
+        </div>
+
+        <div class="header-actions">
+            <span class="contador" id="contadorCitas">
+                Citas pendientes: 1
+            </span>
+            <a href="/Pages/Login" class="btn-logout">
+                Cerrar sesión
+            </a>
+        </div>
+    </header>
+
+    <div class="tabs">
+        <a href="#" class="tab active">
+            Asignación de citas
+        </a>
+    </div>
+
+    <main class="contenido-citas">
+
+        <!-- 🔎 FILTROS -->
+        <div class="filtros">
+            <input type="text" id="buscador" placeholder="Buscar por documento..." />
+
+            <!-- NUEVO FILTRO POR FECHA -->
+            <input type="date" id="filtroFecha" />
+
+            <button onclick="limpiarFiltros()" class="btn-limpiar">
+                Limpiar filtros
+            </button>
+        </div>
+
+        <div class="tabla-container">
+            <table class="tabla-citas" id="tablaCitas">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Paciente</th>
+                        <th>Documento</th>
+                        <th>Estado</th>
+                        <th style="text-align:center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr class="fila-cita">
+                        <td class="fecha">2026-02-20</td>
+                        <td>08:00 AM</td>
+                        <td><strong>María López</strong></td>
+                        <td class="doc">1023456789</td>
+                        <td><span class="estado activa">Activa</span></td>
+                        <td class="acciones">
+                            <button class="btn-ver" onclick="toggleDetalle(this)">Ver</button>
+                            <button class="btn-finalizar" onclick="finalizarCita(this)">Finalizar</button>
+                            <button class="btn-reprogramar">Reprogramar</button>
+                        </td>
+                    </tr>
+
+                    <tr class="detalle-row" style="display:none;">
+                        <td colspan="6">
+                            <div class="detalle-panel">
+                                <h4>Detalle de la Cita</h4>
+                                <p><strong>Motivo:</strong> Dolor abdominal</p>
+                                <p><strong>Observaciones:</strong> Paciente presenta síntomas leves.</p>
+                                <button class="btn-cerrar" onclick="cerrarDetalle(this)">Cerrar</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <script>
+
+        function toggleDetalle(btn) {
+            const fila = btn.closest("tr");
+            const detalle = fila.nextElementSibling;
+            detalle.style.display =
+                detalle.style.display === "table-row" ? "none" : "table-row";
+        }
+
+        function cerrarDetalle(btn) {
+            const panel = btn.closest(".detalle-row");
+            panel.style.display = "none";
+        }
+
+        function finalizarCita(btn) {
+            const fila = btn.closest("tr");
+            const estado = fila.querySelector(".estado");
+            estado.textContent = "Atendida";
+            estado.classList.remove("activa");
+            estado.classList.add("atendida");
+            btn.remove();
+            actualizarContador();
+        }
+
+        function actualizarContador() {
+            const activas = document.querySelectorAll(".estado.activa").length;
+            document.getElementById("contadorCitas").textContent =
+                "Citas pendientes: " + activas;
+        }
+
+        // 🔎 FILTRO COMBINADO (DOCUMENTO + FECHA)
+
+        const buscador = document.getElementById("buscador");
+        const filtroFecha = document.getElementById("filtroFecha");
+
+        buscador.addEventListener("keyup", filtrarCitas);
+        filtroFecha.addEventListener("change", filtrarCitas);
+
+        function filtrarCitas() {
+
+            const textoDoc = buscador.value.toLowerCase();
+            const fechaSeleccionada = filtroFecha.value;
+
+            const filas = document.querySelectorAll(".fila-cita");
+
+            filas.forEach(fila => {
+
+                const doc = fila.querySelector(".doc").textContent.toLowerCase();
+                const fecha = fila.querySelector(".fecha").textContent;
+
+                const coincideDoc = doc.includes(textoDoc);
+                const coincideFecha = fechaSeleccionada === "" || fecha === fechaSeleccionada;
+
+                if (coincideDoc && coincideFecha) {
+                    fila.style.display = "";
+                } else {
+                    fila.style.display = "none";
+                    fila.nextElementSibling.style.display = "none";
+                }
+            });
+        }
+
+        function limpiarFiltros() {
+            buscador.value = "";
+            filtroFecha.value = "";
+            filtrarCitas();
+        }
+
+    </script>
+
+</body>
+</html>

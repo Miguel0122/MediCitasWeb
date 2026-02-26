@@ -1,0 +1,75 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "Login - MediCitas";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Login - MediCitas</title>
+    <link href="~/Content/auth.css" rel="stylesheet" />
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-container">
+
+        <h1>MediCitas</h1>
+        <p class="subtitle">Acceso al sistema de citas médicas</p>
+
+        <form method="post" action="/Auth/Login">
+
+            <!-- CORREO (SOLO VISUAL, NO SE ENVÍA) -->
+            <label>Correo electrónico</label>
+            <input type="email"
+                   placeholder="ejemplo@correo.com"
+                   required />
+
+            <!-- DOCUMENTO (EL QUE SE ENVÍA AL CONTROLADOR) -->
+            <label>Número de documento</label>
+            <input type="text"
+                   name="numero_documento"
+                   placeholder="Número de documento"
+                   required />
+
+            <!-- ROL -->
+            <label>Rol</label>
+            <select name="rol" required>
+                <option value="">Seleccione su rol</option>
+                <option value="Paciente">Paciente</option>
+                <option value="Doctor">Doctor</option>
+                <option value="Administrador">Administrador</option>
+            </select>
+
+            <!-- CONTRASEÑA -->
+            <label>Contraseña</label>
+            <input type="password"
+                   name="password"
+                   placeholder="Contraseña"
+                   required />
+
+            <a href="/Auth/Recuperar" class="auth-links">
+                ¿Olvidaste tu contraseña?
+            </a>
+
+            <button type="submit">Iniciar sesión</button>
+
+            @if (ViewBag.Error != null)
+            {
+                <p style="color:red; margin-top:10px;">
+                    @ViewBag.Error
+                </p>
+            }
+
+        </form>
+
+        <div class="auth-links">
+            ¿No tienes cuenta?
+            <a href="/Auth/Registro">Crear cuenta</a>
+        </div>
+
+    </div>
+
+</body>
+</html>

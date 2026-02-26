@@ -1,0 +1,171 @@
+﻿/* RESET BASICO */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f4f6f9;
+}
+
+/* HEADER */
+.doctor-header {
+    background: linear-gradient(90deg, #0d6efd, #0b5ed7);
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.especialidad {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.contador {
+    background-color: white;
+    color: #0d6efd;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.btn-logout {
+    background-color: white;
+    color: #0d6efd;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* TABS */
+.tabs {
+    display: flex;
+    background: white;
+    padding-left: 40px;
+    border-bottom: 2px solid #ddd;
+}
+
+.tab {
+    padding: 14px 22px;
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+}
+
+    .tab.active {
+        border-bottom: 3px solid #0d6efd;
+        color: #0d6efd;
+    }
+
+/* CONTENIDO */
+.contenido-citas {
+    padding: 40px;
+}
+
+/* BUSCADOR */
+.filtros {
+    margin-bottom: 20px;
+}
+
+    .filtros input {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        width: 250px;
+    }
+
+/* TABLA */
+.tabla-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+.tabla-citas {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .tabla-citas th {
+        background-color: #f8f9fa;
+        padding: 16px;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    .tabla-citas td {
+        padding: 16px;
+        border-top: 1px solid #eee;
+    }
+
+/* ESTADOS */
+.estado {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+    .estado.activa {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .estado.atendida {
+        background-color: #28a745;
+        color: white;
+    }
+
+/* BOTONES */
+.acciones {
+    display: flex;
+    gap: 8px;
+}
+
+button {
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-ver {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.btn-finalizar {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-reprogramar {
+    background-color: #ffc107;
+    color: black;
+}
+
+/* DETALLE */
+.detalle-row {
+    display: none;
+    background-color: #f9fbff;
+}
+
+.detalle-panel {
+    padding: 20px;
+    background: #eef2ff;
+    border-radius: 8px;
+}
+
+.btn-cerrar {
+    margin-top: 10px;
+    background-color: #6c757d;
+    color: white;
+}
+
