@@ -1,7 +1,6 @@
 ﻿/* =====================================================
    ESTILOS GENERALES
    ===================================================== */
-
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
     background-color: #f4f6f8;
@@ -11,7 +10,6 @@ body {
 /* =====================================================
    HEADER
    ===================================================== */
-
 .admin-page .admin-header {
     background-color: #ffffff;
     border-bottom: 3px solid #1976d2;
@@ -37,11 +35,10 @@ body {
 }
 
 /* =====================================================
-   CONTENEDOR
+   CONTENEDOR Y TÍTULOS
    ===================================================== */
-
 .admin-page .admin-container {
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 0 auto;
     padding: 30px 20px;
 }
@@ -49,16 +46,24 @@ body {
 .admin-page .section-title {
     color: #1976d2;
     margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.card-subtitle {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #333;
+    font-weight: 600;
 }
 
 /* =====================================================
-   TARJETAS
+   TARJETAS ESTILO DASHBOARD (CON ICONOS LATERALES)
    ===================================================== */
-
 .admin-page .stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
     margin-bottom: 30px;
 }
 
@@ -66,75 +71,108 @@ body {
     background-color: #ffffff;
     border-radius: 12px;
     padding: 20px;
-    text-align: center;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-    .admin-page .stat-card h3 {
-        font-size: 14px;
-        color: #333;
-        margin-bottom: 10px;
-    }
+.stat-content h3 {
+    font-size: 12px;
+    color: #888;
+    margin: 0 0 5px 0;
+}
 
-    .admin-page .stat-card p {
-        font-size: 26px;
-        font-weight: bold;
-        color: #1976d2;
-        margin: 0;
-    }
+.stat-content p {
+    font-size: 26px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
 
-/* =====================================================
-   BUSCADOR
-   ===================================================== */
-
-.admin-page .search-box {
+.stat-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 30px;
+    justify-content: center;
+    font-size: 20px;
 }
 
-    .admin-page .search-box input {
-        width: 260px;
+/* Colores de Iconos */
+.icon-total {
+    background-color: #e8f0fe;
+    color: #1976d2;
+}
+
+.icon-pending {
+    background-color: #fff3e0;
+    color: #fb8c00;
+}
+
+.icon-completed {
+    background-color: #e8f5e9;
+    color: #4caf50;
+}
+
+.icon-cancelled {
+    background-color: #ffebee;
+    color: #f44336;
+}
+
+.icon-patients {
+    background-color: #f3e5f5;
+    color: #9c27b0;
+}
+
+/* =====================================================
+   FILTROS
+   ===================================================== */
+.filter-container {
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.search-box-v2 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .filter-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #666;
+    }
+
+    .filter-group input, .filter-group select {
         padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        min-width: 180px;
+        outline: none;
     }
 
 /* =====================================================
-   BOTONES
+   TABLAS Y BOTONES
    ===================================================== */
-
-.admin-page .btn-primary {
-    background-color: #1976d2;
-    color: #ffffff;
-    padding: 10px 18px;
-    border-radius: 6px;
-    text-decoration: none;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.admin-page .btn-secondary {
-    background-color: #e3f2fd;
-    color: #1976d2;
-    padding: 10px 18px;
-    border-radius: 6px;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-/* =====================================================
-   TABLA
-   ===================================================== */
-
 .admin-page .card-large {
     background-color: #ffffff;
     border-radius: 12px;
-    padding: 20px;
+    padding: 25px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
 }
 
 .admin-page .table {
@@ -144,24 +182,98 @@ body {
 
     .admin-page .table th {
         text-align: left;
-        padding: 12px;
-        border-bottom: 2px solid #e0e0e0;
-        font-size: 14px;
+        padding: 15px 12px;
+        border-bottom: 2px solid #f0f0f0;
+        color: #888;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .admin-page .table td {
-        padding: 12px;
-        border-bottom: 1px solid #eaeaea;
+        padding: 15px 12px;
+        border-bottom: 1px solid #f9f9f9;
         font-size: 14px;
     }
 
-/* =====================================================
-   REPORTES
-   ===================================================== */
+.admin-page .btn-primary {
+    background-color: #1976d2;
+    color: #ffffff;
+    padding: 10px 22px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
 
-.admin-page .report-buttons {
+.btn-clean {
+    text-decoration: none;
+    color: #1976d2;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* =====================================================
+   BADGES Y CELDAS DE USUARIO
+   ===================================================== */
+.badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-pendiente {
+    background-color: #fff4e5;
+    color: #ff9800;
+}
+
+.status-completada {
+    background-color: #e8f5e9;
+    color: #4caf50;
+}
+
+.status-cancelada {
+    background-color: #ffebee;
+    color: #f44336;
+}
+
+.role-admin {
+    background-color: #f3e5f5;
+    color: #9c27b0;
+}
+
+.role-medico {
+    background-color: #e3f2fd;
+    color: #2196f3;
+}
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icon-user {
+    background: #e3f2fd;
+    color: #1976d2;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.spacer {
+    margin: 40px 0;
+    border: 0;
+    border-top: 1px solid #eee;
+}
+
+.report-buttons {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    margin-top: 25px;
+    margin-top: 20px;
 }

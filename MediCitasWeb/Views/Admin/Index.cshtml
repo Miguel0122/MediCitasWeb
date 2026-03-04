@@ -9,131 +9,157 @@
     <meta charset="utf-8" />
     <title>Panel Admin - MediCitas</title>
     <link href="~/Content/admin.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="admin-page">
 
-    <!-- HEADER -->
     <header class="admin-header">
         <h1>MediCitas | Panel Administrativo</h1>
         <a href="/Admin/Logout" class="btn-logout">Cerrar sesión</a>
     </header>
 
-    <!-- CONTENIDO -->
     <div class="admin-container">
 
         <h2 class="section-title">Gestión de Citas</h2>
 
-        <!-- TARJETAS -->
         <div class="stats-grid">
             <div class="stat-card">
-                <h3>Total de Citas</h3>
-                <p>@ViewBag.TotalCitas</p>
+                <div class="stat-content">
+                    <h3>Total de Citas</h3>
+                    <p>@ViewBag.TotalCitas</p>
+                </div>
+                <div class="stat-icon icon-total">📅</div>
             </div>
 
             <div class="stat-card">
-                <h3>Citas Pendientes</h3>
-                <p>@ViewBag.CitasPendientes</p>
+                <div class="stat-content">
+                    <h3>Citas Pendientes</h3>
+                    <p>@ViewBag.CitasPendientes</p>
+                </div>
+                <div class="stat-icon icon-pending">📋</div>
             </div>
 
             <div class="stat-card">
-                <h3>Citas Completadas</h3>
-                <p>@ViewBag.CitasCompletadas</p>
+                <div class="stat-content">
+                    <h3>Citas Completadas</h3>
+                    <p>@ViewBag.CitasCompletadas</p>
+                </div>
+                <div class="stat-icon icon-completed">✅</div>
             </div>
 
-            <!-- NUEVA -->
             <div class="stat-card">
-                <h3>Citas Canceladas</h3>
-                <p>@ViewBag.CitasCanceladas</p>
+                <div class="stat-content">
+                    <h3>Citas Canceladas</h3>
+                    <p>@ViewBag.CitasCanceladas</p>
+                </div>
+                <div class="stat-icon icon-cancelled">❌</div>
             </div>
 
-            <!-- NUEVA -->
             <div class="stat-card">
-                <h3>Pacientes Registrados</h3>
-                <p>@ViewBag.TotalPacientes</p>
+                <div class="stat-content">
+                    <h3>Pacientes Registrados</h3>
+                    <p>@ViewBag.TotalPacientes</p>
+                </div>
+                <div class="stat-icon icon-patients">👥</div>
             </div>
         </div>
 
-        <!-- FILTROS -->
-        <form method="get">
-
-            <div class="search-box">
-                <input type="text" name="documento" placeholder="Buscar por documento" />
-
-                <!-- Filtro por Estado -->
-                <select name="estado">
-                    <option value="">Todos los estados</option>
-                    <option value="Pendiente">Pendientes</option>
-                    <option value="Completada">Completadas</option>
-                    <option value="Cancelada">Canceladas</option>
-                </select>
-
-                <!-- Filtro por Fecha -->
-                <input type="date" name="fechaInicio" />
-                <input type="date" name="fechaFin" />
-
-                <button type="submit" class="btn-primary">Filtrar</button>
-                <a href="/Admin/Index" class="btn-secondary">Mostrar todos</a>
-            </div>
-
-        </form>
-
-        <!-- GRÁFICA -->
-        <div class="card-large">
-            <h3>Resumen de Citas</h3>
-            <canvas id="graficaCitas" height="100"></canvas>
+        <div class="filter-container card-large">
+            <form method="get" class="search-box-v2">
+                <div class="filter-group">
+                    <label>Buscar por documento</label>
+                    <input type="text" name="documento" placeholder="Buscar por documento" />
+                </div>
+                <div class="filter-group">
+                    <label>Estado</label>
+                    <select name="estado">
+                        <option value="">Todos los estados</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Completada">Completada</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Fecha inicio</label>
+                    <input type="date" name="fechaInicio" />
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">Filtrar</button>
+                    <a href="/Admin/Index" class="btn-clean">Limpiar</a>
+                </div>
+            </form>
         </div>
 
-        <!-- TABLA -->
         <div class="card-large">
+            <h3 class="card-subtitle">Resumen de Citas</h3>
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Documento</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Rol</th>
+                        <th>CÉDULA PACIENTE</th>
+                        <th>FECHA</th>
+                        <th>HORA</th>
+                        <th>SERVICIO</th>
+                        <th>MÉDICO</th>
+                        <th>ESTADO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1234567890</td>
+                        <td>4 de marzo de 2026</td>
+                        <td>09:00 AM</td>
+                        <td>CONSULTA MEDICINA GENERAL</td>
+                        <td>Dr. Carlos Rodríguez</td>
+                        <td><span class="badge status-pendiente">Pendiente</span></td>
+                    </tr>
+                    <tr>
+                        <td>9876543210</td>
+                        <td>4 de marzo de 2026</td>
+                        <td>10:30 AM</td>
+                        <td>CONSULTA ODONTOLOGÍA</td>
+                        <td>Dra. Ana María González</td>
+                        <td><span class="badge status-completada">Completada</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="report-buttons">
+                <a href="#" class="btn-primary">Ver reporte de citas</a>
+            </div>
+        </div>
+
+        <hr class="spacer" />
+
+        <h2 class="section-title">Control de Usuarios</h2>
+        <div class="card-large">
+            <h3 class="card-subtitle">Usuarios Registrados en el Sistema</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>DOCUMENTO</th>
+                        <th>NOMBRE</th>
+                        <th>CORREO</th>
+                        <th>ROL</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>123456</td>
-                        <td>Miguel Ángel Mercado</td>
+                        <td class="user-cell"><span class="icon-user">👤</span> Miguel Ángel Mercado</td>
                         <td>miguel@gmail.com</td>
-                        <td>Administrador</td>
+                        <td><span class="badge role-admin">Administrador</span></td>
+                    </tr>
+                    <tr>
+                        <td>345678</td>
+                        <td class="user-cell"><span class="icon-user">👤</span> Carlos Rodríguez</td>
+                        <td>carlos.r@gmail.com</td>
+                        <td><span class="badge role-medico">Médico</span></td>
                     </tr>
                 </tbody>
             </table>
+            <div class="report-buttons">
+                <a href="#" class="btn-primary">Ver reporte de usuarios</a>
+            </div>
         </div>
-
-        <!-- REPORTES -->
-        <div class="report-buttons">
-            <a href="#" class="btn-primary">Ver reporte de citas</a>
-            <a href="#" class="btn-primary">Ver reporte de usuarios</a>
-        </div>
-
     </div>
-
-    <!-- SCRIPT GRÁFICA -->
-    <script>
-        var ctx = document.getElementById('graficaCitas').getContext('2d');
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Pendientes', 'Completadas', 'Canceladas'],
-                datasets: [{
-                    label: 'Cantidad de Citas',
-                    data: [
-                        @ViewBag.CitasPendientes ?? 0,
-                        @ViewBag.CitasCompletadas ?? 0,
-                        @ViewBag.CitasCanceladas ?? 0
-                    ]
-                }]
-            }
-        });
-    </script>
-
 </body>
 </html>
