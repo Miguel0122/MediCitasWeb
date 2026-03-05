@@ -12,19 +12,12 @@ namespace MediCitasWeb.Models
     {
         [Key]
         public int id_cita { get; set; }
-
         public int id_paciente { get; set; }
-
         public int id_doctor { get; set; }
-
         public DateTime fecha_cita { get; set; }
-
         public TimeSpan hora_cita { get; set; }
-
         public string especialidad { get; set; }
-
         public string tipo_consulta { get; set; }
-
         public string estado { get; set; }
     }
 }

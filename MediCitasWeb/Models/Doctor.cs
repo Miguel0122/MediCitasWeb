@@ -5,7 +5,6 @@ using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
 namespace MediCitasWeb.Models
 {
     [Table("Doctor")]
@@ -13,9 +12,7 @@ namespace MediCitasWeb.Models
     {
         [Key]
         public int id_doctor { get; set; }
-
         public int id_usuario { get; set; }
-
         public string especialidad { get; set; }
     }
 }

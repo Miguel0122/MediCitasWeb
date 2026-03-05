@@ -135,9 +135,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CitaPacienteViewModel.cs" />
     <Compile Include="Models\Citas.cs" />
     <Compile Include="Models\Conexion.cs" />
     <Compile Include="Models\Doctor.cs" />
+    <Compile Include="Models\DoctorViewModel.cs" />
     <Compile Include="Models\MediCitasContext.cs" />
     <Compile Include="Models\Paciente.cs" />
     <Compile Include="Models\Usuario.cs" />
@@ -165,8 +167,12 @@
     <Content Include="Content\chatbot.css" />
     <Content Include="Content\doctor.css" />
     <Content Include="Content\user.css" />
+    <Content Include=".gitignore" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\admin-panel.js" />
+    <Content Include="Scripts\auth-login.js" />
+    <Content Include="Scripts\auth-registro.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -174,6 +180,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
+    <Content Include="Scripts\doctor-panel.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
@@ -198,9 +205,11 @@
     <Content Include="Views\Auth\Recuperar.cshtml" />
     <Content Include="Views\Pages\AgendarCita.cshtml" />
     <Content Include="Views\Pages\MisCitas.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Admin\PanelAdmin.cshtml" />
     <Content Include="Views\ChatBot\chat.cshtml" />
-    <Content Include="Views\Doctor\MisCitas.cshtml" />
+    <Content Include="Views\Doctor\CitasDoctor.cshtml" />
+    <Content Include="Views\Admin\CrearDoctor.cshtml" />
+    <Content Include="Views\Admin\ListaUsuarios.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

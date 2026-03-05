@@ -1,0 +1,124 @@
+﻿@model List<MediCitasWeb.Models.Usuario>
+@{
+    Layout = null;
+    ViewBag.Title = "Panel Administrativo - MediCitas";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Panel Admin - MediCitas</title>
+    <link href="~/Content/admin.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="admin-page">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+        <h1>MediCitas | Panel Administrativo</h1>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <span>Bienvenido, @Session["usuario"]</span>
+            <a href="@Url.Action("Login","Auth")" class="btn-logout">Cerrar sesión</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+
+        <h2 class="section-title">Gestión de Citas</h2>
+
+        <!-- TARJETAS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total de Citas</h3>
+                <p>@ViewBag.TotalCitas</p>
+            </div>
+            <div class="stat-card">
+                <h3>Citas Activas</h3>
+                <p>@ViewBag.CitasPendientes</p>
+            </div>
+            <div class="stat-card">
+                <h3>Citas Completadas</h3>
+                <p>@ViewBag.CitasCompletadas</p>
+            </div>
+            <div class="stat-card">
+                <h3>Citas Canceladas</h3>
+                <p>@ViewBag.CitasCanceladas</p>
+            </div>
+            <div class="stat-card">
+                <h3>Pacientes Registrados</h3>
+                <p>@ViewBag.TotalPacientes</p>
+            </div>
+        </div>
+
+        <!-- ACCIONES RÁPIDAS -->
+        <div class="report-buttons" style="margin-bottom:20px;">
+            <a href="@Url.Action("CrearDoctor","Admin")" class="btn-primary">+ Crear Doctor</a>
+            <a href="@Url.Action("ListaUsuarios","Admin")" class="btn-primary">Ver Usuarios</a>
+        </div>
+
+        <!-- FILTROS -->
+        <form method="get" action="@Url.Action("PanelAdmin","Admin")">
+            <div class="search-box">
+                <input type="text" name="documento" placeholder="Buscar por documento" />
+                <select name="estado">
+                    <option value="">Todos los estados</option>
+                    <option value="Activa">Activas</option>
+                    <option value="Completada">Completadas</option>
+                    <option value="Cancelada">Canceladas</option>
+                </select>
+                <input type="date" name="fechaInicio" />
+                <input type="date" name="fechaFin" />
+                <button type="submit" class="btn-primary">Filtrar</button>
+                <a href="@Url.Action("PanelAdmin","Admin")" class="btn-secondary">Mostrar todos</a>
+            </div>
+        </form>
+
+        <!-- GRÁFICA -->
+        <div class="card-large">
+            <h3>Resumen de Citas</h3>
+            <canvas id="graficaCitas" height="100"
+                    data-pendientes="@ViewBag.CitasPendientes"
+                    data-completadas="@ViewBag.CitasCompletadas"
+                    data-canceladas="@ViewBag.CitasCanceladas">
+            </canvas>
+        </div>
+
+        <!-- TABLA DE USUARIOS -->
+        <div class="card-large">
+            <h3>Usuarios registrados</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model)
+                    {
+                        <tr>
+                            <td>@u.numero_documento</td>
+                            <td>@u.nombres_usuario @u.apellidos_usuario</td>
+                            <td>@u.correo_usuario</td>
+                            <td>@u.rol_usuario</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- REPORTES -->
+        <div class="report-buttons">
+            <a href="#" class="btn-primary">Ver reporte de citas</a>
+            <a href="#" class="btn-primary">Ver reporte de usuarios</a>
+        </div>
+
+    </div>
+
+    <script src="~/Scripts/admin-panel.js"></script>
+</body>
+</html>

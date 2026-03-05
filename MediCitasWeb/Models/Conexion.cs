@@ -10,9 +10,7 @@ namespace MediCitasWeb.Models
     public class Conexion
     {
         // 👇 CORREGIDO: ahora usa el nombre REAL del Web.config
-        private string cadena = ConfigurationManager
-                                .ConnectionStrings["MediCitasDB"]
-                                .ConnectionString;
+        private string cadena = ConfigurationManager.ConnectionStrings["MediCitasDB"].ConnectionString;
 
         public SqlConnection ObtenerConexion()
         {

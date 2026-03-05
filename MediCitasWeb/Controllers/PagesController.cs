@@ -1,7 +1,8 @@
-﻿using System;
+﻿using MediCitasWeb.Models;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using MediCitasWeb.Models;
 
 namespace MediCitasWeb.Controllers
 {
@@ -9,37 +10,38 @@ namespace MediCitasWeb.Controllers
     {
         MediCitasContext db = new MediCitasContext();
 
-        // ==============================
-        // PAGINA AGENDAR
-        // ==============================
         public ActionResult AgendarCita()
         {
-            if (Session["usuario"] == null)
-                return RedirectToAction("Login", "Auth");
+            if (Session["usuario"] == null) return RedirectToAction("Login", "Auth");
 
-            int idUsuario = Convert.ToInt32(Session["usuario"]);
+            // Join Doctor + Usuario para obtener el nombre completo del médico
+            var doctores = (from d in db.Doctor
+                            join u in db.Usuario on d.id_usuario equals u.id_usuario
+                            select new DoctorViewModel
+                            {
+                                IdDoctor = d.id_doctor,
+                                NombreDoctor = u.nombres_usuario + " " + u.apellidos_usuario,
+                                Especialidad = d.especialidad
+                            }).ToList();
 
+            ViewBag.Doctores = doctores;
+
+            int idUsuario = Convert.ToInt32(Session["id_usuario"]);
             var usuario = db.Usuario.FirstOrDefault(u => u.id_usuario == idUsuario);
-
-            if (usuario == null)
-                return RedirectToAction("Login", "Auth");
-
             return View(usuario);
         }
 
-        // ==============================
-        // GUARDAR CITA
-        // ==============================
         [HttpPost]
-        public ActionResult GuardarCita(string especialidad, string tipoConsulta, DateTime fechaCita, string horaCita)
+        public ActionResult GuardarCita(int idDoctor, string especialidad,
+                                        string tipoConsulta, DateTime fechaCita,
+                                        string horaCita)
         {
             if (Session["usuario"] == null)
                 return RedirectToAction("Login", "Auth");
 
-            int idUsuario = Convert.ToInt32(Session["usuario"]);
+            int idUsuario = Convert.ToInt32(Session["id_usuario"]);
 
             var paciente = db.Paciente.FirstOrDefault(p => p.id_usuario == idUsuario);
-
             if (paciente == null)
                 return RedirectToAction("Login", "Auth");
 
@@ -48,7 +50,7 @@ namespace MediCitasWeb.Controllers
             Cita cita = new Cita()
             {
                 id_paciente = paciente.id_paciente,
-                id_doctor = 1,
+                id_doctor = idDoctor,        // ✅ viene del <select>
                 especialidad = especialidad,
                 tipo_consulta = tipoConsulta,
                 fecha_cita = fechaCita,
@@ -58,26 +60,19 @@ namespace MediCitasWeb.Controllers
 
             db.Citas.Add(cita);
             db.SaveChanges();
-
             return RedirectToAction("MisCitas");
         }
 
-        // ==============================
-        // VER MIS CITAS
-        // ==============================
         public ActionResult MisCitas()
         {
-            if (Session["usuario"] == null)
-                return RedirectToAction("Login", "Auth");
+            if (Session["usuario"] == null) return RedirectToAction("Login", "Auth");
 
-            int idUsuario = Convert.ToInt32(Session["usuario"]);
+            int idUsuario = Convert.ToInt32(Session["id_usuario"]);
 
             var paciente = db.Paciente.FirstOrDefault(p => p.id_usuario == idUsuario);
+            if (paciente == null) return View(new List<Cita>());
 
-            var citas = db.Citas
-                .Where(c => c.id_paciente == paciente.id_paciente)
-                .ToList();
-
+            var citas = db.Citas.Where(c => c.id_paciente == paciente.id_paciente).ToList();
             return View(citas);
         }
     }
