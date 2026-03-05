@@ -6,90 +6,182 @@
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <title>Registro de Usuario - MediCitas</title>
-
+    <title>Registro - MediCitas</title>
     <link href="~/Content/auth.css" rel="stylesheet" />
 </head>
 
 <body class="auth-page">
 
-    <div class="auth-container">
+    <!-- 🔥 FORM AGREGADO (ESTO ES LO QUE FALTABA) -->
+    <form method="post" action="/Auth/Registro">
 
-        <h1>MediCitas</h1>
-        <p class="subtitle">Registro de usuario</p>
+        <div class="auth-container">
 
-        <!-- PASO 1 -->
-        <div id="paso1">
-            <label>Nombre</label>
-            <input type="text" id="nombre" placeholder="Ingrese su nombre" oninput="mostrar('paso2')" />
+            <h1>MediCitas</h1>
+            <p class="subtitle">Registro de usuario</p>
+
+            <!-- PASO 1 -->
+            <div id="paso1">
+                <label>Nombre</label>
+                <input type="text"
+                       id="nombre"
+                       name="nombres"
+                       required
+                       oninput="validarNombre()" />
+                <span id="errorNombre" class="error"></span>
+            </div>
+
+            <!-- PASO 2 -->
+            <div id="paso2" style="display:none;">
+                <label>Apellidos</label>
+                <input type="text"
+                       id="apellidos"
+                       name="apellidos"
+                       required
+                       oninput="validarApellidos()" />
+                <span id="errorApellidos" class="error"></span>
+            </div>
+
+            <!-- PASO 3 -->
+            <div id="paso3" style="display:none;">
+                <label>Tipo de documento</label>
+                <select id="tipoDoc"
+                        name="tipo_documento"
+                        required
+                        onchange="validarTipoDoc()">
+                    <option value="">Seleccione</option>
+                    <option>Cédula de ciudadanía</option>
+                    <option>Tarjeta de identidad</option>
+                    <option>Cédula de extranjería</option>
+                </select>
+            </div>
+
+            <!-- PASO 4 -->
+            <div id="paso4" style="display:none;">
+                <label>Número de documento</label>
+                <input type="text"
+                       id="numDoc"
+                       name="numero_documento"
+                       required
+                       oninput="validarDocumento()" />
+                <span id="errorDoc" class="error"></span>
+            </div>
+
+            <!-- PASO 5 -->
+            <div id="paso5" style="display:none;">
+                <label>Teléfono</label>
+                <input type="text"
+                       id="telefono"
+                       name="telefono"
+                       required
+                       oninput="validarTelefono()" />
+                <span id="errorTelefono" class="error"></span>
+            </div>
+
+            <!-- PASO 6 -->
+            <div id="paso6" style="display:none;">
+                <label>Correo</label>
+                <input type="email"
+                       id="correo"
+                       name="correo"
+                       required
+                       oninput="validarCorreo()" />
+                <span id="errorCorreo" class="error"></span>
+            </div>
+
+            <!-- PASO 7 -->
+            <div id="paso7" style="display:none;">
+                <label>Contraseña</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       required
+                       oninput="validarPassword()" />
+                <span id="errorPassword" class="error"></span>
+            </div>
+
+            <!-- PASO 8 -->
+            <div id="paso8" style="display:none;">
+                <label>Rol</label>
+                <select id="rol"
+                        name="rol"
+                        required
+                        onchange="validarRol()">
+                    <option value="">Seleccione</option>
+                    <option>Paciente</option>
+                    <option>Doctor</option>
+                    <option>Administrador</option>
+                </select>
+            </div>
+
+            <!-- BOTÓN -->
+            <div id="paso9" style="display:none;">
+                <button type="submit">Registrar</button>
+            </div>
+
         </div>
 
-        <!-- PASO 2 -->
-        <div id="paso2" style="display:none;">
-            <label>Apellidos</label>
-            <input type="text" id="apellidos" placeholder="Ingrese sus apellidos" oninput="mostrar('paso3')" />
-        </div>
-
-        <!-- PASO 3 -->
-        <div id="paso3" style="display:none;">
-            <label>Tipo de documento</label>
-            <select id="tipoDoc" onchange="mostrar('paso4')">
-                <option value="">Seleccione una opción</option>
-                <option>Cédula de ciudadanía</option>
-                <option>Tarjeta de identidad</option>
-                <option>Cédula de extranjería</option>
-            </select>
-        </div>
-
-        <!-- PASO 4 -->
-        <div id="paso4" style="display:none;">
-            <label>Número de documento</label>
-            <input type="text" id="numDoc" placeholder="Número de documento" oninput="mostrar('paso5')" />
-        </div>
-
-        <!-- PASO 5 -->
-        <div id="paso5" style="display:none;">
-            <label>Teléfono</label>
-            <input type="text" id="telefono" placeholder="Número de teléfono" oninput="mostrar('paso6')" />
-        </div>
-
-        <!-- PASO 6 -->
-        <div id="paso6" style="display:none;">
-            <label>Correo electrónico</label>
-            <input type="email" id="correo" placeholder="Correo electrónico" oninput="mostrar('paso7')" />
-        </div>
-
-        <!-- PASO 7 -->
-        <div id="paso7" style="display:none;">
-            <label>Contraseña</label>
-            <input type="password" id="password" placeholder="Contraseña" oninput="mostrar('paso8')" />
-        </div>
-
-        <!-- PASO 8 -->
-        <div id="paso8" style="display:none;">
-            <label>Rol</label>
-            <select id="rol" onchange="mostrar('paso9')">
-                <option value="">Seleccione el rol</option>
-                <option>Paciente</option>
-                <option>Administrativo</option>
-                <option>Doctor</option>
-            </select>
-        </div>
-
-        <!-- BOTÓN FINAL -->
-        <div id="paso9" style="display:none;">
-            <button>Registrar</button>
-        </div>
-
-        <div class="auth-links">
-            ¿Ya tienes cuenta? <a href="/Pages/Login">Inicia sesión</a>
-        </div>
-
-    </div>
+    </form>
 
     <script>
         function mostrar(id) {
             document.getElementById(id).style.display = "block";
+        }
+
+        function validarNombre() {
+            let input = document.getElementById("nombre");
+            let regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+            if (regex.test(input.value) && input.value.length > 2) {
+                mostrar("paso2");
+            }
+        }
+
+        function validarApellidos() {
+            let input = document.getElementById("apellidos");
+            let regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+            if (regex.test(input.value) && input.value.length > 2) {
+                mostrar("paso3");
+            }
+        }
+
+        function validarTipoDoc() {
+            if (document.getElementById("tipoDoc").value !== "") {
+                mostrar("paso4");
+            }
+        }
+
+        function validarDocumento() {
+            let input = document.getElementById("numDoc");
+            if (/^[0-9]+$/.test(input.value) && input.value.length >= 6) {
+                mostrar("paso5");
+            }
+        }
+
+        function validarTelefono() {
+            let input = document.getElementById("telefono");
+            if (/^[0-9]+$/.test(input.value) && input.value.length >= 7) {
+                mostrar("paso6");
+            }
+        }
+
+        function validarCorreo() {
+            let input = document.getElementById("correo");
+            let regex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+            if (regex.test(input.value)) {
+                mostrar("paso7");
+            }
+        }
+
+        function validarPassword() {
+            if (document.getElementById("password").value.length >= 6) {
+                mostrar("paso8");
+            }
+        }
+
+        function validarRol() {
+            if (document.getElementById("rol").value !== "") {
+                mostrar("paso9");
+            }
         }
     </script>
 

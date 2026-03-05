@@ -20,34 +20,21 @@
 
         <form method="post" action="/Auth/Login">
 
-            <!-- CORREO (SOLO VISUAL, NO SE ENVÍA) -->
-            <label>Correo electrónico</label>
-            <input type="email"
-                   placeholder="ejemplo@correo.com"
-                   required />
-
-            <!-- DOCUMENTO (EL QUE SE ENVÍA AL CONTROLADOR) -->
+            <!-- DOCUMENTO --> <!-- CON VALIDACIONES EN TIEMPO REAL -->
             <label>Número de documento</label>
             <input type="text"
                    name="numero_documento"
-                   placeholder="Número de documento"
+                   value="@Request["numero_documento"]"
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                    required />
+            @Html.ValidationMessage("numero_documento", "", new { style = "color:red" })
 
-            <!-- ROL -->
-            <label>Rol</label>
-            <select name="rol" required>
-                <option value="">Seleccione su rol</option>
-                <option value="Paciente">Paciente</option>
-                <option value="Doctor">Doctor</option>
-                <option value="Administrador">Administrador</option>
-            </select>
-
-            <!-- CONTRASEÑA -->
+            <!-- CONTRASEÑA --><!-- CON VALIDACIONES EN TIEMPO REAL -->
             <label>Contraseña</label>
             <input type="password"
                    name="password"
-                   placeholder="Contraseña"
                    required />
+            @Html.ValidationMessage("password", "", new { style = "color:red" })
 
             <a href="/Auth/Recuperar" class="auth-links">
                 ¿Olvidaste tu contraseña?
@@ -55,12 +42,8 @@
 
             <button type="submit">Iniciar sesión</button>
 
-            @if (ViewBag.Error != null)
-            {
-                <p style="color:red; margin-top:10px;">
-                    @ViewBag.Error
-                </p>
-            }
+            <!-- Error general -->
+            @Html.ValidationSummary(true, "", new { style = "color:red; margin-top:10px;" })
 
         </form>
 
