@@ -7,15 +7,15 @@
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\views\\admin\\paneladmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\views\\admin\\paneladmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\views\\admin\\paneladmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\models\\doctorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\models\\doctorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\models\\doctorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -23,39 +23,39 @@
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\controllers\\doctorcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\controllers\\doctorcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\controllers\\doctorcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\views\\doctor\\citasdoctor.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\views\\doctor\\citasdoctor.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\views\\doctor\\citasdoctor.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\scripts\\doctor-panel.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\scripts\\doctor-panel.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\scripts\\doctor-panel.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\views\\pages\\miscitas.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\views\\pages\\miscitas.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\views\\pages\\miscitas.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\views\\admin\\listausuarios.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\views\\admin\\listausuarios.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\views\\admin\\listausuarios.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\scripts\\admin-panel.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\scripts\\admin-panel.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\scripts\\admin-panel.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\views\\admin\\creardoctor.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\views\\admin\\creardoctor.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\views\\admin\\creardoctor.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\models\\doctor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\models\\doctor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\models\\doctor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\controllers\\pagescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\controllers\\pagescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\controllers\\pagescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -67,35 +67,35 @@
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\views\\auth\\registro.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\views\\auth\\registro.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\views\\auth\\registro.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\models\\citapacienteviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\models\\citapacienteviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\models\\citapacienteviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\models\\citas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\models\\citas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\models\\citas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\views\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\views\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\views\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\views\\auth\\recuperar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\views\\auth\\recuperar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\views\\auth\\recuperar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\scripts\\auth-registro.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\scripts\\auth-registro.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\scripts\\auth-registro.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\scripts\\auth-login.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\scripts\\auth-login.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\scripts\\auth-login.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\views\\auth\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\views\\auth\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\views\\auth\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
@@ -130,8 +130,7 @@
               "RelativeToolTip": "MediCitasWeb\\Views\\Doctor\\CitasDoctor.cshtml",
               "ViewState": "AgIAACcAAAAAAAAAAAAAADIAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-05T14:53:31.49Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T14:53:31.49Z"
             },
             {
               "$type": "Document",
@@ -143,8 +142,7 @@
               "RelativeToolTip": "MediCitasWeb\\Controllers\\AuthController.cs",
               "ViewState": "AgIAAHsBAAAAAAAAAAAmwIcBAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-05T13:36:34.43Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T13:36:34.43Z"
             },
             {
               "$type": "Document",
@@ -156,8 +154,7 @@
               "RelativeToolTip": "MediCitasWeb\\Views\\Admin\\PanelAdmin.cshtml",
               "ViewState": "AgIAAA8AAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-05T20:53:16.463Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T20:53:16.463Z"
             },
             {
               "$type": "Document",
@@ -169,8 +166,7 @@
               "RelativeToolTip": "MediCitasWeb\\Scripts\\doctor-panel.js",
               "ViewState": "AgIAADAAAAAAAAAAAAAUwEIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-03-05T21:18:44.507Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T21:18:44.507Z"
             },
             {
               "$type": "Document",
@@ -182,8 +178,7 @@
               "RelativeToolTip": "MediCitasWeb\\Controllers\\AdminController.cs",
               "ViewState": "AgIAAB8AAAAAAAAAAAAQwG0AAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-05T20:52:54.99Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T20:52:54.99Z"
             },
             {
               "$type": "Document",
@@ -195,8 +190,7 @@
               "RelativeToolTip": "MediCitasWeb\\Views\\Pages\\MisCitas.cshtml",
               "ViewState": "AgIAADkAAAAAAAAAAAAAAEkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-05T14:50:29.232Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T14:50:29.232Z"
             },
             {
               "$type": "Document",
@@ -221,8 +215,7 @@
               "RelativeToolTip": "MediCitasWeb\\Models\\DoctorViewModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-05T20:43:55.143Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T20:43:55.143Z"
             },
             {
               "$type": "Document",
@@ -234,8 +227,7 @@
               "RelativeToolTip": "MediCitasWeb\\Controllers\\DoctorController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-05T15:00:29.639Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T15:00:29.639Z"
             },
             {
               "$type": "Document",
@@ -247,8 +239,7 @@
               "RelativeToolTip": "MediCitasWeb\\Views\\Admin\\ListaUsuarios.cshtml",
               "ViewState": "AgIAACAAAAAAAAAAAAAYwCwAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-05T21:12:37.666Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T21:12:37.666Z"
             },
             {
               "$type": "Document",
@@ -260,8 +251,7 @@
               "RelativeToolTip": "MediCitasWeb\\Views\\Auth\\Registro.cshtml",
               "ViewState": "AgIAAAwAAAAAAAAAAAAAABIAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-05T14:18:55.75Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T14:18:55.75Z"
             },
             {
               "$type": "Document",
@@ -273,8 +263,7 @@
               "RelativeToolTip": "MediCitasWeb\\Models\\Doctor.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-05T20:37:44.164Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T20:37:44.164Z"
             },
             {
               "$type": "Document",
@@ -286,8 +275,7 @@
               "RelativeToolTip": "MediCitasWeb\\Views\\Admin\\CrearDoctor.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-05T20:59:35.775Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T20:59:35.775Z"
             },
             {
               "$type": "Document",
@@ -299,8 +287,7 @@
               "RelativeToolTip": "MediCitasWeb\\Scripts\\admin-panel.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-03-05T21:03:18.119Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T21:03:18.119Z"
             },
             {
               "$type": "Document",
@@ -325,8 +312,7 @@
               "RelativeToolTip": "MediCitasWeb\\Views\\Pages\\AgendarCita.cshtml",
               "ViewState": "AgIAAD4AAAAAAAAAAAAuwGUAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-24T13:50:57.76Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-24T13:50:57.76Z"
             },
             {
               "$type": "Document",
@@ -338,8 +324,7 @@
               "RelativeToolTip": "MediCitasWeb\\Controllers\\PagesController.cs",
               "ViewState": "AgIAADgAAAAAAAAAAAAUwEAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-05T14:15:09.906Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T14:15:09.906Z"
             },
             {
               "$type": "Document",
@@ -351,8 +336,7 @@
               "RelativeToolTip": "MediCitasWeb\\Views\\Web.config",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
-              "WhenOpened": "2026-03-05T15:06:07.579Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T15:06:07.579Z"
             },
             {
               "$type": "Document",
@@ -364,8 +348,7 @@
               "RelativeToolTip": "MediCitasWeb\\Models\\Citas.cs",
               "ViewState": "AgIAAAYAAAAAAAAAAAAQwA0AAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-05T15:53:29.078Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T15:53:29.078Z"
             },
             {
               "$type": "Document",
@@ -377,8 +360,7 @@
               "RelativeToolTip": "MediCitasWeb\\Models\\CitaPacienteViewModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-05T15:55:34.688Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T15:55:34.688Z"
             },
             {
               "$type": "Document",
@@ -390,8 +372,7 @@
               "RelativeToolTip": "MediCitasWeb\\Scripts\\auth-login.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAADAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-03-05T14:29:12.618Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T14:29:12.618Z"
             },
             {
               "$type": "Document",
@@ -403,8 +384,7 @@
               "RelativeToolTip": "MediCitasWeb\\Views\\Auth\\Recuperar.cshtml",
               "ViewState": "AgIAANAAAAAAAAAAAAAQwNkAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-05T14:52:05.484Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T14:52:05.484Z"
             },
             {
               "$type": "Document",
@@ -416,8 +396,7 @@
               "RelativeToolTip": "MediCitasWeb\\Views\\Auth\\Login.cshtml",
               "ViewState": "AgIAABsAAAAAAAAAAAAmwDkAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-05T14:26:10.193Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T14:26:10.193Z"
             },
             {
               "$type": "Document",
@@ -429,8 +408,7 @@
               "RelativeToolTip": "MediCitasWeb\\Scripts\\auth-registro.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAABQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-03-05T14:22:02.657Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T14:22:02.657Z"
             },
             {
               "$type": "Document",
@@ -442,8 +420,7 @@
               "RelativeToolTip": "MediCitasWeb\\Models\\Conexion.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAABVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-05T13:22:05.91Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T13:22:05.91Z"
             },
             {
               "$type": "Document",
