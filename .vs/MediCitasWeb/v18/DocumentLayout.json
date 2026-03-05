@@ -1,13 +1,33 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "E:\\7MO TRIMESTRE\\MediCitasWeb\\",
+  "WorkspaceRootPath": "C:\\dev\\MediCitasWeb\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|e:\\7mo trimestre\\medicitasweb\\medicitasweb\\views\\pages\\agendarcita.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\models\\conexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\models\\conexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|c:\\dev\\medicitasweb\\medicitasweb\\models\\chatbotmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\models\\chatbotmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\views\\pages\\agendarcita.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\views\\pages\\agendarcita.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|e:\\7mo trimestre\\medicitasweb\\medicitasweb\\content\\admin.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "AbsoluteMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|C:\\dev\\MediCitasWeb\\medicitasweb\\content\\admin.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
       "RelativeMoniker": "D:0:0:{7E6A8D5E-7827-4AD4-AF1D-4A0AB4410A9B}|MediCitasWeb\\MediCitasWeb.csproj|solutionrelative:medicitasweb\\content\\admin.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     }
   ],
@@ -18,33 +38,96 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "admin.css",
-              "DocumentMoniker": "E:\\7MO TRIMESTRE\\MediCitasWeb\\MediCitasWeb\\Content\\admin.css",
-              "RelativeDocumentMoniker": "MediCitasWeb\\Content\\admin.css",
-              "ToolTip": "E:\\7MO TRIMESTRE\\MediCitasWeb\\MediCitasWeb\\Content\\admin.css",
-              "RelativeToolTip": "MediCitasWeb\\Content\\admin.css",
+              "DocumentIndex": 0,
+              "Title": ".gitignore",
+              "DocumentMoniker": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\.gitignore",
+              "RelativeDocumentMoniker": "MediCitasWeb\\.gitignore",
+              "ToolTip": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\.gitignore*",
+              "RelativeToolTip": "MediCitasWeb\\.gitignore*",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-02-24T15:01:19.874Z",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-03-05T13:48:04.231Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AgendarCita.cshtml",
-              "DocumentMoniker": "E:\\7MO TRIMESTRE\\MediCitasWeb\\MediCitasWeb\\Views\\Pages\\AgendarCita.cshtml",
-              "RelativeDocumentMoniker": "MediCitasWeb\\Views\\Pages\\AgendarCita.cshtml",
-              "ToolTip": "E:\\7MO TRIMESTRE\\MediCitasWeb\\MediCitasWeb\\Views\\Pages\\AgendarCita.cshtml",
-              "RelativeToolTip": "MediCitasWeb\\Views\\Pages\\AgendarCita.cshtml",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABQAAABCAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-24T13:50:57.76Z",
+              "DocumentIndex": 1,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "MediCitasWeb\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "MediCitasWeb\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAACkAAAAAAAAAAAAwwDsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-05T13:36:34.43Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Web.config",
+              "RelativeDocumentMoniker": "MediCitasWeb\\Web.config",
+              "ToolTip": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Web.config",
+              "RelativeToolTip": "MediCitasWeb\\Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2026-03-05T13:23:19.344Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Conexion.cs",
+              "DocumentMoniker": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Models\\Conexion.cs",
+              "RelativeDocumentMoniker": "MediCitasWeb\\Models\\Conexion.cs",
+              "ToolTip": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Models\\Conexion.cs",
+              "RelativeToolTip": "MediCitasWeb\\Models\\Conexion.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-05T13:22:05.91Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ChatBotModels.cs",
+              "DocumentMoniker": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Models\\ChatBotModels.cs",
+              "RelativeDocumentMoniker": "MediCitasWeb\\Models\\ChatBotModels.cs",
+              "ToolTip": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Models\\ChatBotModels.cs",
+              "RelativeToolTip": "MediCitasWeb\\Models\\ChatBotModels.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T16:28:00.971Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "admin.css",
+              "DocumentMoniker": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Content\\admin.css",
+              "RelativeDocumentMoniker": "MediCitasWeb\\Content\\admin.css",
+              "ToolTip": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Content\\admin.css",
+              "RelativeToolTip": "MediCitasWeb\\Content\\admin.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-02-24T15:01:19.874Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AgendarCita.cshtml",
+              "DocumentMoniker": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Views\\Pages\\AgendarCita.cshtml",
+              "RelativeDocumentMoniker": "MediCitasWeb\\Views\\Pages\\AgendarCita.cshtml",
+              "ToolTip": "C:\\dev\\MediCitasWeb\\MediCitasWeb\\Views\\Pages\\AgendarCita.cshtml",
+              "RelativeToolTip": "MediCitasWeb\\Views\\Pages\\AgendarCita.cshtml",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-24T13:50:57.76Z"
             }
           ]
         }

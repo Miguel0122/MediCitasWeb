@@ -162,6 +162,7 @@
     <Content Include="Content\chatbot.css" />
     <Content Include="Content\doctor.css" />
     <Content Include="Content\user.css" />
+    <Content Include=".gitignore" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\bootstrap.bundle.js" />

@@ -8,10 +8,6 @@ namespace MediCitasWeb.Controllers
     public class AuthController : Controller
     {
 
-        // ============================================================
-        // ==================== VISTAS (GET) ==========================
-        // ============================================================
-
         // Muestra la vista de Login
         public ActionResult Login()
         {
@@ -30,20 +26,6 @@ namespace MediCitasWeb.Controllers
             return View();
         }
 
-
-
-        // ============================================================
-        // ==================== LOGIN (POST) ==========================
-        // ============================================================
-
-        /*
-            Este método ahora:
-            ✔ Valida por numero_documento
-            ✔ Valida contraseña
-            ✔ Valida rol
-            ✔ Guarda sesión
-            ✔ Redirige según rol
-        */
         [HttpPost]
         public ActionResult Login(string numero_documento, string password, string rol)
         {
@@ -73,7 +55,8 @@ namespace MediCitasWeb.Controllers
                     {
                         Session["usuario"] = dr["nombres_usuario"].ToString();
                         Session["rol"] = dr["rol_usuario"].ToString();
-                        Session["documento"] = numero_documento;
+                        // Guardamos el ID de Usuario por si acaso
+                        Session["id_usuario"] = dr["id_usuario"].ToString();
 
                         string rolUsuario = dr["rol_usuario"].ToString();
 
@@ -93,68 +76,63 @@ namespace MediCitasWeb.Controllers
             return View();
         }
 
-
-
-        // ============================================================
-        // ==================== REGISTRO (POST) =======================
-        // ============================================================
-
-        /*
-            Registro ahora:
-            ✔ Guarda numero_documento
-            ✔ Guarda nombres
-            ✔ Guarda apellidos
-            ✔ Guarda correo
-            ✔ Guarda contraseña
-            ✔ Rol por defecto: Paciente
-        */
         [HttpPost]
         public ActionResult Registro(string nombres, string apellidos, string numero_documento, string correo, string password)
         {
-            string conexion = ConfigurationManager
-                              .ConnectionStrings["conexion"]
-                              .ConnectionString;
+            string conexion = ConfigurationManager.ConnectionStrings["MediCitasDB"].ConnectionString; // Ojo: Asegúrate que coincida con Web.config
 
             using (SqlConnection con = new SqlConnection(conexion))
             {
-                /*
-                    INSERT completo incluyendo numero_documento
-                */
-                string query = @"INSERT INTO Usuario
-                                (nombres_usuario, apellidos_usuario, numero_documento, correo_usuario, password_usuario, rol_usuario)
-                                VALUES
-                                (@Nombres, @Apellidos, @Documento, @Correo, @Password, @Rol)";
+                con.Open();
+                // Iniciamos una transacción: o se guardan los dos, o no se guarda ninguno (seguridad de datos)
+                SqlTransaction transaction = con.BeginTransaction();
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                try
                 {
-                    cmd.Parameters.AddWithValue("@Nombres", nombres);
-                    cmd.Parameters.AddWithValue("@Apellidos", apellidos);
-                    cmd.Parameters.AddWithValue("@Documento", numero_documento);
-                    cmd.Parameters.AddWithValue("@Correo", correo);
-                    cmd.Parameters.AddWithValue("@Password", password);
+                    // 1. Insertar en Usuario y recuperar el ID generado (SCOPE_IDENTITY)
+                    string queryUsuario = @"INSERT INTO Usuario
+                            (nombres_usuario, apellidos_usuario, numero_documento, correo_usuario, password_usuario, rol_usuario)
+                            VALUES
+                            (@Nombres, @Apellidos, @Documento, @Correo, @Password, 'Paciente');
+                            SELECT SCOPE_IDENTITY();"; // Esto nos devuelve el ID nuevo
 
-                    // Rol automático
-                    cmd.Parameters.AddWithValue("@Rol", "Paciente");
+                    int idUsuarioNuevo = 0;
 
-                    con.Open();
-                    cmd.ExecuteNonQuery();
+                    using (SqlCommand cmd = new SqlCommand(queryUsuario, con, transaction))
+                    {
+                        cmd.Parameters.AddWithValue("@Nombres", nombres);
+                        cmd.Parameters.AddWithValue("@Apellidos", apellidos);
+                        cmd.Parameters.AddWithValue("@Documento", numero_documento);
+                        cmd.Parameters.AddWithValue("@Correo", correo);
+                        cmd.Parameters.AddWithValue("@Password", password);
+
+                        // Ejecutamos y obtenemos el ID del usuario recién creado
+                        idUsuarioNuevo = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
+
+                    // 2. Insertar automáticamente en la tabla Paciente
+                    string queryPaciente = "INSERT INTO Paciente (id_usuario) VALUES (@IdUsuario)";
+                    using (SqlCommand cmd2 = new SqlCommand(queryPaciente, con, transaction))
+                    {
+                        cmd2.Parameters.AddWithValue("@IdUsuario", idUsuarioNuevo);
+                        cmd2.ExecuteNonQuery();
+                    }
+
+                    // Si todo salió bien, confirmamos los cambios
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    // Si algo falla, deshacemos todo para no dejar datos basura
+                    transaction.Rollback();
+                    ViewBag.Error = "Error al registrar: " + ex.Message;
+                    return View();
                 }
             }
 
-            // Redirige al login después de registrarse
             return RedirectToAction("Login");
         }
 
-
-
-        // ============================================================
-        // ================= RECUPERAR CONTRASEÑA =====================
-        // ============================================================
-
-        /*
-            Por ahora solo muestra mensaje.
-            Luego puedes agregar código de recuperación.
-        */
         [HttpPost]
         public ActionResult Recuperar(string correo)
         {
