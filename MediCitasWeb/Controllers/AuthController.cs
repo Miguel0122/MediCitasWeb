@@ -2,19 +2,23 @@
 using System.Web.Mvc;
 using System.Data.SqlClient;
 using System.Configuration;
-
+using MediCitasWeb.Models;
+using System.Linq;
+using System.Net;
+using System.Net.Mail;
 namespace MediCitasWeb.Controllers
 {
     public class AuthController : Controller
     {
+        private MediCitasContext db = new MediCitasContext();
 
-        // Muestra la vista de Login
+        // 3. Login corregido
         public ActionResult Login()
         {
             return View();
         }
 
-        // Muestra la vista de Registro
+        // 1. Muestra el formulario de registro (GET)
         public ActionResult Registro()
         {
             return View();
@@ -27,117 +31,372 @@ namespace MediCitasWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Login(string numero_documento, string password, string rol)
+        public ActionResult Login(string numero_documento, string password)
         {
-            string conexion = ConfigurationManager
-                              .ConnectionStrings["MediCitasDB"]
-                              .ConnectionString;
+            numero_documento = numero_documento?.Trim();
+            password = password?.Trim();
 
-            using (SqlConnection con = new SqlConnection(conexion))
+            if (string.IsNullOrWhiteSpace(numero_documento))
+                ModelState.AddModelError("numero_documento", "El número de documento es obligatorio.");
+            else if (!numero_documento.All(char.IsDigit))
+                ModelState.AddModelError("numero_documento", "El número de documento solo debe contener números.");
+            else if (numero_documento.Length < 6 || numero_documento.Length > 12)
+                ModelState.AddModelError("numero_documento", "El número de documento debe tener entre 6 y 12 dígitos.");
+
+            if (string.IsNullOrWhiteSpace(password))
+                ModelState.AddModelError("password", "La contraseña es obligatoria.");
+            else if (password.Length < 6)
+                ModelState.AddModelError("password", "La contraseña debe tener mínimo 6 caracteres.");
+
+            if (!ModelState.IsValid)
+                return View();
+
+            try
             {
-                string query = @"SELECT nombres_usuario, rol_usuario
-                         FROM Usuario
-                         WHERE numero_documento = @Documento
-                         AND password_usuario = @Password
-                         AND rol_usuario = @Rol";
+                string conexion = ConfigurationManager
+                    .ConnectionStrings["MediCitasDB"].ConnectionString;
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlConnection con = new SqlConnection(conexion))
                 {
-                    cmd.Parameters.AddWithValue("@Documento", numero_documento);
-                    cmd.Parameters.AddWithValue("@Password", password);
-                    cmd.Parameters.AddWithValue("@Rol", rol);
-
                     con.Open();
 
-                    SqlDataReader dr = cmd.ExecuteReader();
+                    string query = @"SELECT id_usuario, nombres_usuario, password_usuario, rol_usuario
+                             FROM Usuario
+                             WHERE numero_documento = @Documento";
 
-                    if (dr.Read())
+                    using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        Session["usuario"] = dr["nombres_usuario"].ToString();
-                        Session["rol"] = dr["rol_usuario"].ToString();
-                        // Guardamos el ID de Usuario por si acaso
-                        Session["id_usuario"] = dr["id_usuario"].ToString();
+                        cmd.Parameters.AddWithValue("@Documento", numero_documento);
 
-                        string rolUsuario = dr["rol_usuario"].ToString();
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (!dr.Read())
+                            {
+                                ModelState.AddModelError("", "Documento o contraseña incorrectos.");
+                                return View();
+                            }
 
-                        if (rolUsuario == "Administrador")
-                            return RedirectToAction("Index", "Admin");
+                            string passwordBD = dr["password_usuario"].ToString();
+                            string rolUsuario = dr["rol_usuario"]?.ToString();
+                            string nombreUsuario = dr["nombres_usuario"].ToString();
+                            string idUsuario = dr["id_usuario"].ToString();
 
-                        if (rolUsuario == "Doctor")
-                            return RedirectToAction("MisCitas", "Doctor");
+                            if (passwordBD != password)
+                            {
+                                ModelState.AddModelError("", "Documento o contraseña incorrectos.");
+                                return View();
+                            }
 
-                        if (rolUsuario == "Paciente")
-                            return RedirectToAction("AgendarCita", "Pages"); 
+                            if (string.IsNullOrEmpty(rolUsuario))
+                            {
+                                ModelState.AddModelError("", "El usuario no tiene un rol asignado.");
+                                return View();
+                            }
+
+                            Session["usuario"] = nombreUsuario;
+                            Session["rol"] = rolUsuario;
+                            Session["documento"] = numero_documento;
+                            Session["id_usuario"] = idUsuario;
+                        }
+
+                        switch (Session["rol"] as string)
+                        {
+                            case "Administrador":
+                                return RedirectToAction("PanelAdmin", "Admin");
+                            case "Doctor":
+                                return RedirectToAction("CitasDoctor", "Doctor");
+                            case "Paciente":
+                                return RedirectToAction("AgendarCita", "Pages");
+                            default:
+                                ModelState.AddModelError("", "Rol no válido.");
+                                return View();
+                        }
                     }
                 }
             }
-
-            ViewBag.Error = "Documento, contraseña o rol incorrectos.";
-            return View();
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Ocurrió un error inesperado. Intente nuevamente.");
+                return View();
+            }
         }
 
+        // He unificado los parámetros para que coincidan con tu base de datos
         [HttpPost]
-        public ActionResult Registro(string nombres, string apellidos, string numero_documento, string correo, string password)
+        public ActionResult Registro(string nombres, string apellidos,
+                             string numero_documento, string correo,
+                             string password)
         {
-            string conexion = ConfigurationManager.ConnectionStrings["MediCitasDB"].ConnectionString; // Ojo: Asegúrate que coincida con Web.config
-
-            using (SqlConnection con = new SqlConnection(conexion))
+            if (string.IsNullOrWhiteSpace(nombres) ||
+                string.IsNullOrWhiteSpace(apellidos) ||
+                string.IsNullOrWhiteSpace(numero_documento) ||
+                string.IsNullOrWhiteSpace(correo) ||
+                string.IsNullOrWhiteSpace(password))
             {
-                con.Open();
-                // Iniciamos una transacción: o se guardan los dos, o no se guarda ninguno (seguridad de datos)
-                SqlTransaction transaction = con.BeginTransaction();
+                ModelState.AddModelError("", "Todos los campos son obligatorios.");
+                return View();
+            }
+
+            try
+            {
+                Usuario nuevoUsuario = new Usuario
+                {
+                    nombres_usuario = nombres,
+                    apellidos_usuario = apellidos,
+                    numero_documento = numero_documento,
+                    correo_usuario = correo,
+                    password_usuario = password,
+                    rol_usuario = "Paciente",
+                    fecha_registro = DateTime.Now
+                };
+
+                db.Usuario.Add(nuevoUsuario);
+                db.SaveChanges();
+
+                Paciente nuevoPaciente = new Paciente
+                {
+                    id_usuario = nuevoUsuario.id_usuario
+                };
+                db.Paciente.Add(nuevoPaciente);
+                db.SaveChanges();
+
+                TempData["Exito"] = "Usuario registrado correctamente.";
+                return RedirectToAction("Login");
+            }
+            catch (Exception ex)
+            {
+                // Muestra el mensaje concreto mientras pruebas
+                ModelState.AddModelError("", "Error al registrar: " + ex.Message);
+                return View();
+            }
+        }
+
+        [HttpPost] // Indica que este método recibe datos vía POST (AJAX)
+        public JsonResult EnviarCodigo(string correo)
+        {
+            // Crear instancia del contexto de base de datos
+            using (var db = new MediCitasContext())
+            {
+
+                var usuario = db.Usuario
+                                .FirstOrDefault(u => u.correo_usuario == correo);
+
+                // Si el correo no existe en la base de datos
+                if (usuario == null)
+                {
+                    return Json(new
+                    {
+                        ok = false,
+                        mensaje = "El correo no está registrado."
+                    });
+                }
+
+                // =====================================================
+                // 2️⃣ GENERAR CÓDIGO ALEATORIO DE 6 DÍGITOS
+                // =====================================================
+                Random rnd = new Random();
+                string codigo = rnd.Next(100000, 999999).ToString();
+
+                // =====================================================
+                // 3️⃣ GUARDAR CÓDIGO Y CORREO EN SESSION
+                // =====================================================
+                // Se guardan temporalmente para validarlo después
+                Session["CodigoRecuperacion"] = codigo;
+                Session["CorreoRecuperacion"] = correo;
 
                 try
                 {
-                    // 1. Insertar en Usuario y recuperar el ID generado (SCOPE_IDENTITY)
-                    string queryUsuario = @"INSERT INTO Usuario
-                            (nombres_usuario, apellidos_usuario, numero_documento, correo_usuario, password_usuario, rol_usuario)
-                            VALUES
-                            (@Nombres, @Apellidos, @Documento, @Correo, @Password, 'Paciente');
-                            SELECT SCOPE_IDENTITY();"; // Esto nos devuelve el ID nuevo
+                    // =====================================================
+                    // 4️⃣ CREAR Y CONFIGURAR MENSAJE DE CORREO
+                    // =====================================================
+                    MailMessage mensaje = new MailMessage();
 
-                    int idUsuarioNuevo = 0;
+                    // Correo desde el cual se enviará el mensaje
+                    mensaje.From = new MailAddress("estoesparaia73@gmail.com");
 
-                    using (SqlCommand cmd = new SqlCommand(queryUsuario, con, transaction))
+                    // Correo destino (usuario que solicitó recuperación)
+                    mensaje.To.Add(correo);
+
+                    // Asunto del correo
+                    mensaje.Subject = "Código de recuperación - MediCitas";
+
+                    // =====================================================
+                    // IMPORTANTE: INDICAR QUE EL CUERPO SERÁ HTML
+                    // =====================================================
+                    mensaje.IsBodyHtml = true;
+
+                    // =====================================================
+                    // 5️⃣ CUERPO DEL CORREO CON DISEÑO HTML
+                    // =====================================================
+                    // Se usa $@ para poder insertar la variable {codigo}
+                    mensaje.Body = $@"
+                                    <!DOCTYPE html>
+                                    <html>
+                                    <head>
+                                    <meta charset='UTF-8'>
+                                    </head>
+
+                                    <body style='margin:0; padding:0; background-color:#e3f2fd; font-family:Arial, sans-serif;'>
+
+                                        <!-- Contenedor con fondo degradado -->
+                                        <div style='padding:50px 0; background:linear-gradient(135deg,#4fc3f7,#81d4fa);'>
+
+                                            <!-- Tarjeta blanca central -->
+                                            <div style='max-width:500px; margin:auto; background:white; 
+                                                        border-radius:15px; 
+                                                        box-shadow:0 10px 30px rgba(0,0,0,0.2); 
+                                                        padding:40px; 
+                                                        text-align:center;'>
+
+                                                <!-- Título -->
+                                                <h2 style='color:#0277bd; margin-bottom:25px;'>
+                                                    Recuperación de Contraseña - MediCitas
+                                                </h2>
+
+                                                <!-- Mensaje informativo -->
+                                                <p style='font-size:16px; color:#555; margin-bottom:30px; line-height:1.6;'>
+                                                    Hola,<br><br>
+                                                    Recibimos una solicitud para restablecer tu contraseña en 
+                                                    <b>MediCitas</b>.
+                                                </p>
+
+                                                <!-- Código destacado -->
+                                                <div style='background:#e1f5fe; 
+                                                            padding:20px; 
+                                                            border-radius:10px; 
+                                                            font-size:32px; 
+                                                            font-weight:bold; 
+                                                            letter-spacing:6px; 
+                                                            color:#01579b; 
+                                                            margin-bottom:30px;'>
+
+                                                    {codigo}
+
+                                                </div>
+
+                                                <!-- Mensaje final -->
+                                                <p style='font-size:14px; color:#777; line-height:1.5;'>
+                                                    Este código es válido por unos minutos.<br>
+                                                    Si no solicitaste este cambio, puedes ignorar este mensaje.
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
+                                    </body>
+                                    </html>";
+
+                    SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+
+                    // Credenciales del correo emisor (contraseña de aplicación)
+                    smtp.Credentials = new NetworkCredential(
+                        "estoesparaia73@gmail.com",
+                        "rlwccoeikalgjwbi" // SIN espacios ni saltos de línea
+                    );
+
+                    // Activar conexión segura SSL
+                    smtp.EnableSsl = true;
+
+                    // =====================================================
+                    // 7️⃣ ENVIAR CORREO
+                    // =====================================================
+                    smtp.Send(mensaje);
+
+                    // =====================================================
+                    // RESPUESTA EXITOSA
+                    // =====================================================
+                    return Json(new
                     {
-                        cmd.Parameters.AddWithValue("@Nombres", nombres);
-                        cmd.Parameters.AddWithValue("@Apellidos", apellidos);
-                        cmd.Parameters.AddWithValue("@Documento", numero_documento);
-                        cmd.Parameters.AddWithValue("@Correo", correo);
-                        cmd.Parameters.AddWithValue("@Password", password);
-
-                        // Ejecutamos y obtenemos el ID del usuario recién creado
-                        idUsuarioNuevo = Convert.ToInt32(cmd.ExecuteScalar());
-                    }
-
-                    // 2. Insertar automáticamente en la tabla Paciente
-                    string queryPaciente = "INSERT INTO Paciente (id_usuario) VALUES (@IdUsuario)";
-                    using (SqlCommand cmd2 = new SqlCommand(queryPaciente, con, transaction))
-                    {
-                        cmd2.Parameters.AddWithValue("@IdUsuario", idUsuarioNuevo);
-                        cmd2.ExecuteNonQuery();
-                    }
-
-                    // Si todo salió bien, confirmamos los cambios
-                    transaction.Commit();
+                        ok = true,
+                        mensaje = "Código enviado correctamente al correo."
+                    });
                 }
                 catch (Exception ex)
                 {
-                    // Si algo falla, deshacemos todo para no dejar datos basura
-                    transaction.Rollback();
-                    ViewBag.Error = "Error al registrar: " + ex.Message;
-                    return View();
+                    // =====================================================
+                    // MANEJO DE ERRORES
+                    // =====================================================
+                    return Json(new
+                    {
+                        ok = false,
+                        mensaje = "Error al enviar el correo: " + ex.Message
+                    });
                 }
             }
-
-            return RedirectToAction("Login");
         }
 
         [HttpPost]
-        public ActionResult Recuperar(string correo)
+        public JsonResult ValidarCodigo(string codigo)
         {
-            ViewBag.Mensaje = "Si el correo existe, se enviará un código de recuperación.";
-            return View();
+            // Obtener código guardado en sesión
+            string codigoSession = Session["CodigoRecuperacion"] as string;
+
+            // Validar que no sea null
+            if (string.IsNullOrEmpty(codigoSession))
+            {
+                return Json(new
+                {
+                    ok = false,
+                    mensaje = "La sesión expiró. Solicita un nuevo código."
+                });
+            }
+
+            // Limpiar espacios por seguridad
+            codigo = codigo?.Trim();
+            codigoSession = codigoSession?.Trim();
+
+            // Comparar códigos
+            if (codigoSession.Equals(codigo))
+            {
+                return Json(new { ok = true });
+            }
+
+            return Json(new
+            {
+                ok = false,
+                mensaje = "Código incorrecto."
+            });
+        }
+
+        [HttpPost]
+        public JsonResult CambiarPassword(string nueva)
+        {
+
+            string correo = Session["CorreoRecuperacion"] as string;
+
+            if (correo == null)
+            {
+                return Json(new
+                {
+                    ok = false,
+                    mensaje = "Sesión expirada. Intente nuevamente."
+                });
+            }
+
+            // Crear conexión con base de datos
+            using (var db = new MediCitasContext())
+            {
+                var usuario = db.Usuario
+                                .FirstOrDefault(u => u.correo_usuario == correo);
+
+                // Si por alguna razón no existe el usuario
+                if (usuario == null)
+                {
+                    return Json(new { ok = false });
+                }
+
+                usuario.password_usuario = nueva;
+
+                // Guardar cambios en la base de datos
+                db.SaveChanges();
+            }
+
+            Session.Remove("CodigoRecuperacion");
+            Session.Remove("CorreoRecuperacion");
+
+            // Respuesta exitosa
+            return Json(new { ok = true });
         }
     }
 }

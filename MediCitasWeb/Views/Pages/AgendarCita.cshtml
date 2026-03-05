@@ -1,220 +1,119 @@
-﻿@{
+﻿@model MediCitasWeb.Models.Usuario
+@{
     ViewBag.Title = "Asignación de Citas";
-    Layout = null;
+    Layout = null; // O tu layout si decides usarlo después
 }
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
-    <title>Asignación de Citas</title>
-
+    <title>Agendar Cita - MediCitas</title>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/Content/user.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-section {
+            background: #007bff;
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- TABS SUPERIORES -->
-    <div class="container mt-3">
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a class="nav-link active">Asignación de citas</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("MisCitas","Pages")">
-                    Consulta y cancelación
-                </a>
-            </li>
-        </ul>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="header-section text-center">
+                <h2 class="fw-bold">NUEVA CITA MÉDICA</h2>
+            </div>
+
+            <div class="card-body p-4">
+                <h5 class="text-primary border-bottom pb-2">Información del Paciente</h5>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Documento</label>
+                        <input class="form-control bg-light" value="@Model.numero_documento" readonly />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Nombre Completo</label>
+                        <input class="form-control bg-light" value="@Model.nombres_usuario @Model.apellidos_usuario" readonly />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Correo</label>
+                        <input class="form-control bg-light" value="@Model.correo_usuario" readonly />
+                    </div>
+                </div>
+
+                <h5 class="text-primary border-bottom pb-2">Detalles de la Cita</h5>
+                <form method="post" action="@Url.Action("GuardarCita","Pages")">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Especialidad</label>
+                            <select name="especialidad" class="form-select" required>
+                                <option value="">Seleccione...</option>
+                                <option>Medicina General</option>
+                                <option>Pediatría</option>
+                                <option>Cardiología</option>
+                                <option>Odontología</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo de Consulta</label>
+                            <select name="tipoConsulta" class="form-select">
+                                <option>Primera vez</option>
+                                <option>Seguimiento / Control</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Fecha</label>
+                            <input type="date" name="fechaCita" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Hora</label>
+                            <select name="horaCita" class="form-select" required>
+                                <option value="08:00:00">08:00 AM</option>
+                                <option value="09:00:00">09:00 AM</option>
+                                <option value="10:00:00">10:00 AM</option>
+                                <option value="14:00:00">02:00 PM</option>
+                                <option value="15:00:00">03:00 PM</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Doctor</label>
+                            <select name="idDoctor" class="form-select" required>
+                                <option value="">Seleccione un doctor...</option>
+                                @foreach (var doc in ViewBag.Doctores as List<MediCitasWeb.Models.DoctorViewModel>)
+                                {
+                                    <option value="@doc.IdDoctor">
+                                        @doc.NombreDoctor — @doc.Especialidad
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+
+                        <div class="col-12 mt-4 text-center">
+                            <button type="submit" class="btn btn-success btn-lg px-5">Confirmar Agendamiento</button>
+                            <a href="@Url.Action("MisCitas", "Pages")" class="btn btn-outline-secondary btn-lg px-5">Ver Mis Citas</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <div class="container mt-3 user-container">
-
-        <!-- ENCABEZADO -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-
-            <h4 class="fw-bold">ASIGNACIÓN DE CITAS</h4>
-
-            <div>
-                <a href="@Url.Action("Chat","ChatBot")"
-                   class="btn btn-outline-primary btn-sm me-2">
-                    🤖 Asistente
-                </a>
-
-                <a href="@Url.Action("Login","Pages")"
-                   class="btn btn-danger btn-sm">
-                    ❌ Cerrar sesión
-                </a>
-            </div>
-
-        </div>
-
-        <!-- INFORMACIÓN DEL AFILIADO -->
-        <div class="bg-light p-2 mb-3 fw-bold text-secondary">
-            INFORMACIÓN DEL AFILIADO
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <label>Tipo y número de identificación</label>
-                <input type="text" class="form-control" value="CC 1043647199" disabled />
-            </div>
-
-            <div class="col-md-4">
-                <label>Nombre</label>
-                <input type="text" class="form-control" value="SAMUEL JAVIER AVILEZ VERBEL" disabled />
-            </div>
-
-            <div class="col-md-4">
-                <label>IPS Básica</label>
-                <input type="text" class="form-control" value="SALUD DEL CARIBE SANTA LUCÍA" disabled />
-            </div>
-        </div>
-
-        <!-- INFORMACIÓN DE CONTACTO -->
-        <div class="bg-light p-2 mb-3 fw-bold text-secondary">
-            INFORMACIÓN DE CONTACTO
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label>Número de teléfono</label>
-                <input type="text" class="form-control" value="60564****" disabled />
-            </div>
-
-            <div class="col-md-4">
-                <label>Número de celular</label>
-                <input type="text" class="form-control" value="311280****" disabled />
-            </div>
-
-            <div class="col-md-4">
-                <label>Dirección de correo</label>
-                <input type="text" class="form-control" value="agustis****gmail.com" disabled />
-            </div>
-        </div>
-
-        <div class="mb-4">
-            <button class="btn btn-primary">
-                Actualiza tus datos
-            </button>
-        </div>
-
-        <!-- INFORMACIÓN DE CITAS -->
-        <div class="bg-light p-2 mb-3 fw-bold text-secondary">
-            INFORMACIÓN DE CITAS
-        </div>
-
-        <div class="row align-items-end mb-4">
-            <div class="col-md-6">
-                <label>Servicio</label>
-                <select class="form-control">
-                    <option>CONSULTA MEDICINA GENERAL SALUD CITA PRESENCIAL</option>
-                    <option>CONSULTA ODONTOLOGÍA GENERAL</option>
-                    <option>CONSULTA PEDIATRÍA</option>
-                    <option>VACUNA COVID-19 REFUERZO SALUD</option>
-                </select>
-            </div>
-
-            <div class="col-md-4">
-                <button class="btn btn-primary w-100" onclick="mostrarPanel()">
-                    Consultar disponibilidad
-                </button>
-            </div>
-        </div>
-
-        <!-- 🔽 PANEL NUEVO DE AGENDAMIENTO -->
-        <div id="panelAgendamiento" class="card p-4 mb-5" style="display:none;">
-
-            <h5 class="fw-bold mb-3">Agendar Cita</h5>
-
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label>Especialidad médica *</label>
-                    <select id="especialidad" class="form-control">
-                        <option value="">Seleccione</option>
-                        <option>Medicina General</option>
-                        <option>Cardiología</option>
-                        <option>Pediatría</option>
-                        <option>Dermatología</option>
-                    </select>
-                </div>
-
-                <div class="col-md-4">
-                    <label>Médico (opcional)</label>
-                    <select class="form-control">
-                        <option>Asignación automática</option>
-                        <option>Dr. Juan Pérez</option>
-                        <option>Dra. Laura Gómez</option>
-                    </select>
-                </div>
-
-                <div class="col-md-4">
-                    <label>Tipo de consulta *</label>
-                    <select id="tipoConsulta" class="form-control">
-                        <option value="">Seleccione</option>
-                        <option>Primera vez</option>
-                        <option>Seguimiento</option>
-                        <option>Urgencia</option>
-                        <option>Teleconsulta</option>
-                        <option>Presencial</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label>Fecha deseada *</label>
-                    <input type="date" id="fechaCita" class="form-control" />
-                </div>
-
-                <div class="col-md-4">
-                    <label>Hora disponible *</label>
-                    <select id="horaCita" class="form-control">
-                        <option value="">Seleccione hora</option>
-                        <option>08:00 AM</option>
-                        <option>09:00 AM</option>
-                        <option>10:00 AM</option>
-                        <option>11:00 AM</option>
-                        <option>02:00 PM</option>
-                        <option>03:00 PM</option>
-                    </select>
-                </div>
-            </div>
-
-            <button class="btn btn-success" onclick="confirmarCita()">
-                Confirmar Cita
-            </button>
-
-        </div>
-
-    </div>
-
-    <script>
-        function mostrarPanel() {
-            document.getElementById("panelAgendamiento").style.display = "block";
-        }
-
-        function confirmarCita() {
-
-            const especialidad = document.getElementById("especialidad").value;
-            const tipo = document.getElementById("tipoConsulta").value;
-            const fecha = document.getElementById("fechaCita").value;
-            const hora = document.getElementById("horaCita").value;
-
-            if (!especialidad || !tipo || !fecha || !hora) {
-                alert("Debe completar todos los campos obligatorios.");
-                return;
-            }
-
-            const hoy = new Date().toISOString().split("T")[0];
-            if (fecha < hoy) {
-                alert("No puede agendar en fechas pasadas.");
-                return;
-            }
-
-            alert("Cita agendada correctamente.");
-        }
-    </script>
 
 </body>
 </html>
