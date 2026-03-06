@@ -1,14 +1,11 @@
 # Visual Studio archivos temporales
 .vs/
 [Bb]in/
-[Obj]/
+[Oo]bj/
 *.user
-*.suo
 *.userosscache
 *.sln.docstates
 
 # Paquetes NuGet
 packages/
-
-# Archivos de publicación
-*.Publish.xml
+!packages/repository.config

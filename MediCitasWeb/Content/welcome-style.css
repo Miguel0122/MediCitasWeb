@@ -1,0 +1,43 @@
+/* Content/welcome-style.css */
+body {
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #007bff 0%, #00d4ff 100%);
+    min-height: 80vh;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.feature-card {
+    transition: all 0.3s;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-radius: 15px;
+}
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+footer {
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+}
