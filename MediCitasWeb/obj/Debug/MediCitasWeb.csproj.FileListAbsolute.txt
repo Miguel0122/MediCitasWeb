@@ -433,6 +433,6 @@ C:\dev\MediCitasWeb\MediCitasWeb\bin\es\System.Web.WebPages.Deployment.resources
 C:\dev\MediCitasWeb\MediCitasWeb\bin\es\System.Web.WebPages.Razor.resources.dll
 C:\dev\MediCitasWeb\MediCitasWeb\obj\Debug\MediCitasWeb.csproj.AssemblyReference.cache
 C:\dev\MediCitasWeb\MediCitasWeb\obj\Debug\MediCitasWeb.csproj.CoreCompileInputs.cache
-C:\dev\MediCitasWeb\MediCitasWeb\obj\Debug\MediCitasWeb.csproj.CopyComplete
 C:\dev\MediCitasWeb\MediCitasWeb\obj\Debug\MediCitasWeb.dll
 C:\dev\MediCitasWeb\MediCitasWeb\obj\Debug\MediCitasWeb.pdb
+C:\dev\MediCitasWeb\MediCitasWeb\obj\Debug\MediCita.D60A732C.Up2Date

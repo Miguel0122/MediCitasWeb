@@ -1,125 +1,119 @@
 ﻿@model MediCitasWeb.Models.Usuario
-
 @{
     ViewBag.Title = "Asignación de Citas";
-    Layout = null;
+    Layout = null; // O tu layout si decides usarlo después
 }
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-
+    <meta charset="utf-8" />
+    <title>Agendar Cita - MediCitas</title>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
 
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-section {
+            background: #007bff;
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+        }
+    </style>
 </head>
-
 <body>
 
-    <div class="container mt-4">
-
-        <h4 class="fw-bold">ASIGNACIÓN DE CITAS</h4>
-
-        <hr />
-
-        <h5>INFORMACIÓN DEL AFILIADO</h5>
-
-        <div class="row">
-
-            <div class="col-md-4">
-                <label>Documento</label>
-                <input class="form-control"
-                       value="@Model.numero_documento" disabled />
+    <div class="container mt-5">
+        <div class="card">
+            <div class="header-section text-center">
+                <h2 class="fw-bold">NUEVA CITA MÉDICA</h2>
             </div>
 
-            <div class="col-md-4">
-                <label>Nombre</label>
-                <input class="form-control"
-                       value="@Model.nombres_usuario @Model.apellidos_usuario" disabled />
-            </div>
+            <div class="card-body p-4">
+                <h5 class="text-primary border-bottom pb-2">Información del Paciente</h5>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Documento</label>
+                        <input class="form-control bg-light" value="@Model.numero_documento" readonly />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Nombre Completo</label>
+                        <input class="form-control bg-light" value="@Model.nombres_usuario @Model.apellidos_usuario" readonly />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Correo</label>
+                        <input class="form-control bg-light" value="@Model.correo_usuario" readonly />
+                    </div>
+                </div>
 
-            <div class="col-md-4">
-                <label>Correo</label>
-                <input class="form-control"
-                       value="@Model.correo_usuario" disabled />
-            </div>
+                <h5 class="text-primary border-bottom pb-2">Detalles de la Cita</h5>
+                <form method="post" action="@Url.Action("GuardarCita","Pages")">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Especialidad</label>
+                            <select name="especialidad" class="form-select" required>
+                                <option value="">Seleccione...</option>
+                                <option>Medicina General</option>
+                                <option>Pediatría</option>
+                                <option>Cardiología</option>
+                                <option>Odontología</option>
+                            </select>
+                        </div>
 
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo de Consulta</label>
+                            <select name="tipoConsulta" class="form-select">
+                                <option>Primera vez</option>
+                                <option>Seguimiento / Control</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Fecha</label>
+                            <input type="date" name="fechaCita" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Hora</label>
+                            <select name="horaCita" class="form-select" required>
+                                <option value="08:00:00">08:00 AM</option>
+                                <option value="09:00:00">09:00 AM</option>
+                                <option value="10:00:00">10:00 AM</option>
+                                <option value="14:00:00">02:00 PM</option>
+                                <option value="15:00:00">03:00 PM</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Doctor</label>
+                            <select name="idDoctor" class="form-select" required>
+                                <option value="">Seleccione un doctor...</option>
+                                @foreach (var doc in ViewBag.Doctores as List<MediCitasWeb.Models.DoctorViewModel>)
+                                {
+                                    <option value="@doc.IdDoctor">
+                                        @doc.NombreDoctor — @doc.Especialidad
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+
+                        <div class="col-12 mt-4 text-center">
+                            <button type="submit" class="btn btn-success btn-lg px-5">Confirmar Agendamiento</button>
+                            <a href="@Url.Action("MisCitas", "Pages")" class="btn btn-outline-secondary btn-lg px-5">Ver Mis Citas</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-
-        <hr />
-
-        <h5>AGENDAR CITA</h5>
-
-        <form method="post" action="@Url.Action("GuardarCita","Pages")">
-
-            <div class="row">
-
-                <div class="col-md-3">
-
-                    <label>Especialidad</label>
-
-                    <select name="especialidad" class="form-control">
-
-                        <option>Medicina General</option>
-                        <option>Pediatría</option>
-                        <option>Cardiología</option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3">
-
-                    <label>Tipo consulta</label>
-
-                    <select name="tipoConsulta" class="form-control">
-
-                        <option>Primera vez</option>
-                        <option>Seguimiento</option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3">
-
-                    <label>Fecha</label>
-
-                    <input type="date"
-                           name="fechaCita"
-                           class="form-control"
-                           required />
-
-                </div>
-
-                <div class="col-md-3">
-
-                    <label>Hora</label>
-
-                    <select name="horaCita"
-                            class="form-control">
-
-                        <option value="08:00:00">08:00 AM</option>
-                        <option value="09:00:00">09:00 AM</option>
-                        <option value="10:00:00">10:00 AM</option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-            <br>
-
-            <button class="btn btn-success">
-
-                Confirmar Cita
-
-            </button>
-
-        </form>
-
     </div>
 
 </body>
-
 </html>

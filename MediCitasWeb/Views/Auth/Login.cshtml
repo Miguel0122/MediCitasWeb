@@ -1,58 +1,58 @@
 ﻿@{
     Layout = null;
-    ViewBag.Title = "Login - MediCitas";
 }
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <title>Login - MediCitas</title>
+    <title>Iniciar Sesión - MediCitas</title>
     <link href="~/Content/auth.css" rel="stylesheet" />
 </head>
-
 <body class="auth-page">
 
     <div class="auth-container">
-
         <h1>MediCitas</h1>
-        <p class="subtitle">Acceso al sistema de citas médicas</p>
+        <p class="subtitle">Acceso al sistema</p>
 
-        <form method="post" action="/Auth/Login">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="error-summary" style="color: #e74c3c; text-align: center; margin-bottom: 15px; font-size: 0.9em;">
+                @Html.ValidationSummary(true)
+            </div>
+        }
 
-            <!-- DOCUMENTO --> <!-- CON VALIDACIONES EN TIEMPO REAL -->
+        <form method="post" action="@Url.Action("Login", "Auth")" id="loginForm">
+
             <label>Número de documento</label>
             <input type="text"
+                   id="numDocLogin"
                    name="numero_documento"
-                   value="@Request["numero_documento"]"
-                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                   required />
-            @Html.ValidationMessage("numero_documento", "", new { style = "color:red" })
+                   required
+                   placeholder="Ingrese su identificación"
+                   value="@Request["numero_documento"]" />
 
-            <!-- CONTRASEÑA --><!-- CON VALIDACIONES EN TIEMPO REAL -->
             <label>Contraseña</label>
             <input type="password"
+                   id="passwordLogin"
                    name="password"
-                   required />
-            @Html.ValidationMessage("password", "", new { style = "color:red" })
+                   required
+                   placeholder="••••••••" />
 
-            <a href="/Auth/Recuperar" class="auth-links">
-                ¿Olvidaste tu contraseña?
-            </a>
+            <div class="auth-options" style="display: flex; justify-content: center; margin-top: 10px;">
+                <a href="@Url.Action("Recuperar", "Auth")" class="auth-links" style="font-size: 0.85em;">¿Olvidó su contraseña?</a>
+            </div>
 
-            <button type="submit">Iniciar sesión</button>
-
-            <!-- Error general -->
-            @Html.ValidationSummary(true, "", new { style = "color:red; margin-top:10px;" })
-
+            <button type="submit" id="btnLogin">Ingresar</button>
         </form>
 
-        <div class="auth-links">
-            ¿No tienes cuenta?
-            <a href="/Auth/Registro">Crear cuenta</a>
+        <div class="auth-footer" style="margin-top: 20px; text-align: center; border-top: 1px solid #eee; padding-top: 15px;">
+            <p style="font-size: 0.9em; color: #666;">
+                ¿No tienes cuenta? <a href="@Url.Action("Registro", "Auth")" style="font-weight: bold;">Regístrate aquí</a>
+            </p>
         </div>
-
     </div>
 
+    <script src="~/Scripts/auth-login.js"></script>
 </body>
 </html>
