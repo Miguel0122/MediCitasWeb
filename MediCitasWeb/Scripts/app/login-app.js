@@ -7,19 +7,22 @@ createApp({
                 numero_documento: '',
                 password: ''
             },
-            error: null,
             loading: false
         }
     },
     methods: {
-        handleLogin() {
-            this.loading = true;
-            this.error = null;
-
-            // Enviamos el formulario manualmente
-            // Nota: Aquí puedes usar fetch si quieres una API, 
-            // pero para mantener tu controlador actual, lo haremos por submit normal
-            event.target.submit();
+        soloNumeros() {
+            // Reemplaza cualquier cosa que no sea número (lo que hacía el otro JS)
+            this.form.numero_documento = this.form.numero_documento.replace(/[^0-9]/g, '');
+        },
+        handleLogin(event) {
+            // Si los campos están llenos, mostramos el "Cargando" y dejamos que el form siga su curso
+            if (this.form.numero_documento && this.form.password) {
+                this.loading = true;
+                // No ponemos preventDefault para que el POST de ASP.NET funcione normal
+            } else {
+                event.preventDefault();
+            }
         }
     }
 }).mount('#loginApp');
