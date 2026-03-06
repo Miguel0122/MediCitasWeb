@@ -14,23 +14,35 @@
         <h1>MediCitas</h1>
         <p class="subtitle">Acceso al sistema</p>
 
-        <div v-if="error" style="background: #fee; color: #e74c3c; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.85em; text-align: center;">
-            {{ error }}
-        </div>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div style="background: #fee; color: #e74c3c; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.85em; text-align: center;">
+                @Html.ValidationSummary(true)
+            </div>
+        }
 
-        <form @@submit.prevent="handleLogin">
+        <form @@submit="handleLogin" method="post" action="@Url.Action("Login", "Auth")" id="realForm">
             <label>Número de documento</label>
-            <input type="text" v-model="form.numero_documento" required placeholder="Ingrese su identificación" />
+            <input type="text"
+                   name="numero_documento"
+                   v-model="form.numero_documento"
+                   @@input="soloNumeros"
+                   required
+                   placeholder="Ingrese su identificación" />
 
             <label>Contraseña</label>
-            <input type="password" v-model="form.password" required placeholder="••••••••" />
+            <input type="password"
+                   name="password"
+                   v-model="form.password"
+                   required
+                   placeholder="••••••••" />
 
             <div style="display: flex; justify-content: center; margin-top: 10px;">
                 <a href="@Url.Action("Recuperar", "Auth")" style="font-size: 0.85em; color: #007bff; text-decoration: none;">¿Olvidó su contraseña?</a>
             </div>
 
             <button type="submit" :disabled="loading">
-                <span v-if="loading">Cargando...</span>
+                <span v-if="loading">Verificando...</span>
                 <span v-else>Ingresar</span>
             </button>
         </form>

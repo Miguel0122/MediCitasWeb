@@ -175,7 +175,6 @@
     <Content Include="Scripts\admin-panel.js" />
     <Content Include="Scripts\app\login-app.js" />
     <Content Include="Scripts\app\welcome-app.js" />
-    <Content Include="Scripts\auth-login.js" />
     <Content Include="Scripts\auth-registro.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
