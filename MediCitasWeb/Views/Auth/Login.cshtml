@@ -1,58 +1,48 @@
-﻿@{
-    Layout = null;
-}
-
+﻿@{ Layout = null; }
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - MediCitas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="~/Content/auth.css" rel="stylesheet" />
 </head>
 <body class="auth-page">
 
-    <div class="auth-container">
+    <div id="loginApp" class="auth-container">
         <h1>MediCitas</h1>
         <p class="subtitle">Acceso al sistema</p>
 
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="error-summary" style="color: #e74c3c; text-align: center; margin-bottom: 15px; font-size: 0.9em;">
-                @Html.ValidationSummary(true)
-            </div>
-        }
+        <div v-if="error" style="background: #fee; color: #e74c3c; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.85em; text-align: center;">
+            {{ error }}
+        </div>
 
-        <form method="post" action="@Url.Action("Login", "Auth")" id="loginForm">
-
+        <form @@submit.prevent="handleLogin">
             <label>Número de documento</label>
-            <input type="text"
-                   id="numDocLogin"
-                   name="numero_documento"
-                   required
-                   placeholder="Ingrese su identificación"
-                   value="@Request["numero_documento"]" />
+            <input type="text" v-model="form.numero_documento" required placeholder="Ingrese su identificación" />
 
             <label>Contraseña</label>
-            <input type="password"
-                   id="passwordLogin"
-                   name="password"
-                   required
-                   placeholder="••••••••" />
+            <input type="password" v-model="form.password" required placeholder="••••••••" />
 
-            <div class="auth-options" style="display: flex; justify-content: center; margin-top: 10px;">
-                <a href="@Url.Action("Recuperar", "Auth")" class="auth-links" style="font-size: 0.85em;">¿Olvidó su contraseña?</a>
+            <div style="display: flex; justify-content: center; margin-top: 10px;">
+                <a href="@Url.Action("Recuperar", "Auth")" style="font-size: 0.85em; color: #007bff; text-decoration: none;">¿Olvidó su contraseña?</a>
             </div>
 
-            <button type="submit" id="btnLogin">Ingresar</button>
+            <button type="submit" :disabled="loading">
+                <span v-if="loading">Cargando...</span>
+                <span v-else>Ingresar</span>
+            </button>
         </form>
 
         <div class="auth-footer" style="margin-top: 20px; text-align: center; border-top: 1px solid #eee; padding-top: 15px;">
             <p style="font-size: 0.9em; color: #666;">
-                ¿No tienes cuenta? <a href="@Url.Action("Registro", "Auth")" style="font-weight: bold;">Regístrate aquí</a>
+                ¿No tienes cuenta? <a href="@Url.Action("Registro", "Auth")" style="font-weight: bold; color: #007bff; text-decoration: none;">Regístrate aquí</a>
             </p>
         </div>
     </div>
 
-    <script src="~/Scripts/auth-login.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="~/Scripts/app/login-app.js"></script>
 </body>
 </html>
