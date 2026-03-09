@@ -248,7 +248,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Auth\Registro.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
-    <Content Include="Views\Auth\Recuperar.cshtml" />
+    <Content Include="Views\Password\Recuperar.cshtml" />
     <Content Include="Views\Paciente\AgendarCita.cshtml" />
     <Content Include="Views\Paciente\MisCitas.cshtml" />
     <Content Include="Views\Admin\PanelAdmin.cshtml" />
