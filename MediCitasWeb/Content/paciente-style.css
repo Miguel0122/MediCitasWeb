@@ -122,4 +122,56 @@ th, td {
     font-size: 14px;
     margin-bottom: 20px;
 }
- 
+
+
+/* Botón flotante del asistente (esquina superior derecha) */
+.btn-asistente {
+    position: fixed;
+    top: 25px;
+    right: 30px;
+    background: linear-gradient(135deg, #0d6efd, #4e73df);
+    color: white;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 999;
+}
+
+    .btn-asistente:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(13, 110, 253, 0.5);
+        color: white;
+    }
+
+    /* Punto verde animado que indica que el bot está activo */
+    .btn-asistente .dot {
+        width: 9px;
+        height: 9px;
+        background: #4fffb0;
+        border-radius: 50%;
+        animation: pulso 1.5s infinite;
+    }
+
+@keyframes pulso {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.4);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

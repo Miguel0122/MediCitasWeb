@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace MediCitasWeb.Controllers
 {
-    public class PagesController : Controller
+    public class PacienteController : Controller
     {
         MediCitasContext db = new MediCitasContext();
 

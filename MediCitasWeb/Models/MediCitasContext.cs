@@ -11,14 +11,16 @@ namespace MediCitasWeb.Models
     {
         public MediCitasContext() : base("MediCitasDB")
         {
+
         }
 
         public DbSet<Usuario> Usuario { get; set; }
-
         public DbSet<Doctor> Doctor { get; set; }
-
         public DbSet<Paciente> Paciente { get; set; }
-
         public DbSet<Cita> Citas { get; set; }
+        public DbSet<ChatSesion> ChatSesiones { get; set; }
+        public DbSet<ChatMensaje> ChatMensajes { get; set; }
+        public DbSet<ChatFAQ> ChatFAQ { get; set; }
+
     }
 }
