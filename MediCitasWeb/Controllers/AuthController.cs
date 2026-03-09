@@ -4,59 +4,69 @@ using System.Data.SqlClient;
 using System.Configuration;
 using MediCitasWeb.Models;
 using System.Linq;
-using System.Net;
-using System.Net.Mail;
+using MediCitasWeb.Services.Security;
+
 namespace MediCitasWeb.Controllers
 {
     public class AuthController : Controller
     {
         private MediCitasContext db = new MediCitasContext();
 
-        // 3. Login corregido
+        // ===============================
+        // LOGIN VIEW
+        // ===============================
         public ActionResult Login()
         {
             return View();
         }
 
-        // 1. Muestra el formulario de registro (GET)
+        // ===============================
+        // REGISTRO VIEW
+        // ===============================
         public ActionResult Registro()
         {
             return View();
         }
 
+        // ===============================
+        // LOGIN POST (SEGURO)
+        // ===============================
         [HttpPost]
         public ActionResult Login(string numero_documento, string password)
         {
             numero_documento = numero_documento?.Trim();
             password = password?.Trim();
 
+            // VALIDACIONES
             if (string.IsNullOrWhiteSpace(numero_documento))
                 ModelState.AddModelError("numero_documento", "El número de documento es obligatorio.");
             else if (!numero_documento.All(char.IsDigit))
-                ModelState.AddModelError("numero_documento", "El número de documento solo debe contener números.");
+                ModelState.AddModelError("numero_documento", "Solo números permitidos.");
             else if (numero_documento.Length < 6 || numero_documento.Length > 12)
-                ModelState.AddModelError("numero_documento", "El número de documento debe tener entre 6 y 12 dígitos.");
+                ModelState.AddModelError("numero_documento", "Debe tener entre 6 y 12 dígitos.");
 
             if (string.IsNullOrWhiteSpace(password))
                 ModelState.AddModelError("password", "La contraseña es obligatoria.");
-            else if (password.Length < 6)
-                ModelState.AddModelError("password", "La contraseña debe tener mínimo 6 caracteres.");
 
             if (!ModelState.IsValid)
                 return View();
 
             try
             {
-                string conexion = ConfigurationManager
-                    .ConnectionStrings["MediCitasDB"].ConnectionString;
+                string conexion =
+                    ConfigurationManager.ConnectionStrings["MediCitasDB"].ConnectionString;
 
                 using (SqlConnection con = new SqlConnection(conexion))
                 {
                     con.Open();
 
-                    string query = @"SELECT id_usuario, nombres_usuario, password_usuario, rol_usuario
-                             FROM Usuario
-                             WHERE numero_documento = @Documento";
+                    string query = @"
+                        SELECT id_usuario,
+                               nombres_usuario,
+                               password_usuario,
+                               rol_usuario
+                        FROM Usuario
+                        WHERE numero_documento = @Documento";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -75,7 +85,11 @@ namespace MediCitasWeb.Controllers
                             string nombreUsuario = dr["nombres_usuario"].ToString();
                             string idUsuario = dr["id_usuario"].ToString();
 
-                            if (passwordBD != password)
+                            // 🔐 VERIFICACIÓN SEGURA
+                            bool passwordCorrecta =
+                                PasswordHasher.Verify(password, passwordBD);
+
+                            if (!passwordCorrecta)
                             {
                                 ModelState.AddModelError("", "Documento o contraseña incorrectos.");
                                 return View();
@@ -83,43 +97,53 @@ namespace MediCitasWeb.Controllers
 
                             if (string.IsNullOrEmpty(rolUsuario))
                             {
-                                ModelState.AddModelError("", "El usuario no tiene un rol asignado.");
+                                ModelState.AddModelError("", "Usuario sin rol asignado.");
                                 return View();
                             }
 
+                            // SESSION
                             Session["usuario"] = nombreUsuario;
                             Session["rol"] = rolUsuario;
                             Session["documento"] = numero_documento;
                             Session["id_usuario"] = idUsuario;
                         }
-
-                        switch (Session["rol"] as string)
-                        {
-                            case "Administrador":
-                                return RedirectToAction("PanelAdmin", "Admin");
-                            case "Doctor":
-                                return RedirectToAction("CitasDoctor", "Doctor");
-                            case "Paciente":
-                                return RedirectToAction("AgendarCita", "Pages");
-                            default:
-                                ModelState.AddModelError("", "Rol no válido.");
-                                return View();
-                        }
                     }
+                }
+
+                // REDIRECCIÓN POR ROL
+                switch (Session["rol"] as string)
+                {
+                    case "Administrador":
+                        return RedirectToAction("PanelAdmin", "Admin");
+
+                    case "Doctor":
+                        return RedirectToAction("CitasDoctor", "Doctor");
+
+                    case "Paciente":
+                        return RedirectToAction("AgendarCita", "Paciente");
+
+                    default:
+                        ModelState.AddModelError("", "Rol no válido.");
+                        return View();
                 }
             }
             catch (Exception)
             {
-                ModelState.AddModelError("", "Ocurrió un error inesperado. Intente nuevamente.");
+                ModelState.AddModelError("", "Ocurrió un error inesperado.");
                 return View();
             }
         }
 
-        // He unificado los parámetros para que coincidan con tu base de datos
+        // ===============================
+        // REGISTRO POST (CON HASH)
+        // ===============================
         [HttpPost]
-        public ActionResult Registro(string nombres, string apellidos,
-                             string numero_documento, string correo,
-                             string password)
+        public ActionResult Registro(
+            string nombres,
+            string apellidos,
+            string numero_documento,
+            string correo,
+            string password)
         {
             if (string.IsNullOrWhiteSpace(nombres) ||
                 string.IsNullOrWhiteSpace(apellidos) ||
@@ -133,13 +157,16 @@ namespace MediCitasWeb.Controllers
 
             try
             {
+                // 🔐 HASH PASSWORD
+                string passwordHash = PasswordHasher.Hash(password);
+
                 Usuario nuevoUsuario = new Usuario
                 {
                     nombres_usuario = nombres,
                     apellidos_usuario = apellidos,
                     numero_documento = numero_documento,
                     correo_usuario = correo,
-                    password_usuario = password,
+                    password_usuario = passwordHash,
                     rol_usuario = "Paciente",
                     fecha_registro = DateTime.Now
                 };
@@ -151,6 +178,7 @@ namespace MediCitasWeb.Controllers
                 {
                     id_usuario = nuevoUsuario.id_usuario
                 };
+
                 db.Paciente.Add(nuevoPaciente);
                 db.SaveChanges();
 
@@ -159,7 +187,6 @@ namespace MediCitasWeb.Controllers
             }
             catch (Exception ex)
             {
-                // Muestra el mensaje concreto mientras pruebas
                 ModelState.AddModelError("", "Error al registrar: " + ex.Message);
                 return View();
             }

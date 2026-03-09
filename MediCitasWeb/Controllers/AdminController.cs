@@ -1,4 +1,5 @@
 ﻿using MediCitasWeb.Models;
+using MediCitasWeb.Services.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,7 +62,7 @@ namespace MediCitasWeb.Controllers
                     apellidos_usuario = apellidos,
                     numero_documento = numero_documento,
                     correo_usuario = correo,
-                    password_usuario = password,
+                    password_usuario = PasswordHasher.Hash(password),
                     rol_usuario = "Doctor",
                     fecha_registro = DateTime.Now
                 };

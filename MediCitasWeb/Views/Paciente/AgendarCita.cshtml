@@ -42,7 +42,7 @@
         <div class="section">
             <div class="section-title">Detalles de la Cita</div>
 
-            <form method="post" action="@Url.Action("GuardarCita","Pages")" @@submit="validarFormulario">
+            <form method="post" action="@Url.Action("GuardarCita","Paciente")" @@submit="validarFormulario">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Especialidad</label>
@@ -96,7 +96,7 @@
                     <button type="submit" class="btn btn-primary px-5" :disabled="loading">
                         {{ loading ? 'Procesando...' : 'Confirmar Agendamiento' }}
                     </button>
-                    <a href="@Url.Action("MisCitas", "Pages")" class="btn btn-secondary px-5">Ver Mis Citas</a>
+                    <a href="@Url.Action("MisCitas", "Paciente")" class="btn btn-secondary px-5">Ver Mis Citas</a>
                 </div>
             </form>
         </div>
