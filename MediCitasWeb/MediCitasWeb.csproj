@@ -156,12 +156,13 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\ChatBotApiController.cs" />
     <Compile Include="Controllers\DoctorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\PagesController.cs" />
+    <Compile Include="Controllers\PacienteController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -177,6 +178,7 @@
     <Compile Include="Models\Paciente.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\EmailService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.css" />
@@ -204,12 +206,13 @@
     <Content Include="Content\welcome-style.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Scripts\admin-panel.js" />
+    <Content Include="Scripts\app\admin-panel.js" />
     <Content Include="Scripts\app\agendar-app.js" />
     <Content Include="Scripts\app\chatbot-app.js" />
     <Content Include="Scripts\app\login-app.js" />
+    <Content Include="Scripts\app\recuperar-app.js" />
     <Content Include="Scripts\app\welcome-app.js" />
-    <Content Include="Scripts\auth-registro.js" />
+    <Content Include="Scripts\app\auth-registro.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -217,9 +220,10 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="AppSettings.secrets.config" />
+    <Compile Include="Controllers\PasswordController.cs" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\chat-widget.js" />
-    <Content Include="Scripts\doctor-panel.js" />
+    <Content Include="Scripts\app\doctor-panel.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
@@ -246,7 +250,7 @@
     <Content Include="Views\Pages\MisCitas.cshtml" />
     <Content Include="Views\Admin\PanelAdmin.cshtml" />
     <Content Include="Views\ChatBot\ChatBot.cshtml" />
-    <Content Include="Views\Doctor\CitasDoctor.cshtml" />
+    <Content Include="Views\Doctor\PanelDoctor.cshtml" />
     <Content Include="Views\Admin\CrearDoctor.cshtml" />
     <Content Include="Views\Admin\ListaUsuarios.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
