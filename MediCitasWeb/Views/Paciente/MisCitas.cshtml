@@ -1,31 +1,23 @@
-﻿@model List<MediCitasWeb.Models.Cita>
+@model List<MediCitasWeb.Models.Cita>
 @{
     ViewBag.Title = "Mis Citas Médicas";
     Layout = null;
 }
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="utf-8" />
+    <title>Mis Citas - MediCitas</title>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        .status-activa {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .status-cancelada {
-            color: #dc3545;
-            font-weight: bold;
-        }
-    </style>
+    <link href="~/Content/paciente-style.css" rel="stylesheet" />
 </head>
-<body class="bg-light">
+<body>
 
-    <div class="container mt-5">
+    <div class="app-container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold">Historial de Citas</h2>
-            <a href="@Url.Action("AgendarCita", "Pages")" class="btn btn-primary">+ Agendar Nueva</a>
+            <a href="@Url.Action("AgendarCita", "Paciente")" class="btn btn-primary">+ Agendar Nueva</a>
         </div>
 
         <div class="table-responsive shadow-sm bg-white p-3 rounded">
@@ -37,7 +29,7 @@
                         <th>Hora</th>
                         <th>Tipo</th>
                         <th>Estado</th>
-                        <th>Acción</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,8 +47,22 @@
                                         @c.estado
                                     </span>
                                 </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-danger">Cancelar</button>
+                                <td class="d-flex gap-2">
+                                    @if (c.estado == "Activa")
+                                    {
+                                        using (Html.BeginForm("CancelarCita", "Paciente", FormMethod.Post, new { @class = "d-inline" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            @Html.Hidden("idCita", c.id_cita)
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                Cancelar
+                                            </button>
+                                        }
+                                        <a href="@Url.Action("AgendarCita", "Paciente", new { idCita = c.id_cita })"
+                                           class="btn btn-sm btn-outline-secondary">
+                                            Reprogramar
+                                        </a>
+                                    }
                                 </td>
                             </tr>
                         }

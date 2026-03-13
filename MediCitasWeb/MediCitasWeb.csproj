@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
@@ -160,6 +160,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\ChatBotApiController.cs" />
+    <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\DoctorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PacienteController.cs" />
@@ -174,6 +175,7 @@
     <Compile Include="Models\Conexion.cs" />
     <Compile Include="Models\Doctor.cs" />
     <Compile Include="Models\DoctorViewModel.cs" />
+    <Compile Include="Models\AuthViewModels.cs" />
     <Compile Include="Models\MediCitasContext.cs" />
     <Compile Include="Models\Paciente.cs" />
     <Compile Include="Models\Usuario.cs" />
@@ -181,6 +183,7 @@
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\Security\PasswordHasher.cs" />
     <Compile Include="Services\SetupService.cs" />
+    <Compile Include="Filters\SessionAuthorizeAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.css" />
