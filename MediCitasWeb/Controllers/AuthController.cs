@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Web.Mvc;
 using System.Data.SqlClient;
 using System.Configuration;
 using MediCitasWeb.Models;
 using System.Linq;
 using MediCitasWeb.Services.Security;
+using System.Web.Helpers;
 
 namespace MediCitasWeb.Controllers
 {
@@ -17,7 +18,7 @@ namespace MediCitasWeb.Controllers
         // ===============================
         public ActionResult Login()
         {
-            return View();
+            return View(new LoginViewModel());
         }
 
         // ===============================
@@ -32,24 +33,11 @@ namespace MediCitasWeb.Controllers
         // LOGIN POST (SEGURO)
         // ===============================
         [HttpPost]
-        public ActionResult Login(string numero_documento, string password)
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(LoginViewModel model)
         {
-            numero_documento = numero_documento?.Trim();
-            password = password?.Trim();
-
-            // VALIDACIONES
-            if (string.IsNullOrWhiteSpace(numero_documento))
-                ModelState.AddModelError("numero_documento", "El número de documento es obligatorio.");
-            else if (!numero_documento.All(char.IsDigit))
-                ModelState.AddModelError("numero_documento", "Solo números permitidos.");
-            else if (numero_documento.Length < 6 || numero_documento.Length > 12)
-                ModelState.AddModelError("numero_documento", "Debe tener entre 6 y 12 dígitos.");
-
-            if (string.IsNullOrWhiteSpace(password))
-                ModelState.AddModelError("password", "La contraseña es obligatoria.");
-
             if (!ModelState.IsValid)
-                return View();
+                return View(model);
 
             try
             {
@@ -63,6 +51,7 @@ namespace MediCitasWeb.Controllers
                     string query = @"
                         SELECT id_usuario,
                                nombres_usuario,
+                               numero_documento,
                                password_usuario,
                                rol_usuario
                         FROM Usuario
@@ -70,7 +59,7 @@ namespace MediCitasWeb.Controllers
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Documento", numero_documento);
+                        cmd.Parameters.AddWithValue("@Documento", model.numero_documento);
 
                         using (SqlDataReader dr = cmd.ExecuteReader())
                         {
@@ -85,26 +74,34 @@ namespace MediCitasWeb.Controllers
                             string nombreUsuario = dr["nombres_usuario"].ToString();
                             string idUsuario = dr["id_usuario"].ToString();
 
-                            // 🔐 VERIFICACIÓN SEGURA
-                            bool passwordCorrecta =
-                                PasswordHasher.Verify(password, passwordBD);
+                            // 🔐 VERIFICACIÓN SEGURA (soporta formato antiguo y nuevo)
+                            bool passwordCorrecta;
+                            try
+                            {
+                                passwordCorrecta = PasswordHasher.Verify(model.password, passwordBD);
+                            }
+                            catch (FormatException)
+                            {
+                                // Hash antiguo generado con System.Web.Helpers.Crypto
+                                passwordCorrecta = Crypto.VerifyHashedPassword(passwordBD, model.password);
+                            }
 
                             if (!passwordCorrecta)
                             {
                                 ModelState.AddModelError("", "Documento o contraseña incorrectos.");
-                                return View();
+                                return View(model);
                             }
 
                             if (string.IsNullOrEmpty(rolUsuario))
                             {
                                 ModelState.AddModelError("", "Usuario sin rol asignado.");
-                                return View();
+                                return View(model);
                             }
 
                             // SESSION
                             Session["usuario"] = nombreUsuario;
                             Session["rol"] = rolUsuario;
-                            Session["documento"] = numero_documento;
+                            Session["documento"] = dr["numero_documento"].ToString();
                             Session["id_usuario"] = idUsuario;
                         }
                     }
@@ -124,13 +121,13 @@ namespace MediCitasWeb.Controllers
 
                     default:
                         ModelState.AddModelError("", "Rol no válido.");
-                        return View();
+                        return View(model);
                 }
             }
             catch (Exception)
             {
                 ModelState.AddModelError("", "Ocurrió un error inesperado.");
-                return View();
+                return View(model);
             }
         }
 
@@ -138,34 +135,25 @@ namespace MediCitasWeb.Controllers
         // REGISTRO POST (CON HASH)
         // ===============================
         [HttpPost]
-        public ActionResult Registro(
-            string nombres,
-            string apellidos,
-            string numero_documento,
-            string correo,
-            string password)
+        [ValidateAntiForgeryToken]
+        public ActionResult Registro(RegistroViewModel model)
         {
-            if (string.IsNullOrWhiteSpace(nombres) ||
-                string.IsNullOrWhiteSpace(apellidos) ||
-                string.IsNullOrWhiteSpace(numero_documento) ||
-                string.IsNullOrWhiteSpace(correo) ||
-                string.IsNullOrWhiteSpace(password))
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Todos los campos son obligatorios.");
-                return View();
+                return View(model);
             }
 
             try
             {
                 // 🔐 HASH PASSWORD
-                string passwordHash = PasswordHasher.Hash(password);
+                string passwordHash = PasswordHasher.Hash(model.password);
 
                 Usuario nuevoUsuario = new Usuario
                 {
-                    nombres_usuario = nombres,
-                    apellidos_usuario = apellidos,
-                    numero_documento = numero_documento,
-                    correo_usuario = correo,
+                    nombres_usuario = model.nombres,
+                    apellidos_usuario = model.apellidos,
+                    numero_documento = model.numero_documento,
+                    correo_usuario = model.correo,
                     password_usuario = passwordHash,
                     rol_usuario = "Paciente",
                     fecha_registro = DateTime.Now

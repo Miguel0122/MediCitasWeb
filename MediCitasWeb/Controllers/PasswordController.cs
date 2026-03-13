@@ -1,9 +1,9 @@
 using MediCitasWeb.Models;
 using MediCitasWeb.Services;
+using MediCitasWeb.Services.Security;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace MediCitasWeb.Controllers
@@ -124,8 +124,8 @@ namespace MediCitasWeb.Controllers
 				if (usuario == null)
 					return Json(new { ok = false });
 
-				// ✅ PASSWORD HASH
-				usuario.password_usuario = Crypto.HashPassword(nueva);
+				// ✅ PASSWORD HASH unificado con el login/registro
+				usuario.password_usuario = PasswordHasher.Hash(nueva);
 
 				db.SaveChanges();
 			}
