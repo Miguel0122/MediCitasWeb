@@ -52,8 +52,8 @@ new Vue({
 
                 const data = JSON.parse(text);
 
-                const textoBot = data && data.mensaje
-                    ? data.mensaje
+                const textoBot = data && (data.respuesta || data.mensaje)
+                    ? (data.respuesta || data.mensaje)
                     : 'Lo siento, no pude procesar tu consulta.';
 
                 this.agregarMensaje(textoBot, 'bot');
@@ -66,6 +66,9 @@ new Vue({
             } finally {
                 this.loading = false;
             }
+        },
+        limpiarChat() {
+            this.mensajes = [];
         }
     }
 });

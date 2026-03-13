@@ -1,4 +1,5 @@
-﻿@{ Layout = null; }
+@model MediCitasWeb.Models.LoginViewModel
+@{ Layout = null; }
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,14 +15,10 @@
         <h1>MediCitas</h1>
         <p class="subtitle">Acceso al sistema</p>
 
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div style="background: #fee; color: #e74c3c; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.85em; text-align: center;">
-                @Html.ValidationSummary(true)
-            </div>
-        }
+        @Html.ValidationSummary(true, "", new { @class = "validation-summary" })
 
         <form @@submit="handleLogin" method="post" action="@Url.Action("Login", "Auth")" id="realForm">
+            @Html.AntiForgeryToken()
             <label>Número de documento</label>
             <input type="text"
                    name="numero_documento"

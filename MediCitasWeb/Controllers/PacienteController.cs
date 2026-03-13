@@ -12,7 +12,7 @@ namespace MediCitasWeb.Controllers
     {
         MediCitasContext db = new MediCitasContext();
 
-        public ActionResult AgendarCita()
+        public ActionResult AgendarCita(int? idCita)
         {
             // Join Doctor + Usuario para obtener el nombre completo del médico
             var doctores = (from d in db.Doctor
@@ -28,6 +28,13 @@ namespace MediCitasWeb.Controllers
 
             int idUsuario = Convert.ToInt32(Session["id_usuario"]);
             var usuario = db.Usuario.FirstOrDefault(u => u.id_usuario == idUsuario);
+
+            if (idCita.HasValue)
+            {
+                var cita = db.Citas.FirstOrDefault(c => c.id_cita == idCita.Value);
+                ViewBag.CitaEditar = cita;
+            }
+
             return View(usuario);
         }
 
@@ -35,7 +42,7 @@ namespace MediCitasWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult GuardarCita(int idDoctor, string especialidad,
                                         string tipoConsulta, DateTime fechaCita,
-                                        string horaCita)
+                                        string horaCita, int? idCita)
         {
             if (Session["usuario"] == null)
                 return RedirectToAction("Login", "Auth");
@@ -59,18 +66,37 @@ namespace MediCitasWeb.Controllers
                 return RedirectToAction("AgendarCita");
             }
 
-            Cita cita = new Cita()
+            Cita cita;
+            if (idCita.HasValue)
             {
-                id_paciente = paciente.id_paciente,
-                id_doctor = idDoctor,        // ✅ viene del <select>
-                especialidad = especialidad,
-                tipo_consulta = tipoConsulta,
-                fecha_cita = fechaCita,
-                hora_cita = hora,
-                estado = "Activa"
-            };
+                // Reprogramación
+                cita = db.Citas.FirstOrDefault(c => c.id_cita == idCita.Value && c.id_paciente == paciente.id_paciente);
+                if (cita == null) return RedirectToAction("MisCitas");
 
-            db.Citas.Add(cita);
+                cita.id_doctor = idDoctor;
+                cita.especialidad = especialidad;
+                cita.tipo_consulta = tipoConsulta;
+                cita.fecha_cita = fechaCita;
+                cita.hora_cita = hora;
+                cita.estado = "Activa";
+            }
+            else
+            {
+                // Nueva cita
+                cita = new Cita()
+                {
+                    id_paciente = paciente.id_paciente,
+                    id_doctor = idDoctor,
+                    especialidad = especialidad,
+                    tipo_consulta = tipoConsulta,
+                    fecha_cita = fechaCita,
+                    hora_cita = hora,
+                    estado = "Activa"
+                };
+
+                db.Citas.Add(cita);
+            }
+
             db.SaveChanges();
             return RedirectToAction("MisCitas");
         }
@@ -86,6 +112,23 @@ namespace MediCitasWeb.Controllers
 
             var citas = db.Citas.Where(c => c.id_paciente == paciente.id_paciente).ToList();
             return View(citas);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CancelarCita(int idCita)
+        {
+            int idUsuario = Convert.ToInt32(Session["id_usuario"]);
+            var paciente = db.Paciente.FirstOrDefault(p => p.id_usuario == idUsuario);
+            if (paciente == null) return RedirectToAction("MisCitas");
+
+            var cita = db.Citas.FirstOrDefault(c => c.id_cita == idCita && c.id_paciente == paciente.id_paciente);
+            if (cita != null && cita.estado == "Activa")
+            {
+                cita.estado = "Cancelada";
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("MisCitas");
         }
     }
 }

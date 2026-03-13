@@ -1,4 +1,5 @@
-﻿@{
+@model MediCitasWeb.Models.RegistroViewModel
+@{
     Layout = null;
 }
 
@@ -13,6 +14,7 @@
 <body class="auth-page">
 
     <form method="post" action="@Url.Action("Registro", "Auth")">
+        @Html.AntiForgeryToken()
         @Html.ValidationSummary(true, "", new { @class = "error" })
 
         <div class="auth-container">

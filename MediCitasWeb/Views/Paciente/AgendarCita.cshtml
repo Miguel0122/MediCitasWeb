@@ -1,4 +1,4 @@
-﻿@model MediCitasWeb.Models.Usuario
+@model MediCitasWeb.Models.Usuario
 @{
     ViewBag.Title = "Asignación de Citas";
     Layout = null;
@@ -14,15 +14,36 @@
 </head>
 <body>
 
-    <div id="agendarApp" class="app-container">
-        <a href="@Url.Action("ChatBot", "Home")" class="btn-asistente">
-            <span class="dot"></span> 🤖 Asistente
-        </a>
+    <div class="app-header">
+        <div class="logo">MediCitas | Paciente</div>
+        <a href="@Url.Action("MisCitas","Paciente")">Mis citas</a>
+    </div>
 
-        <h2 class="app-title">NUEVA CITA MÉDICA</h2>
+    <a href="@Url.Action("ChatBot", "Chat")" class="btn-asistente">
+        <span class="dot"></span> 🤖 Asistente
+    </a>
+
+    <div id="agendarApp" class="app-container">
+
+        <h2 class="app-title">
+            @if (ViewBag.CitaEditar != null)
+            {
+                @:REPROGRAMAR CITA MÉDICA
+            }
+            else
+            {
+                @:NUEVA CITA MÉDICA
+            }
+        </h2>
 
         <div class="section">
-            <div class="section-title">Información del Paciente</div>
+            <div class="section-title">
+                Información del Paciente
+                @if (ViewBag.CitaEditar != null)
+                {
+                    <span class="badge bg-info ms-2">Reprogramando cita</span>
+                }
+            </div>
             <div class="form-grid">
                 <div class="form-group">
                     <label>Documento</label>
@@ -43,6 +64,11 @@
             <div class="section-title">Detalles de la Cita</div>
 
             <form method="post" action="@Url.Action("GuardarCita","Paciente")" @@submit="validarFormulario">
+                @Html.AntiForgeryToken()
+                @if (ViewBag.CitaEditar != null)
+                {
+                    <input type="hidden" name="idCita" value="@ViewBag.CitaEditar.id_cita" />
+                }
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Especialidad</label>
@@ -80,7 +106,7 @@
                             <option v-for="h in horasDisponibles" :value="h.valor">{{ h.texto }}</option>
                         </select>
                     </div>
-                        
+
                     <div class="form-group">
                         <label>Doctor</label>
                         <select name="idDoctor" v-model="form.idDoctor" required :disabled="!form.especialidad">
@@ -101,8 +127,12 @@
             </form>
         </div>
     </div>
-    <script>window.listaDoctoresBase = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Doctores))</script>
+    <script>
+        window.listaDoctoresBase = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Doctores));
+        window.citaEditar = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.CitaEditar));
+    </script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="~/Scripts/app/agendar-app.js"></script>
-</body>;
+    </div>
+</body>
 </html>

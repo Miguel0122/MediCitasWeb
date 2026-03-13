@@ -8,11 +8,11 @@ createApp({
             // Cargamos los doctores que vienen desde el servidor
             todosLosDoctores: window.listaDoctoresBase || [],
             form: {
-                especialidad: '',
-                tipoConsulta: 'Primera vez',
-                fecha: '',
+                especialidad: window.citaEditar ? window.citaEditar.especialidad : '',
+                tipoConsulta: window.citaEditar ? window.citaEditar.tipo_consulta : 'Primera vez',
+                fecha: window.citaEditar ? window.citaEditar.fecha_cita.split('T')[0] : '',
                 hora: '',
-                idDoctor: ''
+                idDoctor: window.citaEditar ? window.citaEditar.id_doctor : ''
             }
         }
     },
@@ -73,6 +73,8 @@ createApp({
     },
     mounted() {
         // Si ya hay una fecha pre-seleccionada, cargar horas
-        if (this.form.fecha) this.actualizarHoras();
+        if (this.form.fecha) {
+            this.actualizarHoras();
+        }
     }
 }).mount('#agendarApp');
