@@ -1,75 +1,57 @@
-﻿@{
-    Layout = null;
-    ViewBag.Title = "Login - MediCitas";
-}
-
+@model MediCitasWeb.Models.LoginViewModel
+@{ Layout = null; }
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <title>Login - MediCitas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - MediCitas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="~/Content/auth.css" rel="stylesheet" />
 </head>
-
 <body class="auth-page">
 
-    <div class="auth-container">
-
+    <div id="loginApp" class="auth-container">
         <h1>MediCitas</h1>
-        <p class="subtitle">Acceso al sistema de citas médicas</p>
+        <p class="subtitle">Acceso al sistema</p>
 
-        <form method="post" action="/Auth/Login">
+        @Html.ValidationSummary(true, "", new { @class = "validation-summary" })
 
-            <!-- CORREO (SOLO VISUAL, NO SE ENVÍA) -->
-            <label>Correo electrónico</label>
-            <input type="email"
-                   placeholder="ejemplo@correo.com"
-                   required />
-
-            <!-- DOCUMENTO (EL QUE SE ENVÍA AL CONTROLADOR) -->
+        <form @@submit="handleLogin" method="post" action="@Url.Action("Login", "Auth")" id="realForm">
+            @Html.AntiForgeryToken()
             <label>Número de documento</label>
             <input type="text"
                    name="numero_documento"
-                   placeholder="Número de documento"
-                   required />
+                   v-model="form.numero_documento"
+                   @@input="soloNumeros"
+                   required
+                   placeholder="Ingrese su identificación" />
 
-            <!-- ROL -->
-            <label>Rol</label>
-            <select name="rol" required>
-                <option value="">Seleccione su rol</option>
-                <option value="Paciente">Paciente</option>
-                <option value="Doctor">Doctor</option>
-                <option value="Administrador">Administrador</option>
-            </select>
-
-            <!-- CONTRASEÑA -->
             <label>Contraseña</label>
             <input type="password"
                    name="password"
-                   placeholder="Contraseña"
-                   required />
+                   v-model="form.password"
+                   required
+                   placeholder="••••••••" />
 
-            <a href="/Auth/Recuperar" class="auth-links">
-                ¿Olvidaste tu contraseña?
-            </a>
+            <div style="display: flex; justify-content: center; margin-top: 10px;">
+                <a href="@Url.Action("Recuperar", "Password")" style="font-size: 0.85em; color: #007bff; text-decoration: none;">¿Olvidó su contraseña?</a>
+            </div>
 
-            <button type="submit">Iniciar sesión</button>
-
-            @if (ViewBag.Error != null)
-            {
-                <p style="color:red; margin-top:10px;">
-                    @ViewBag.Error
-                </p>
-            }
-
+            <button type="submit" :disabled="loading">
+                <span v-if="loading">Verificando...</span>
+                <span v-else>Ingresar</span>
+            </button>
         </form>
 
-        <div class="auth-links">
-            ¿No tienes cuenta?
-            <a href="/Auth/Registro">Crear cuenta</a>
+        <div class="auth-footer" style="margin-top: 20px; text-align: center; border-top: 1px solid #eee; padding-top: 15px;">
+            <p style="font-size: 0.9em; color: #666;">
+                ¿No tienes cuenta? <a href="@Url.Action("Registro", "Auth")" style="font-weight: bold; color: #007bff; text-decoration: none;">Regístrate aquí</a>
+            </p>
         </div>
-
     </div>
 
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="~/Scripts/app/login-app.js"></script>
 </body>
 </html>

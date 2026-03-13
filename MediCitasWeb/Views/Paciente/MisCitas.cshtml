@@ -1,0 +1,82 @@
+@model List<MediCitasWeb.Models.Cita>
+@{
+    ViewBag.Title = "Mis Citas Médicas";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Mis Citas - MediCitas</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/paciente-style.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">Historial de Citas</h2>
+            <a href="@Url.Action("AgendarCita", "Paciente")" class="btn btn-primary">+ Agendar Nueva</a>
+        </div>
+
+        <div class="table-responsive shadow-sm bg-white p-3 rounded">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Especialidad</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        foreach (var c in Model)
+                        {
+                            <tr>
+                                <td>@c.especialidad</td>
+                                <td>@c.fecha_cita.ToShortDateString()</td>
+                                <td>@c.hora_cita.ToString(@"hh\:mm")</td>
+                                <td>@c.tipo_consulta</td>
+                                <td>
+                                    <span class="badge @(c.estado == "Activa" ? "bg-success" : "bg-secondary")">
+                                        @c.estado
+                                    </span>
+                                </td>
+                                <td class="d-flex gap-2">
+                                    @if (c.estado == "Activa")
+                                    {
+                                        using (Html.BeginForm("CancelarCita", "Paciente", FormMethod.Post, new { @class = "d-inline" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            @Html.Hidden("idCita", c.id_cita)
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                Cancelar
+                                            </button>
+                                        }
+                                        <a href="@Url.Action("AgendarCita", "Paciente", new { idCita = c.id_cita })"
+                                           class="btn btn-sm btn-outline-secondary">
+                                            Reprogramar
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">No tienes citas agendadas aún.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

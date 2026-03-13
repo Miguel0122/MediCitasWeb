@@ -1,165 +1,183 @@
-﻿using System;
+using System;
 using System.Web.Mvc;
 using System.Data.SqlClient;
 using System.Configuration;
+using MediCitasWeb.Models;
+using System.Linq;
+using MediCitasWeb.Services.Security;
+using System.Web.Helpers;
 
 namespace MediCitasWeb.Controllers
 {
     public class AuthController : Controller
     {
+        private MediCitasContext db = new MediCitasContext();
 
-        // ============================================================
-        // ==================== VISTAS (GET) ==========================
-        // ============================================================
-
-        // Muestra la vista de Login
+        // ===============================
+        // LOGIN VIEW
+        // ===============================
         public ActionResult Login()
         {
-            return View();
+            return View(new LoginViewModel());
         }
 
-        // Muestra la vista de Registro
+        // ===============================
+        // REGISTRO VIEW
+        // ===============================
         public ActionResult Registro()
         {
             return View();
         }
 
-        // Muestra la vista de Recuperar contraseña
-        public ActionResult Recuperar()
-        {
-            return View();
-        }
-
-
-
-        // ============================================================
-        // ==================== LOGIN (POST) ==========================
-        // ============================================================
-
-        /*
-            Este método ahora:
-            ✔ Valida por numero_documento
-            ✔ Valida contraseña
-            ✔ Valida rol
-            ✔ Guarda sesión
-            ✔ Redirige según rol
-        */
+        // ===============================
+        // LOGIN POST (SEGURO)
+        // ===============================
         [HttpPost]
-        public ActionResult Login(string numero_documento, string password, string rol)
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(LoginViewModel model)
         {
-            string conexion = ConfigurationManager
-                              .ConnectionStrings["MediCitasDB"]
-                              .ConnectionString;
+            if (!ModelState.IsValid)
+                return View(model);
 
-            using (SqlConnection con = new SqlConnection(conexion))
+            try
             {
-                string query = @"SELECT nombres_usuario, rol_usuario
-                         FROM Usuario
-                         WHERE numero_documento = @Documento
-                         AND password_usuario = @Password
-                         AND rol_usuario = @Rol";
+                string conexion =
+                    ConfigurationManager.ConnectionStrings["MediCitasDB"].ConnectionString;
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlConnection con = new SqlConnection(conexion))
                 {
-                    cmd.Parameters.AddWithValue("@Documento", numero_documento);
-                    cmd.Parameters.AddWithValue("@Password", password);
-                    cmd.Parameters.AddWithValue("@Rol", rol);
-
                     con.Open();
 
-                    SqlDataReader dr = cmd.ExecuteReader();
+                    string query = @"
+                        SELECT id_usuario,
+                               nombres_usuario,
+                               numero_documento,
+                               password_usuario,
+                               rol_usuario
+                        FROM Usuario
+                        WHERE numero_documento = @Documento";
 
-                    if (dr.Read())
+                    using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        Session["usuario"] = dr["nombres_usuario"].ToString();
-                        Session["rol"] = dr["rol_usuario"].ToString();
-                        Session["documento"] = numero_documento;
+                        cmd.Parameters.AddWithValue("@Documento", model.numero_documento);
 
-                        string rolUsuario = dr["rol_usuario"].ToString();
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (!dr.Read())
+                            {
+                                ModelState.AddModelError("", "Documento o contraseña incorrectos.");
+                                return View();
+                            }
 
-                        if (rolUsuario == "Administrador")
-                            return RedirectToAction("Index", "Admin");
+                            string passwordBD = dr["password_usuario"].ToString();
+                            string rolUsuario = dr["rol_usuario"]?.ToString();
+                            string nombreUsuario = dr["nombres_usuario"].ToString();
+                            string idUsuario = dr["id_usuario"].ToString();
 
-                        if (rolUsuario == "Doctor")
-                            return RedirectToAction("MisCitas", "Doctor");
+                            // 🔐 VERIFICACIÓN SEGURA (soporta formato antiguo y nuevo)
+                            bool passwordCorrecta;
+                            try
+                            {
+                                passwordCorrecta = PasswordHasher.Verify(model.password, passwordBD);
+                            }
+                            catch (FormatException)
+                            {
+                                // Hash antiguo generado con System.Web.Helpers.Crypto
+                                passwordCorrecta = Crypto.VerifyHashedPassword(passwordBD, model.password);
+                            }
 
-                        if (rolUsuario == "Paciente")
-                            return RedirectToAction("AgendarCita", "Pages"); 
+                            if (!passwordCorrecta)
+                            {
+                                ModelState.AddModelError("", "Documento o contraseña incorrectos.");
+                                return View(model);
+                            }
+
+                            if (string.IsNullOrEmpty(rolUsuario))
+                            {
+                                ModelState.AddModelError("", "Usuario sin rol asignado.");
+                                return View(model);
+                            }
+
+                            // SESSION
+                            Session["usuario"] = nombreUsuario;
+                            Session["rol"] = rolUsuario;
+                            Session["documento"] = dr["numero_documento"].ToString();
+                            Session["id_usuario"] = idUsuario;
+                        }
                     }
                 }
-            }
 
-            ViewBag.Error = "Documento, contraseña o rol incorrectos.";
-            return View();
-        }
-
-
-
-        // ============================================================
-        // ==================== REGISTRO (POST) =======================
-        // ============================================================
-
-        /*
-            Registro ahora:
-            ✔ Guarda numero_documento
-            ✔ Guarda nombres
-            ✔ Guarda apellidos
-            ✔ Guarda correo
-            ✔ Guarda contraseña
-            ✔ Rol por defecto: Paciente
-        */
-        [HttpPost]
-        public ActionResult Registro(string nombres, string apellidos, string numero_documento, string correo, string password)
-        {
-            string conexion = ConfigurationManager
-                              .ConnectionStrings["conexion"]
-                              .ConnectionString;
-
-            using (SqlConnection con = new SqlConnection(conexion))
-            {
-                /*
-                    INSERT completo incluyendo numero_documento
-                */
-                string query = @"INSERT INTO Usuario
-                                (nombres_usuario, apellidos_usuario, numero_documento, correo_usuario, password_usuario, rol_usuario)
-                                VALUES
-                                (@Nombres, @Apellidos, @Documento, @Correo, @Password, @Rol)";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                // REDIRECCIÓN POR ROL
+                switch (Session["rol"] as string)
                 {
-                    cmd.Parameters.AddWithValue("@Nombres", nombres);
-                    cmd.Parameters.AddWithValue("@Apellidos", apellidos);
-                    cmd.Parameters.AddWithValue("@Documento", numero_documento);
-                    cmd.Parameters.AddWithValue("@Correo", correo);
-                    cmd.Parameters.AddWithValue("@Password", password);
+                    case "Administrador":
+                        return RedirectToAction("PanelAdmin", "Admin");
 
-                    // Rol automático
-                    cmd.Parameters.AddWithValue("@Rol", "Paciente");
+                    case "Doctor":
+                        return RedirectToAction("CitasDoctor", "Doctor");
 
-                    con.Open();
-                    cmd.ExecuteNonQuery();
+                    case "Paciente":
+                        return RedirectToAction("AgendarCita", "Paciente");
+
+                    default:
+                        ModelState.AddModelError("", "Rol no válido.");
+                        return View(model);
                 }
             }
-
-            // Redirige al login después de registrarse
-            return RedirectToAction("Login");
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Ocurrió un error inesperado.");
+                return View(model);
+            }
         }
 
-
-
-        // ============================================================
-        // ================= RECUPERAR CONTRASEÑA =====================
-        // ============================================================
-
-        /*
-            Por ahora solo muestra mensaje.
-            Luego puedes agregar código de recuperación.
-        */
+        // ===============================
+        // REGISTRO POST (CON HASH)
+        // ===============================
         [HttpPost]
-        public ActionResult Recuperar(string correo)
+        [ValidateAntiForgeryToken]
+        public ActionResult Registro(RegistroViewModel model)
         {
-            ViewBag.Mensaje = "Si el correo existe, se enviará un código de recuperación.";
-            return View();
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                // 🔐 HASH PASSWORD
+                string passwordHash = PasswordHasher.Hash(model.password);
+
+                Usuario nuevoUsuario = new Usuario
+                {
+                    nombres_usuario = model.nombres,
+                    apellidos_usuario = model.apellidos,
+                    numero_documento = model.numero_documento,
+                    correo_usuario = model.correo,
+                    password_usuario = passwordHash,
+                    rol_usuario = "Paciente",
+                    fecha_registro = DateTime.Now
+                };
+
+                db.Usuario.Add(nuevoUsuario);
+                db.SaveChanges();
+
+                Paciente nuevoPaciente = new Paciente
+                {
+                    id_usuario = nuevoUsuario.id_usuario
+                };
+
+                db.Paciente.Add(nuevoPaciente);
+                db.SaveChanges();
+
+                TempData["Exito"] = "Usuario registrado correctamente.";
+                return RedirectToAction("Login");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al registrar: " + ex.Message);
+                return View();
+            }
         }
     }
 }

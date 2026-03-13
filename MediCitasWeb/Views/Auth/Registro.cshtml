@@ -1,4 +1,5 @@
-﻿@{
+@model MediCitasWeb.Models.RegistroViewModel
+@{
     Layout = null;
 }
 
@@ -6,92 +7,60 @@
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <title>Registro de Usuario - MediCitas</title>
-
+    <title>Registro - MediCitas</title>
     <link href="~/Content/auth.css" rel="stylesheet" />
 </head>
 
 <body class="auth-page">
 
-    <div class="auth-container">
+    <form method="post" action="@Url.Action("Registro", "Auth")">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "error" })
 
-        <h1>MediCitas</h1>
-        <p class="subtitle">Registro de usuario</p>
+        <div class="auth-container">
+            <h1>MediCitas</h1>
+            <p class="subtitle">Registro de usuario</p>
 
-        <!-- PASO 1 -->
-        <div id="paso1">
-            <label>Nombre</label>
-            <input type="text" id="nombre" placeholder="Ingrese su nombre" oninput="mostrar('paso2')" />
+            <div id="paso1">
+                <label>Nombres</label>
+                <input type="text" id="nombre" name="nombres" required placeholder="Escriba sus nombres" />
+                <span id="errorNombre" class="error"></span>
+            </div>
+
+            <div id="paso2" style="display:none;">
+                <label>Apellidos</label>
+                <input type="text" id="apellidos" name="apellidos" required placeholder="Escriba sus apellidos" />
+                <span id="errorApellidos" class="error"></span>
+            </div>
+
+            <div id="paso3" style="display:none;">
+                <label>Número de documento</label>
+                <input type="text" id="numDoc" name="numero_documento" required placeholder="Cédula o TI" />
+                <span id="errorDoc" class="error"></span>
+            </div>
+
+            <div id="paso4" style="display:none;">
+                <label>Correo electrónico</label>
+                <input type="email" id="correo" name="correo" required placeholder="ejemplo@correo.com" />
+                <span id="errorCorreo" class="error"></span>
+            </div>
+
+            <div id="paso5" style="display:none;">
+                <label>Contraseña</label>
+                <input type="password" id="password" name="password" required placeholder="Mínimo 6 caracteres" />
+                <span id="errorPassword" class="error"></span>
+            </div>
+
+            <div id="pasoFinal" style="display:none; margin-top: 20px;">
+                <button type="submit">Crear Cuenta</button>
+            </div>
+
+            <div class="auth-footer" style="margin-top: 15px; text-align: center;">
+                <a href="@Url.Action("Login", "Auth")" style="color: #666; font-size: 0.9em;">¿Ya tienes cuenta? Inicia sesión</a>
+            </div>
         </div>
+    </form>
 
-        <!-- PASO 2 -->
-        <div id="paso2" style="display:none;">
-            <label>Apellidos</label>
-            <input type="text" id="apellidos" placeholder="Ingrese sus apellidos" oninput="mostrar('paso3')" />
-        </div>
-
-        <!-- PASO 3 -->
-        <div id="paso3" style="display:none;">
-            <label>Tipo de documento</label>
-            <select id="tipoDoc" onchange="mostrar('paso4')">
-                <option value="">Seleccione una opción</option>
-                <option>Cédula de ciudadanía</option>
-                <option>Tarjeta de identidad</option>
-                <option>Cédula de extranjería</option>
-            </select>
-        </div>
-
-        <!-- PASO 4 -->
-        <div id="paso4" style="display:none;">
-            <label>Número de documento</label>
-            <input type="text" id="numDoc" placeholder="Número de documento" oninput="mostrar('paso5')" />
-        </div>
-
-        <!-- PASO 5 -->
-        <div id="paso5" style="display:none;">
-            <label>Teléfono</label>
-            <input type="text" id="telefono" placeholder="Número de teléfono" oninput="mostrar('paso6')" />
-        </div>
-
-        <!-- PASO 6 -->
-        <div id="paso6" style="display:none;">
-            <label>Correo electrónico</label>
-            <input type="email" id="correo" placeholder="Correo electrónico" oninput="mostrar('paso7')" />
-        </div>
-
-        <!-- PASO 7 -->
-        <div id="paso7" style="display:none;">
-            <label>Contraseña</label>
-            <input type="password" id="password" placeholder="Contraseña" oninput="mostrar('paso8')" />
-        </div>
-
-        <!-- PASO 8 -->
-        <div id="paso8" style="display:none;">
-            <label>Rol</label>
-            <select id="rol" onchange="mostrar('paso9')">
-                <option value="">Seleccione el rol</option>
-                <option>Paciente</option>
-                <option>Administrativo</option>
-                <option>Doctor</option>
-            </select>
-        </div>
-
-        <!-- BOTÓN FINAL -->
-        <div id="paso9" style="display:none;">
-            <button>Registrar</button>
-        </div>
-
-        <div class="auth-links">
-            ¿Ya tienes cuenta? <a href="/Pages/Login">Inicia sesión</a>
-        </div>
-
-    </div>
-
-    <script>
-        function mostrar(id) {
-            document.getElementById(id).style.display = "block";
-        }
-    </script>
-
+    <script src="~/Scripts/app/auth-registro.js"></script>
 </body>
 </html>

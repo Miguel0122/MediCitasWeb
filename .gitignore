@@ -1,4 +1,18 @@
+<<<<<<< HEAD
 ﻿.vs/
 [Bb]in/
 [Ob]j/
 *.user
+=======
+# Visual Studio archivos temporales
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.sln.docstates
+
+# Paquetes NuGet
+packages/
+!packages/repository.config
+>>>>>>> ce46009d2cb1615d8370d765b0eefee6be02d19b

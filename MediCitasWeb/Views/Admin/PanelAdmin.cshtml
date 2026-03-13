@@ -1,0 +1,217 @@
+﻿@model List<MediCitasWeb.Models.Usuario>
+@{
+    Layout = null;
+    ViewBag.Title = "Panel Administrativo - MediCitas";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Panel Admin - MediCitas</title>
+    <link href="~/Content/admin.css" rel="stylesheet" />
+</head>
+
+<body class="admin-page">
+
+    <header class="admin-header">
+        <h1>MediCitas | Panel Administrativo</h1>
+
+        <div style="display:flex; gap:10px; align-items:center;">
+            <span>Bienvenido, @Session["usuario"]</span>
+            <a href="@Url.Action("Logout","Admin")" class="btn-logout">Cerrar sesión</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+
+        <h2 class="section-title">Citas Registradas</h2>
+
+        <!-- FILTRO DE CITAS -->
+        <div class="filter-container card-large">
+
+            <form method="get" action="@Url.Action("PanelAdmin","Admin")" class="search-box-v2">
+
+                <div class="filter-group">
+
+                    <label>Documento del paciente</label>
+
+                    <input type="text"
+                           name="documento"
+                           placeholder="Ej: 1023456789"
+                           class="form-control" />
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label>Estado de la cita</label>
+
+                    <select name="estado" class="form-control">
+
+                        <option value="">Todos</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Completada">Completada</option>
+                        <option value="Cancelada">Cancelada</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label>Desde fecha</label>
+
+                    <input type="date"
+                           name="fechaInicio"
+                           class="form-control" />
+
+                </div>
+
+
+                <div class="btn-group">
+
+                    <button type="submit" class="btn-primary">
+                        🔎 Filtrar
+                    </button>
+
+                    <a href="@Url.Action("PanelAdmin","Admin")"
+                       class="btn-clean">
+
+                        Limpiar
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- TABLA DE CITAS -->
+
+        <div class="card-large">
+
+            <table class="table">
+
+                <thead>
+                    <tr>
+                        <th>CÉDULA PACIENTE</th>
+                        <th>FECHA</th>
+                        <th>HORA</th>
+                        <th>SERVICIO</th>
+                        <th>MÉDICO</th>
+                        <th>ESTADO</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var c in ViewBag.Citas)
+                    {
+                        <tr>
+
+                            <td>@c.Paciente.Usuario.numero_documento</td>
+
+                            <td>@c.fecha_cita.ToString("dd/MM/yyyy")</td>
+
+                            <td>@c.hora_cita</td>
+
+                            <td>@c.especialidad</td>
+
+                            <td>@c.Doctor.Usuario.nombres_usuario @c.Doctor.Usuario.apellidos_usuario</td>
+
+                            <td>
+                                <span class="badge status-@c.estado.ToLower()">
+                                    @c.estado
+                                </span>
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <hr class="spacer" />
+
+        <h2 class="section-title">Usuarios Registrados</h2>
+
+        <!-- FILTRO DE USUARIOS -->
+
+        <div class="card-large">
+
+            <form method="get" action="@Url.Action("PanelAdmin","Admin")">
+
+                <div class="search-box">
+
+                    <input type="text"
+                           name="buscarUsuario"
+                           placeholder="Buscar por nombre o documento" />
+
+                    <select name="rol">
+
+                        <option value="">Todos los roles</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Doctor">Doctor</option>
+                        <option value="Paciente">Paciente</option>
+
+                    </select>
+
+                    <button type="submit" class="btn-primary">
+                        Buscar
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- TABLA DE USUARIOS -->
+
+        <div class="card-large">
+
+            <table class="table">
+
+                <thead>
+                    <tr>
+                        <th>DOCUMENTO</th>
+                        <th>NOMBRE</th>
+                        <th>CORREO</th>
+                        <th>ROL</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var u in Model)
+                    {
+                        <tr>
+
+                            <td>@u.numero_documento</td>
+
+                            <td>@u.nombres_usuario @u.apellidos_usuario</td>
+
+                            <td>@u.correo_usuario</td>
+
+                            <td>@u.rol_usuario</td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
