@@ -19,7 +19,7 @@ namespace MediCitasWeb.Models
         public string password_usuario { get; set; }
         public string rol_usuario { get; set; }
         public string telefono_usuario { get; set; }
-        public bool activo { get; set; }
+        public bool activo { get; set; } = true;
         public DateTime fecha_registro { get; set; }
     }
 }

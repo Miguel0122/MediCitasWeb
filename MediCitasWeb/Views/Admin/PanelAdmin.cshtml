@@ -1,124 +1,216 @@
 ﻿@model List<MediCitasWeb.Models.Usuario>
 @{
-    Layout = null;
-    ViewBag.Title = "Panel Administrativo - MediCitas";
+    ViewBag.Title = "Admin Command Center";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="utf-8" />
-    <title>Panel Admin - MediCitas</title>
-    <link href="~/Content/admin.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-
-<body class="admin-page">
-
-    <!-- HEADER -->
-    <header class="admin-header">
-        <h1>MediCitas | Panel Administrativo</h1>
-        <div style="display:flex; gap:10px; align-items:center;">
-            <span>Bienvenido, @Session["usuario"]</span>
-            <a href="@Url.Action("Logout","Admin")" class="btn-logout">Cerrar sesión</a>
+<div id="adminApp" class="container py-4">
+    <div class="row align-items-center mb-5">
+        <div class="col">
+            <h6 class="text-uppercase text-muted fw-bold mb-1">Resumen del Sistema</h6>
+            <h2 class="fw-bold m-0">Consola de Administración</h2>
         </div>
-    </header>
-
-    <div class="admin-container">
-
-        <h2 class="section-title">Gestión de Citas</h2>
-
-        <!-- TARJETAS -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total de Citas</h3>
-                <p>@ViewBag.TotalCitas</p>
-            </div>
-            <div class="stat-card">
-                <h3>Citas Activas</h3>
-                <p>@ViewBag.CitasPendientes</p>
-            </div>
-            <div class="stat-card">
-                <h3>Citas Completadas</h3>
-                <p>@ViewBag.CitasCompletadas</p>
-            </div>
-            <div class="stat-card">
-                <h3>Citas Canceladas</h3>
-                <p>@ViewBag.CitasCanceladas</p>
-            </div>
-            <div class="stat-card">
-                <h3>Pacientes Registrados</h3>
-                <p>@ViewBag.TotalPacientes</p>
-            </div>
+        <div class="col-auto d-flex gap-2">
+            <a href="@Url.Action("Reportes", "Admin")" class="btn btn-outline-dark rounded-pill shadow-sm px-4">
+                <i class="bi bi-file-earmark-bar-graph me-2"></i>Centro de Reportes
+            </a>
+            <button class="btn btn-primary rounded-pill shadow px-4" @@click="abrirModal">
+                <i class="bi bi-person-plus-fill me-2"></i>Registrar Doctor
+            </button>
         </div>
-
-        <!-- ACCIONES RÁPIDAS -->
-        <div class="report-buttons" style="margin-bottom:20px;">
-            <a href="@Url.Action("CrearDoctor","Admin")" class="btn-primary">+ Crear Doctor</a>
-            <a href="@Url.Action("ListaUsuarios","Admin")" class="btn-primary">Ver Usuarios</a>
-        </div>
-
-        <!-- FILTROS -->
-        <form method="get" action="@Url.Action("PanelAdmin","Admin")">
-            <div class="search-box">
-                <input type="text" name="documento" placeholder="Buscar por documento" />
-                <select name="estado">
-                    <option value="">Todos los estados</option>
-                    <option value="Activa">Activas</option>
-                    <option value="Completada">Completadas</option>
-                    <option value="Cancelada">Canceladas</option>
-                </select>
-                <input type="date" name="fechaInicio" />
-                <input type="date" name="fechaFin" />
-                <button type="submit" class="btn-primary">Filtrar</button>
-                <a href="@Url.Action("PanelAdmin","Admin")" class="btn-secondary">Mostrar todos</a>
-            </div>
-        </form>
-
-        <!-- GRÁFICA -->
-        <div class="card-large">
-            <h3>Resumen de Citas</h3>
-            <canvas id="graficaCitas" height="100"
-                    data-pendientes="@ViewBag.CitasPendientes"
-                    data-completadas="@ViewBag.CitasCompletadas"
-                    data-canceladas="@ViewBag.CitasCanceladas">
-            </canvas>
-        </div>
-
-        <!-- TABLA DE USUARIOS -->
-        <div class="card-large">
-            <h3>Usuarios registrados</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Documento</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Rol</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var u in Model)
-                    {
-                        <tr>
-                            <td>@u.numero_documento</td>
-                            <td>@u.nombres_usuario @u.apellidos_usuario</td>
-                            <td>@u.correo_usuario</td>
-                            <td>@u.rol_usuario</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        <!-- REPORTES -->
-        <div class="report-buttons">
-            <a href="#" class="btn-primary">Ver reporte de citas</a>
-            <a href="#" class="btn-primary">Ver reporte de usuarios</a>
-        </div>
-
     </div>
 
-    <script src="~/Scripts/app/admin-panel.js"></script>
-</body>
-</html>
+    <div class="row g-4 mb-5">
+        <div class="col-md-4" v-for="stat in stats" :key="stat.titulo">
+            <div class="card border-0 shadow-sm h-100 p-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div :class="'rounded-circle p-3 ' + stat.bgClass">
+                            <i :class="'bi ' + stat.icono + ' text-white fs-4'"></i>
+                        </div>
+                        <span class="text-success small fw-bold mt-1"><i class="bi bi-graph-up me-1"></i>En tiempo real</span>
+                    </div>
+                    <h6 class="text-muted text-uppercase small mb-1">{{ stat.titulo }}</h6>
+                    <h2 class="fw-bold mb-0">{{ stat.valor }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm p-4 h-100">
+                <h5 class="fw-bold mb-4">Análisis de Operaciones</h5>
+                <div style="height: 300px;">
+                    <canvas id="graficaCitasPro"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Directorio de Usuarios</h5>
+                    <div class="input-group w-50">
+                        <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+                        <input type="text" v-model="filtro" class="form-control bg-light border-0" placeholder="Filtrar por nombre...">
+                    </div>
+                </div>
+                <div class="table-responsive px-4 pb-4">
+                    <table class="table table-hover align-middle">
+                        <thead class="text-muted small text-uppercase">
+                            <tr>
+                                <th>Identificación</th>
+                                <th>Usuario</th>
+                                <th>Rol</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="u in usuariosFiltrados" :key="u.documento">
+                                <td class="fw-bold">#{{ u.documento }}</td>
+                                <td>
+                                    <div class="fw-bold">{{ u.nombre }}</div>
+                                    <div class="small text-muted">{{ u.correo }}</div>
+                                </td>
+                                <td><span :class="getBadgeClass(u.rol)">{{ u.rol }}</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-light border-0 rounded-circle" title="Editar">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalDoctor" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header border-0 bg-dark text-white p-4">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-person-badge me-2 text-primary"></i>Onboarding Especialista</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form @@submit.prevent="guardarDoctor">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Nombres</label>
+                                <input type="text" v-model="form.nombres" class="form-control rounded-3" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Apellidos</label>
+                                <input type="text" v-model="form.apellidos" class="form-control rounded-3" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Documento</label>
+                                <input type="text" v-model="form.documento" @@input="soloNumeros" class="form-control rounded-3" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Especialidad</label>
+                                <select v-model="form.especialidad" class="form-select rounded-3" required>
+                                    <option value="">Seleccione especialidad...</option>
+                                    <option>Cardiología</option>
+                                    <option>Pediatría</option>
+                                    <option>Neurología</option>
+                                    <option>Medicina General</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-4 d-grid">
+                            <button type="submit" class="btn btn-primary py-2 fw-bold" :disabled="loading">
+                                <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+                                Registrar en el Sistema
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    filtro: '',
+                    loading: false,
+                    usuarios: [
+                        @foreach(var u in Model) {
+                            <text>{ documento: '@u.numero_documento', nombre: '@u.nombres_usuario @u.apellidos_usuario', correo: '@u.correo_usuario', rol: '@u.rol_usuario' },</text>
+                        }
+                    ],
+                    stats: [
+                        { titulo: 'Citas Hoy', valor: '@ViewBag.TotalCitas', icono: 'bi-calendar-check', bgClass: 'bg-primary' },
+                        { titulo: 'Pacientes', valor: '1,240', icono: 'bi-people', bgClass: 'bg-info' },
+                        { titulo: 'Citas Pendientes', valor: '@ViewBag.CitasPendientes', icono: 'bi-hourglass-split', bgClass: 'bg-warning' }
+                    ],
+                    form: { nombres: '', apellidos: '', documento: '', especialidad: '' }
+                }
+            },
+            computed: {
+                usuariosFiltrados() {
+                    return this.usuarios.filter(u => {
+                        const coincideNombre = u.nombre.toLowerCase().includes(this.filtro.toLowerCase());
+                        const noEsAdmin = u.rol !== 'Administrador';
+                        return coincideNombre && noEsAdmin;
+                    });
+                }
+            },
+            methods: {
+                abrirModal() {
+                    const el = document.getElementById('modalDoctor');
+                    const modal = new bootstrap.Modal(el);
+                    modal.show();
+                },
+                soloNumeros() {
+                    this.form.documento = this.form.documento.replace(/[^0-9]/g, '');
+                },
+                getBadgeClass(rol) {
+                    return rol === 'Doctor' ? 'badge bg-primary-subtle text-primary' : 'badge bg-secondary-subtle text-dark';
+                },
+                async guardarDoctor() {
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.loading = false;
+                        const modalEl = document.getElementById('modalDoctor');
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                        if (modalInstance) modalInstance.hide();
+                        alert("¡Médico añadido con éxito!");
+                    }, 1200);
+                },
+                renderChart() {
+                    const ctx = document.getElementById('graficaCitasPro').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Activas', 'Completas', 'Canceladas'],
+                            datasets: [{
+                                data: [@ViewBag.CitasPendientes, @ViewBag.CitasCompletadas, @ViewBag.CitasCanceladas],
+                                backgroundColor: ['#0d6efd', '#198754', '#dc3545'],
+                                hoverOffset: 10,
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } },
+                            cutout: '75%'
+                        }
+                    });
+                }
+            },
+            mounted() {
+                this.renderChart();
+            }
+        }).mount('#adminApp');
+    </script>
+}

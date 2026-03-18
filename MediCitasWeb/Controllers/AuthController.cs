@@ -134,14 +134,10 @@ namespace MediCitasWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Registro(RegistroViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            if (!ModelState.IsValid) return View(model);
 
             try
             {
-                // 🔐 HASH PASSWORD
                 string passwordHash = PasswordHasher.Hash(model.password);
 
                 Usuario nuevoUsuario = new Usuario
@@ -152,12 +148,14 @@ namespace MediCitasWeb.Controllers
                     correo_usuario = model.correo,
                     password_usuario = passwordHash,
                     rol_usuario = "Paciente",
+                    activo = true, // <--- ESTA ES LA LÍNEA QUE FALTA
                     fecha_registro = DateTime.Now
                 };
 
                 db.Usuario.Add(nuevoUsuario);
                 db.SaveChanges();
 
+                // Registrar como paciente
                 Paciente nuevoPaciente = new Paciente
                 {
                     id_usuario = nuevoUsuario.id_usuario
@@ -172,7 +170,7 @@ namespace MediCitasWeb.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error al registrar: " + ex.Message);
-                return View();
+                return View(model);
             }
         }
     }

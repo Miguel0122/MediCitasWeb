@@ -1,0 +1,94 @@
+@{
+    ViewBag.Title = "Centro de Inteligencia de Datos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="reportApp" class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold"><i class="bi bi-file-earmark-bar-graph text-primary me-2"></i>Centro de Reportes</h2>
+            <p class="text-muted">Configure los parámetros para generar reportes oficiales vía Crystal Reports.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4">
+                <h5 class="fw-bold mb-4">Configuración del Reporte</h5>
+
+                <form action="@Url.Action("GenerarCrystalReport", "Admin")" method="get">
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase">Tipo de Informe</label>
+                        <select name="tipoReporte" class="form-select bg-light border-0" v-model="config.tipo">
+                            <option value="Citas">Informe de Citas Médicas</option>
+                            <option value="Usuarios">Directorio de Usuarios</option>
+                            <option value="Financiero">Resumen de Copagos (Simulado)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase">Periodo</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text bg-white"><i class="bi bi-calendar-event"></i></span>
+                            <input type="date" name="fechaInicio" class="form-control" v-model="config.inicio">
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-calendar-check"></i></span>
+                            <input type="date" name="fechaFin" class="form-control" v-model="config.fin">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase">Filtros Especializados</label>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" name="soloActivos" checked>
+                            <label class="form-check-label small">Solo personal activo</label>
+                        </div>
+                        <select name="especialidad" class="form-select form-select-sm bg-light border-0" v-if="config.tipo === 'Citas'">
+                            <option value="">Todas las especialidades</option>
+                            <option>Medicina General</option>
+                            <option>Pediatría</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary py-3 fw-bold shadow">
+                            <i class="bi bi-printer me-2"></i>Generar en Crystal Reports
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-5 text-center bg-light">
+                <div v-if="!generando">
+                    <i class="bi bi-file-earmark-pdf text-muted display-1"></i>
+                    <h4 class="mt-4 fw-bold">Vista Previa de Generación</h4>
+                    <p class="text-muted">
+                        Seleccione los filtros a la izquierda para procesar los datos.<br>
+                        El sistema conectará con el motor de Crystal Reports para exportar en formato .PDF o .XLS
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    config: {
+                        tipo: 'Citas',
+                        inicio: '',
+                        fin: ''
+                    },
+                    generando: false
+                }
+            }
+        }).mount('#reportApp');
+    </script>
+}
