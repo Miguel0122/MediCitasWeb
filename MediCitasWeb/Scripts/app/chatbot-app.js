@@ -1,74 +1,66 @@
-new Vue({
-    el: '#chatApp',
-    data: {
-        entrada: '',
-        mensajes: [],
-        loading: false
-    },
-    methods: {
-        horaActual() {
-            const now = new Date();
-            return now.getHours().toString().padStart(2, '0') + ':' +
-                now.getMinutes().toString().padStart(2, '0');
-        },
-        agregarMensaje(texto, tipo) {
-            this.mensajes.push({
-                texto: texto,
-                tipo: tipo,   // 'user' o 'bot'
-                hora: this.horaActual()
+document.addEventListener('DOMContentLoaded', function () {
+    const txtEntrada = document.getElementById('txtEntrada');
+    const btnEnviar = document.getElementById('btnEnviar');
+    const btnLimpiar = document.getElementById('btnLimpiar');
+    const chatMessages = document.getElementById('chatMessages');
+    const typingIndicator = document.getElementById('typingIndicator');
+
+    async function enviarMensaje() {
+        const mensaje = txtEntrada.value.trim();
+        if (!mensaje) return;
+
+        // 1. Mostrar mensaje del usuario
+        agregarMensaje(mensaje, 'user');
+        txtEntrada.value = '';
+
+        // 2. Bloquear UI y mostrar indicador de carga
+        setLoading(true);
+
+        try {
+            const response = await fetch('/api/chatbot/consultar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mensaje: mensaje })
             });
-            this.$nextTick(() => {
-                const cont = document.querySelector('.chat-messages');
-                if (cont) cont.scrollTop = cont.scrollHeight;
-            });
-        },
-        async enviarMensaje() {
-            const mensaje = this.entrada.trim();
-            if (!mensaje || this.loading) return;
 
-            this.agregarMensaje(mensaje, 'user');
-            this.entrada = '';
-            this.loading = true;
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
 
-            try {
-                const resp = await fetch('/api/chatbot/consultar', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ mensaje: mensaje })
-                });
+            const data = await response.json();
+            agregarMensaje(data.respuesta, 'bot');
 
-                const text = await resp.text(); // leemos el cuerpo como texto primero
-
-                if (!resp.ok) {
-                    console.error('Respuesta no OK:', resp.status, text);
-                    this.agregarMensaje(
-                        'Error del servidor: ' + text,
-                        'bot'
-                    );
-                    return;
-                }
-
-                const data = JSON.parse(text);
-
-                const textoBot = data && (data.respuesta || data.mensaje)
-                    ? (data.respuesta || data.mensaje)
-                    : 'Lo siento, no pude procesar tu consulta.';
-
-                this.agregarMensaje(textoBot, 'bot');
-            } catch (err) {
-                console.error(err);
-                this.agregarMensaje(
-                    'Ocurrió un error al conectar con el servidor. Intenta nuevamente.',
-                    'bot'
-                );
-            } finally {
-                this.loading = false;
-            }
-        },
-        limpiarChat() {
-            this.mensajes = [];
+        } catch (error) {
+            console.error(error);
+            agregarMensaje("Lo siento, hubo un problema al conectar con el servidor.", 'bot');
+        } finally {
+            setLoading(false);
         }
     }
+
+    function agregarMensaje(texto, tipo) {
+        const ahora = new Date();
+        const horaStr = ahora.getHours().toString().padStart(2, '0') + ':' +
+            ahora.getMinutes().toString().padStart(2, '0');
+
+        const divMsg = document.createElement('div');
+        divMsg.className = `message ${tipo}`;
+        divMsg.innerHTML = `
+            <div>${texto}</div>
+            <div class="time">${horaStr}</div>
+        `;
+
+        chatMessages.appendChild(divMsg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function setLoading(isLoading) {
+        txtEntrada.disabled = isLoading;
+        btnEnviar.disabled = isLoading;
+        typingIndicator.style.display = isLoading ? 'block' : 'none';
+        if (isLoading) chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Eventos
+    btnEnviar.onclick = enviarMensaje;
+    txtEntrada.onkeyup = (e) => { if (e.key === 'Enter') enviarMensaje(); };
+    btnLimpiar.onclick = () => { chatMessages.innerHTML = ''; };
 });

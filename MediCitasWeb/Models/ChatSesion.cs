@@ -10,21 +10,20 @@ namespace MediCitasWeb.Models
     [Table("ChatSesiones")]
     public class ChatSesion
     {
-        [Key] // Clave primaria de la tabla
+        [Key]
         public int id_sesion { get; set; }
-
-        // ID del usuario que inició la conversación (viene de la sesión activa)
         public int id_usuario { get; set; }
-
-        // Fecha y hora en que el usuario abrió el chatbot
         public DateTime fecha_inicio { get; set; }
-
-        // Fecha y hora en que el usuario cerró el chatbot (puede ser null si aún está activo)
         public DateTime? fecha_fin { get; set; }
+        public string estado { get; set; } // Agregamos este campo que usamos en el Controller
 
-        // Relación de navegación hacia la tabla Usuario
         [ForeignKey("id_usuario")]
         public virtual Usuario Usuario { get; set; }
         public virtual ICollection<ChatMensaje> Mensajes { get; set; }
+
+        public ChatSesion()
+        {
+            Mensajes = new HashSet<ChatMensaje>();
+        }
     }
 }

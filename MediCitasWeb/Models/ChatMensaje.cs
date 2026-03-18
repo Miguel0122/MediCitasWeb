@@ -12,22 +12,18 @@ namespace MediCitasWeb.Models
     [Table("ChatMensajes")]
     public class ChatMensaje
     {
-        [Key] // Clave primaria de la tabla
+        [Key]
         public int id_mensaje { get; set; }
-
-        // ID de la sesión a la que pertenece este mensaje
         public int id_sesion { get; set; }
 
-        // Indica quién envió el mensaje: "user" (paciente) o "assistant" (bot)
-        public string rol { get; set; }
+        // Cambiamos 'rol' por 'remitente' para que sea más claro (Usuario/Bot)
+        public string remitente { get; set; }
 
-        // El texto del mensaje enviado o recibido
         public string contenido { get; set; }
 
-        // Fecha y hora exacta en que se registró el mensaje
-        public DateTime fecha_mensaje { get; set; }
+        // Cambiamos 'fecha_mensaje' por 'fecha_envio'
+        public DateTime fecha_envio { get; set; }
 
-        // Relación de navegación hacia la tabla ChatSesiones
         [ForeignKey("id_sesion")]
         public virtual ChatSesion ChatSesion { get; set; }
     }
