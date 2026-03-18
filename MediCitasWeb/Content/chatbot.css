@@ -134,13 +134,13 @@
     font-size: 14px;
 }
 
-    .chat-panel-header button {
-        border: none;
-        background: transparent;
-        color: #fff;
-        font-size: 18px;
-        cursor: pointer;
-    }
+.chat-panel-header button {
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+}
 
 /* Iframe que contiene el ChatBot dentro del panel */
 #chatFrame {
@@ -162,4 +162,19 @@
     100% {
         transform: translateY(0);
     }
+}
+
+/* Ejemplo rápido para tu archivo .css */
+.message.user {
+    align-self: flex-end;
+    background-color: #007bff;
+    color: white;
+    border-radius: 15px 15px 0 15px;
+}
+
+.message.bot {
+    align-self: flex-start;
+    background-color: #e9ecef;
+    color: black;
+    border-radius: 15px 15px 15px 0;
 }

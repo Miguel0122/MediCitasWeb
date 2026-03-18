@@ -1,0 +1,113 @@
+@model MediCitasWeb.Models.Usuario
+@{
+    ViewBag.Title = "Mi Perfil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="perfilApp" class="container mt-4">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm text-center p-4 rounded-4">
+                <div class="mb-3">
+                    <i class="bi bi-person-circle text-primary display-1"></i>
+                </div>
+                <h4 class="fw-bold">@Model.nombres_usuario @Model.apellidos_usuario</h4>
+                <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill">
+                    <i class="bi bi-shield-check"></i> @Model.rol_usuario
+                </span>
+                <hr>
+                <p class="text-muted small">Miembro desde: @Model.fecha_registro.ToString("MMMM yyyy")</p>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            @if (TempData["Exito"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["Exito"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-person-lines-fill me-2"></i> Datos de Contacto</h5>
+                </div>
+                <div class="card-body p-4">
+                    @using (Html.BeginForm("ActualizarDatos", "Account", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Número de Documento</label>
+                                <input type="text" class="form-control bg-light" value="@Model.numero_documento" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Correo Electrónico</label>
+                                <input type="email" name="correo" class="form-control" value="@Model.correo_usuario" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label text-muted small fw-bold">Teléfono / Celular</label>
+                                <input type="text" name="telefono" class="form-control" value="@Model.telefono_usuario" placeholder="Ej: 300 123 4567">
+                            </div>
+                        </div>
+                        <div class="mt-4 text-end">
+                            <button type="submit" class="btn btn-primary px-4 rounded-pill">Actualizar Información</button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-lock-fill me-2"></i> Seguridad</h5>
+                </div>
+                <div class="card-body p-4">
+                    @using (Html.BeginForm("CambiarPassword", "Account", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Contraseña Actual</label>
+                                <input type="password" name="passwordActual" class="form-control" required placeholder="••••••••">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Nueva Contraseña</label>
+                                <input type="password" name="nuevaPassword" class="form-control" required placeholder="Mínimo 6 caracteres">
+                            </div>
+                        </div>
+                        <div class="mt-4 text-end">
+                            <button type="submit" class="btn btn-outline-danger px-4 rounded-pill">Cambiar Contraseña</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-soft-primary {
+        background-color: #e7f1ff;
+    }
+
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    }
+
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+</style>

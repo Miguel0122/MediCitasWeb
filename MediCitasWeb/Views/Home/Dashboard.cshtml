@@ -1,0 +1,123 @@
+@using MediCitasWeb.Models
+@{
+    ViewBag.Title = "Panel de Control";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Conecta con tu plantilla maestra
+
+    // Capturamos los datos de sesión para pasarlos a Vue
+    var rol = Session["rol"]?.ToString();
+    var nombre = Session["usuario"]?.ToString();
+}
+
+<div id="dashboardApp">
+    <div class="row mb-5 animate__animated animate__fadeIn">
+        <div class="col-12 text-center">
+            <h1 class="display-5 fw-bold text-primary">Panel de Control</h1>
+            <p class="lead text-muted">Hola, <strong>@nombre</strong>. Gestiona tus servicios de salud desde aquí.</p>
+            <hr class="w-25 mx-auto">
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-4 col-sm-6" v-for="item in menuFiltrado" :key="item.id">
+            <div class="card h-100 border-0 shadow-sm hover-card pt-4 pb-2">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="icon-container mb-3">
+                        <i :class="['bi', item.icono, 'display-4', 'text-primary']"></i>
+                    </div>
+                    <h4 class="card-title fw-bold">{{ item.titulo }}</h4>
+                    <p class="card-text text-muted flex-grow-1 px-3">
+                        {{ item.descripcion }}
+                    </p>
+                    <div class="mt-auto p-3">
+                        <a :href="item.url" :class="['btn', item.claseBoton, 'w-100', 'stretched-link']">
+                            {{ item.textoBoton }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                rolActual: '@rol',
+                // Definimos todas las opciones posibles
+                menuItems: [
+                    {
+                        id: 1,
+                        roles: ['Paciente', 'Doctor', 'Administrador'],
+                        titulo: 'Mi Perfil',
+                        icono: 'bi-person-circle',
+                        descripcion: 'Consulta y actualiza tus datos personales y de contacto.',
+                        url: '@Url.Action("Perfil", "Account")',
+                        textoBoton: 'Ver Perfil',
+                        claseBoton: 'btn-outline-primary'
+                    },
+                    {
+                        id: 2,
+                        roles: ['Paciente'],
+                        titulo: 'Agendar Cita',
+                        icono: 'bi-calendar-plus-fill',
+                        descripcion: 'Reserva una cita médica con nuestros especialistas disponibles.',
+                        url: '@Url.Action("AgendarCita", "Paciente")',
+                        textoBoton: 'Agendar Ahora',
+                        claseBoton: 'btn-primary'
+                    },
+                    {
+                        id: 3,
+                        roles: ['Paciente'],
+                        titulo: 'Mis Citas',
+                        icono: 'bi-journal-medical',
+                        descripcion: 'Revisa tus citas programadas y consulta tu historial médico.',
+                        url: '@Url.Action("MisCitas", "Paciente")',
+                        textoBoton: 'Ver Historial',
+                        claseBoton: 'btn-outline-primary'
+                    },
+                    {
+                        id: 4,
+                        roles: ['Doctor'],
+                        titulo: 'Agenda Médica',
+                        icono: 'bi-clipboard2-pulse-fill',
+                        descripcion: 'Gestiona los pacientes que tienes programados para hoy.',
+                        url: '@Url.Action("PanelDoctor", "Doctor")',
+                        textoBoton: 'Ver Agenda',
+                        claseBoton: 'btn-success'
+                    }
+                ]
+            }
+        },
+        computed: {
+            // Vue filtra automáticamente qué tarjetas mostrar según el rol
+            menuFiltrado() {
+                return this.menuItems.filter(item => item.roles.includes(this.rolActual));
+            }
+        }
+    }).mount('#dashboardApp');
+    </script>
+
+    <style>
+        /* Estilo para que las tarjetas se sientan interactivas */
+        .hover-card {
+            transition: transform 0.3s ease, shadow 0.3s ease;
+        }
+
+            .hover-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            }
+
+        .icon-container {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-card:hover .icon-container {
+            transform: scale(1.1);
+        }
+    </style>
+}
