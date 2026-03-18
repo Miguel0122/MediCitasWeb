@@ -19,9 +19,12 @@ namespace MediCitasWeb.Models
         public string especialidad { get; set; }
         public string tipo_consulta { get; set; }
         public string estado { get; set; }
-        
+        public string observaciones { get; set; }
         // Navegación
+        [ForeignKey("id_paciente")]
         public virtual Paciente Paciente { get; set; }
+
+        [ForeignKey("id_doctor")]
         public virtual Doctor Doctor { get; set; }
     }
 }

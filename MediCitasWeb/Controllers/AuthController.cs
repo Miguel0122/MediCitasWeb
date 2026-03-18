@@ -41,21 +41,22 @@ namespace MediCitasWeb.Controllers
 
             try
             {
-                string conexion =
-                    ConfigurationManager.ConnectionStrings["MediCitasDB"].ConnectionString;
+                string conexion = ConfigurationManager.ConnectionStrings["MediCitasDB"].ConnectionString;
 
                 using (SqlConnection con = new SqlConnection(conexion))
                 {
                     con.Open();
 
+                    // 1. Agregamos "activo" al SELECT para validar el estado de la cuenta
                     string query = @"
-                        SELECT id_usuario,
-                               nombres_usuario,
-                               numero_documento,
-                               password_usuario,
-                               rol_usuario
-                        FROM Usuario
-                        WHERE numero_documento = @Documento";
+                SELECT id_usuario, 
+                       nombres_usuario, 
+                       numero_documento, 
+                       password_usuario, 
+                       rol_usuario,
+                       activo
+                FROM Usuario 
+                WHERE numero_documento = @Documento";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -66,7 +67,15 @@ namespace MediCitasWeb.Controllers
                             if (!dr.Read())
                             {
                                 ModelState.AddModelError("", "Documento o contraseña incorrectos.");
-                                return View();
+                                return View(model);
+                            }
+
+                            // 2. Validación de Cuenta Activa (Nuevo campo de la BD)
+                            bool estaActivo = dr["activo"] != DBNull.Value && Convert.ToBoolean(dr["activo"]);
+                            if (!estaActivo)
+                            {
+                                ModelState.AddModelError("", "Tu cuenta se encuentra desactivada. Contacta al administrador.");
+                                return View(model);
                             }
 
                             string passwordBD = dr["password_usuario"].ToString();
@@ -74,7 +83,7 @@ namespace MediCitasWeb.Controllers
                             string nombreUsuario = dr["nombres_usuario"].ToString();
                             string idUsuario = dr["id_usuario"].ToString();
 
-                            // 🔐 VERIFICACIÓN SEGURA (soporta formato antiguo y nuevo)
+                            // 🔐 VERIFICACIÓN SEGURA
                             bool passwordCorrecta;
                             try
                             {
@@ -82,8 +91,7 @@ namespace MediCitasWeb.Controllers
                             }
                             catch (FormatException)
                             {
-                                // Hash antiguo generado con System.Web.Helpers.Crypto
-                                passwordCorrecta = Crypto.VerifyHashedPassword(passwordBD, model.password);
+                                passwordCorrecta = System.Web.Helpers.Crypto.VerifyHashedPassword(passwordBD, model.password);
                             }
 
                             if (!passwordCorrecta)
@@ -98,7 +106,7 @@ namespace MediCitasWeb.Controllers
                                 return View(model);
                             }
 
-                            // SESSION
+                            // 3. SET DE SESIÓN
                             Session["usuario"] = nombreUsuario;
                             Session["rol"] = rolUsuario;
                             Session["documento"] = dr["numero_documento"].ToString();
@@ -107,26 +115,14 @@ namespace MediCitasWeb.Controllers
                     }
                 }
 
-                // REDIRECCIÓN POR ROL
-                switch (Session["rol"] as string)
-                {
-                    case "Administrador":
-                        return RedirectToAction("PanelAdmin", "Admin");
-
-                    case "Doctor":
-                        return RedirectToAction("CitasDoctor", "Doctor");
-
-                    case "Paciente":
-                        return RedirectToAction("AgendarCita", "Paciente");
-
-                    default:
-                        ModelState.AddModelError("", "Rol no válido.");
-                        return View(model);
-                }
+                // 4. REDIRECCIÓN UNIFICADA AL DASHBOARD
+                // Ahora todos van al Index de Home, que es donde está tu nuevo Dashboard dinámico.
+                return RedirectToAction("Dashboard", "Home");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", "Ocurrió un error inesperado.");
+                // Es buena práctica loguear 'ex' en desarrollo
+                ModelState.AddModelError("", "Ocurrió un error al intentar iniciar sesión.");
                 return View(model);
             }
         }

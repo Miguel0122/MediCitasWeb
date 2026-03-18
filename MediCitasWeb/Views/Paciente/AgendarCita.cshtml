@@ -17,14 +17,10 @@
     <!-- HEADER con Asistente y Mis Citas juntos -->
     <div class="app-header">
         <div class="logo">MediCitas | Paciente</div>
+
         <div style="display:flex; align-items:center; gap:15px;">
-            <!-- Botón Asistente -->
-            <a href="@Url.Action("ChatBot", "chat")" class="btn-asistente">
-                <span class="dot"></span> 🤖 Asistente
-            </a>
             <!-- Cerrar Sesión al lado del Asistente -->
-            <a href="@Url.Action("Login","Auth")"
-               class="btn btn-danger btn-sm">
+            <a href="@Url.Action("Login","Auth")" class="btn btn-danger btn-sm">
                 ❌ Cerrar sesión
             </a>
         </div>

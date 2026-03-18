@@ -20,10 +20,16 @@
     font-size: 20px;
 }
 
-.app-header a {
+/* Cambia la regla anterior por esta para que solo afecte a enlaces de texto simple */
+.app-header a:not(.btn) {
     color: #d32f2f;
     font-weight: 600;
     text-decoration: none;
+}
+
+/* Y añade esto para asegurar que el texto de los botones en el header sea siempre blanco */
+.app-header .btn {
+    color: #ffffff !important;
 }
 
 /* CONTENEDOR PRINCIPAL */

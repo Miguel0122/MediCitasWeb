@@ -47,7 +47,7 @@ namespace MediCitasWeb.Controllers
                 return RedirectToAction("Login", "Auth");
 
             if (nuevoEstado != "Completada" && nuevoEstado != "Cancelada")
-                return RedirectToAction("CitasDoctor");
+                return RedirectToAction("PanelDoctor");
 
             var cita = db.Citas.FirstOrDefault(c => c.id_cita == idCita);
             if (cita == null) return HttpNotFound();
@@ -55,7 +55,7 @@ namespace MediCitasWeb.Controllers
             cita.estado = nuevoEstado;
             db.SaveChanges();
 
-            return RedirectToAction("CitasDoctor");
+            return RedirectToAction("PanelDoctor");
         }
     }
 }

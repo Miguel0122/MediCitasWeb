@@ -12,19 +12,14 @@ namespace MediCitasWeb.Models
     {
         [Key]
         public int id_usuario { get; set; }
-
         public string nombres_usuario { get; set; }
-
         public string apellidos_usuario { get; set; }
-
         public string numero_documento { get; set; }
-
         public string correo_usuario { get; set; }
-
         public string password_usuario { get; set; }
-
         public string rol_usuario { get; set; }
-
+        public string telefono_usuario { get; set; }
+        public bool activo { get; set; }
         public DateTime fecha_registro { get; set; }
     }
 }
