@@ -17,32 +17,32 @@
 
         @Html.ValidationSummary(true, "", new { @class = "validation-summary" })
 
-        <form @@submit="handleLogin" method="post" action="@Url.Action("Login", "Auth")" id="realForm">
-            @Html.AntiForgeryToken()
-            <label>Número de documento</label>
-            <input type="text"
-                   name="numero_documento"
-                   v-model="form.numero_documento"
-                   @@input="soloNumeros"
-                   required
-                   placeholder="Ingrese su identificación" />
+    <form @@submit="handleLogin" method="post" action="@Url.Action("Login", "Auth")" id="realForm">
+        @Html.AntiForgeryToken()
+        <label>Número de documento</label>
+        <input type="text"
+               name="numero_documento"
+               v-model="form.numero_documento"
+               @@input="soloNumeros"
+               required
+               placeholder="Ingrese su identificación" />
 
-            <label>Contraseña</label>
-            <input type="password"
-                   name="password"
-                   v-model="form.password"
-                   required
-                   placeholder="••••••••" />
+        <label>Contraseña</label>
+        <input type="password"
+               name="password"
+               v-model="form.password"
+               required
+               placeholder="••••••••" />
 
-            <div style="display: flex; justify-content: center; margin-top: 10px;">
-                <a href="@Url.Action("Recuperar", "Password")" style="font-size: 0.85em; color: #007bff; text-decoration: none;">¿Olvidó su contraseña?</a>
-            </div>
+        <button type="submit" :disabled="loading">
+            <span v-if="loading">Verificando...</span>
+            <span v-else>Ingresar</span>
+        </button>
 
-            <button type="submit" :disabled="loading">
-                <span v-if="loading">Verificando...</span>
-                <span v-else>Ingresar</span>
-            </button>
-        </form>
+        <div style="display: flex; justify-content: center; margin-top: 10px;">
+            <a href="@Url.Action("Recuperar", "Password")" style="font-size: 0.85em; color: #007bff; text-decoration: none;">¿Olvidó su contraseña?</a>
+        </div>
+    </form>
 
         <div class="auth-footer" style="margin-top: 20px; text-align: center; border-top: 1px solid #eee; padding-top: 15px;">
             <p style="font-size: 0.9em; color: #666;">

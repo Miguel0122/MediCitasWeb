@@ -20,10 +20,16 @@
     font-size: 20px;
 }
 
-.app-header a {
+/* Cambia la regla anterior por esta para que solo afecte a enlaces de texto simple */
+.app-header a:not(.btn) {
     color: #d32f2f;
     font-weight: 600;
     text-decoration: none;
+}
+
+/* Y añade esto para asegurar que el texto de los botones en el header sea siempre blanco */
+.app-header .btn {
+    color: #ffffff !important;
 }
 
 /* CONTENEDOR PRINCIPAL */
@@ -124,28 +130,33 @@ th, td {
 }
 
 
-/* Botón flotante del asistente (esquina superior derecha) */
+/* Botón Asistente dentro del header — ya no es flotante */
 .btn-asistente {
     background: #0d6efd; 
+
+    position: relative;
+    background: linear-gradient(135deg, #0d6efd, #4e73df);
+
     color: white;
     border-radius: 50px;
-    padding: 12px 20px;
+    padding: 8px 16px;
     font-size: 14px;
     font-weight: 600;
-    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
     text-decoration: none;
     display: flex;
     align-items: center;
     gap: 8px;
+
 }
 
     .btn-asistente:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(13, 110, 253, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.5);
         color: white;
     }
 
-    /* Punto verde animado que indica que el bot está activo */
+    /* Punto verde animado */
     .btn-asistente .dot {
         width: 9px;
         height: 9px;
@@ -193,5 +204,43 @@ th, td {
     .btn-cerrar:hover {
         background: #b02a37 !important;
         color: white !important;
+    }
+
+/* ================= BOTONES DE AGENDAR CITA ================= */
+
+.botones-container {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* Botón principal (Confirmar) */
+.btn-main {
+    background: linear-gradient(135deg, #1976d2, #42a5f5);
+    color: white !important;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+    .btn-main:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(25, 118, 210, 0.3);
+    }
+
+/* Botones secundarios */
+.btn-alt {
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+    .btn-alt:hover {
+        transform: scale(1.05);
     }
 

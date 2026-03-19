@@ -23,13 +23,27 @@
 
             <div id="paso1">
                 <label>Nombres</label>
-                <input type="text" id="nombre" name="nombres" required placeholder="Escriba sus nombres" />
+                <input type="text"
+                       id="nombre"
+                       name="nombres"
+                       required
+                       placeholder="Escriba sus nombres"
+                       pattern="[A-Za-záéíóúÁÉÍÓÚñÑ ]+"
+                       title="Solo se permiten letras y espacios"
+                       oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')" />
                 <span id="errorNombre" class="error"></span>
             </div>
 
             <div id="paso2" style="display:none;">
                 <label>Apellidos</label>
-                <input type="text" id="apellidos" name="apellidos" required placeholder="Escriba sus apellidos" />
+                <input type="text"
+                       id="apellidos"
+                       name="apellidos"
+                       required
+                       placeholder="Escriba sus apellidos"
+                       pattern="[A-Za-záéíóúÁÉÍÓÚñÑ ]+"
+                       title="Solo se permiten letras y espacios"
+                       oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')" />
                 <span id="errorApellidos" class="error"></span>
             </div>
 

@@ -11,48 +11,37 @@
     <meta charset="utf-8" />
     <title>Agendar Cita - MediCitas</title>
 
-    
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
     <link href="~/Content/paciente-style.css" rel="stylesheet" />
-    
-
 </head>
 
 <body>
 
     <header class="app-header">
-
-        
         <div class="logo">
             MediCitas | Paciente
         </div>
 
         <div class="top-bar">
-
             <a href="@Url.Action("ChatBot","Chat")" class="btn-asistente">
-                <span class="dot"></span> 🤖 Asistente
+                🤖 Asistente
             </a>
 
             <a href="@Url.Action("Login","Auth")" class="btn-logout">
                 Cerrar sesión
             </a>
-
         </div>
-        
-
     </header>
 
     <div id="agendarApp" class="app-container">
 
-        
         <h2 class="app-title">NUEVA CITA MÉDICA</h2>
 
+        <!-- ================= INFO PACIENTE ================= -->
         <div class="section">
-
             <div class="section-title">Información del Paciente</div>
 
             <div class="form-grid">
-
                 <div class="form-group">
                     <label>Documento</label>
                     <input value="@Model.numero_documento" readonly class="bg-light" />
@@ -67,14 +56,11 @@
                     <label>Correo</label>
                     <input value="@Model.correo_usuario" readonly class="bg-light" />
                 </div>
-
             </div>
-
         </div>
 
-
+        <!-- ================= FORMULARIO ================= -->
         <div class="section">
-
             <div class="section-title">Detalles de la Cita</div>
 
             <form method="post" action="@Url.Action("GuardarCita","Paciente")">
@@ -83,57 +69,36 @@
                 <div class="form-grid">
 
                     <div class="form-group">
-
                         <label>Especialidad</label>
-
-                        <select name="especialidad"
-                                v-model="form.especialidad"
-                                required>
-
+                        <select name="especialidad" v-model="form.especialidad" required>
                             <option value="">Seleccione...</option>
                             <option>Medicina General</option>
                             <option>Pediatría</option>
                             <option>Cardiología</option>
                             <option>Odontología</option>
-
                         </select>
-
                     </div>
 
-
                     <div class="form-group">
-
                         <label>Tipo de Consulta</label>
-
-                        <select name="tipoConsulta"
-                                v-model="form.tipoConsulta">
-
+                        <select name="tipoConsulta" v-model="form.tipoConsulta">
                             <option>Primera vez</option>
                             <option>Seguimiento / Control</option>
-
                         </select>
-
                     </div>
 
-
                     <div class="form-group">
-
                         <label>Fecha</label>
-
                         <input type="date"
                                name="fechaCita"
                                v-model="form.fecha"
                                @@change="actualizarHoras"
                                min="@DateTime.Now.ToString("yyyy-MM-dd")"
                                required />
-
                     </div>
 
-
                     <div class="form-group">
-
                         <label>Hora</label>
-
                         <select name="horaCita"
                                 v-model="form.hora"
                                 :disabled="horasDisponibles.length === 0"
@@ -143,22 +108,14 @@
                                 {{ horasDisponibles.length ? 'Seleccione hora...' : 'Seleccione una fecha primero' }}
                             </option>
 
-                            <option v-for="h in horasDisponibles"
-                                    :value="h.valor">
-
+                            <option v-for="h in horasDisponibles" :value="h.valor">
                                 {{ h.texto }}
-
                             </option>
-
                         </select>
-
                     </div>
 
-
                     <div class="form-group">
-
                         <label>Doctor</label>
-
                         <select name="idDoctor"
                                 v-model="form.idDoctor"
                                 :disabled="!form.especialidad"
@@ -171,53 +128,45 @@
                             <option v-for="doc in doctoresFiltrados"
                                     :key="doc.IdDoctor"
                                     :value="doc.IdDoctor">
-
                                 {{ doc.NombreDoctor }}
-
                             </option>
-
                         </select>
-
                     </div>
 
                 </div>
 
-
-                <div style="margin-top:25px; text-align:center;">
+                <!-- ================= BOTONES ================= -->
+                <div class="botones-container">
 
                     <button type="submit"
-                            class="btn btn-primary px-5"
+                            class="btn btn-primary btn-main"
                             :disabled="loading">
-
                         {{ loading ? 'Procesando...' : 'Confirmar Agendamiento' }}
-
                     </button>
 
                     <a href="@Url.Action("MisCitas","Paciente")"
-                       class="btn btn-secondary px-5">
-
+                       class="btn btn-secondary btn-alt">
                         Ver Mis Citas
+                    </a>
 
+                    <a href="@Url.Action("Dashboard", "Home")"
+                       class="btn btn-dark btn-alt">
+                        Volver al Menú
                     </a>
 
                 </div>
 
             </form>
-
         </div>
-        
 
     </div>
 
     <script>
-
-window.listaDoctoresBase =
-@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Doctores))
-
+        window.listaDoctoresBase =
+        @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Doctores))
     </script>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
     <script src="~/Scripts/app/agendar-app.js"></script>
 
 </body>

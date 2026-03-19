@@ -18,12 +18,12 @@ namespace MediCitasWeb.Models
 
     public class RegistroViewModel
     {
-        [Required, StringLength(50)]
-        [Display(Name = "Nombres")]
+        [Required]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "Solo letras y espacios.")]
         public string nombres { get; set; }
 
-        [Required, StringLength(50)]
-        [Display(Name = "Apellidos")]
+        [Required]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "Solo letras y espacios.")]
         public string apellidos { get; set; }
 
         [Required]
