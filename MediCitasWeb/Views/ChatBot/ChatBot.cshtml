@@ -174,11 +174,33 @@
 
         <div class="chat-messages" id="chatMessages"></div>
 
-        <div id="typingIndicator" class="p-2 ms-3" style="display:none;">
-            <div class="typing-indicator">
-                <span class="typing-dot"></span>
-                <span class="typing-dot"></span>
-                <span class="typing-dot"></span>
+        <div id="typingIndicator" class="p-2 ms-2" style="display:none;">
+            <div class="d-flex align-items-center gap-2">
+                <div class="chat-typing-heart">
+                    <svg width="32" height="30" viewBox="0 0 108 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <clipPath id="heartClipTyping">
+                                <path d="M54 94C54 94 8 64 8 32C8 18 19 8 32 8C40 8 47 12 54 19C61 12 68 8 76 8C89 8 100 18 100 32C100 64 54 94 54 94Z" />
+                            </clipPath>
+                        </defs>
+                        <path d="M54 94C54 94 8 64 8 32C8 18 19 8 32 8C40 8 47 12 54 19C61 12 68 8 76 8C89 8 100 18 100 32C100 64 54 94 54 94Z"
+                              fill="#0d6efd" fill-opacity="0.15" />
+                        <path d="M54 94C54 94 8 64 8 32C8 18 19 8 32 8C40 8 47 12 54 19C61 12 68 8 76 8C89 8 100 18 100 32C100 64 54 94 54 94Z"
+                              fill="none" stroke="#0d6efd" stroke-width="3" />
+                        <g clip-path="url(#heartClipTyping)">
+                            <svg x="8" y="28" width="84" height="44" viewBox="0 0 168 44" overflow="hidden">
+                                <g class="ecg-ticker">
+                                    <polyline points="0,22 8,22 13,22 18,4 22,40 27,14 31,26 34,20 38,26 42,22 48,22 54,22 58,22 63,4 67,40 72,14 76,26 79,20 83,26 87,22 93,22 99,22 104,22 109,4 113,40 118,14 122,26 125,20 129,26 133,22 139,22 145,22 149,22 154,4 158,40 163,14 167,26 168,22"
+                                              fill="none" stroke="#0d6efd" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+                                    <polyline points="0,22 8,22 13,22 18,4 22,40 27,14 31,26 34,20 38,26 42,22 48,22 54,22 58,22 63,4 67,40 72,14 76,26 79,20 83,26 87,22 93,22 99,22 104,22 109,4 113,40 118,14 122,26 125,20 129,26 133,22 139,22 145,22 149,22 154,4 158,40 163,14 167,26 168,22"
+                                              fill="none" stroke="#0d6efd" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"
+                                              transform="translate(168,0)" />
+                                </g>
+                            </svg>
+                        </g>
+                    </svg>
+                </div>
+                <span style="font-size:13px; color:#6c757d;">MediBot está escribiendo...</span>
             </div>
         </div>
 
