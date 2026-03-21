@@ -1,4 +1,5 @@
 ﻿@model List<MediCitasWeb.Models.Usuario>
+@using Newtonsoft.Json
 @{
     ViewBag.Title = "Admin Command Center";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -146,6 +147,30 @@
                     </div>
                 </div>
 
+                <!-- Paginación -->
+                <div v-if="totalPaginas > 1" class="d-flex justify-content-between align-items-center px-4 pb-3">
+                    <small class="text-muted">
+                        Mostrando {{ (paginaActual-1)*porPagina+1 }}-{{ Math.min(paginaActual*porPagina, usuariosFiltrados.length) }}
+                        de {{ usuariosFiltrados.length }} usuarios
+                    </small>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item" :class="{ disabled: paginaActual === 1 }">
+                                <a class="page-link" href="#" @@click.prevent="paginaActual--">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li v-for="p in totalPaginas" :key="p" class="page-item" :class="{ active: p === paginaActual }">
+                                <a class="page-link" href="#" @@click.prevent="paginaActual = p">{{ p }}</a>
+                            </li>
+                            <li class="page-item" :class="{ disabled: paginaActual === totalPaginas }">
+                                <a class="page-link" href="#" @@click.prevent="paginaActual++">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
                 <div class="table-responsive px-4 pb-4">
                     <table class="table table-hover align-middle">
                         <thead class="text-muted small text-uppercase bg-light">
@@ -166,7 +191,7 @@
                             </tr>
 
                             <!-- Lista de usuarios -->
-                            <tr v-for="u in usuariosFiltrados" :key="u.documento" class="user-row">
+                            <tr v-for="u in usuariosPaginados" :key="u.documento" class="user-row">
                                 <td class="fw-bold ps-3">
                                     <span class="badge bg-light text-dark">#{{ u.documento }}</span>
                                 </td>
@@ -282,7 +307,7 @@
                                     </button>
                                     <button class="btn btn-sm"
                                             :class="usuarioSeleccionado.activo ? 'btn-outline-danger' : 'btn-outline-success'"
-                                            @@click="cambiarEstadoUsuario(usuarioSeleccionado.id)">
+                                            @@click="cambiarEstadoUsuario(usuarioSeleccionado)">
                                         <i :class="usuarioSeleccionado.activo ? 'bi-x-circle' : 'bi-check-circle'"></i>
                                         {{ usuarioSeleccionado.activo ? 'Desactivar' : 'Activar' }}
                                     </button>
@@ -715,18 +740,18 @@
                 showSuccessToast: false,
                 mensaje: '',
                 errors: {},
-                usuarios: [
-                    @foreach(var u in Model) {
-                        <text>{
-                            id: @u.id_usuario,
-                            documento: '@u.numero_documento',
-                            nombre: '@u.nombres_usuario @u.apellidos_usuario',
-                            correo: '@u.correo_usuario',
-                            rol: '@u.rol_usuario',
-                            activo: @(u.activo ? "true" : "false")
-                        },</text>
-                    }
-                ],
+                usuarios: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                    Model.Select(u => new {
+                        id      = u.id_usuario,
+                        documento = u.numero_documento,
+                        nombre  = u.nombres_usuario + " " + u.apellidos_usuario,
+                        nombres = u.nombres_usuario,
+                        apellidos = u.apellidos_usuario,
+                        correo  = u.correo_usuario,
+                        rol     = u.rol_usuario,
+                        activo  = u.activo
+                    }).ToList()
+                )),
                 stats: [
                     { titulo: 'Citas Programadas', valor: '@ViewBag.TotalCitas', icono: 'bi-calendar-check', bgClass: 'bg-primary', trend: '+12% vs ayer' },
                     { titulo: 'Pacientes Activos', valor: '@ViewBag.TotalPacientes', icono: 'bi-people', bgClass: 'bg-info', trend: '👥 3 nuevos hoy' },
@@ -736,6 +761,8 @@
                     nombres: '', apellidos: '', numero_documento: '', correo: '', telefono: '', especialidad: '', activo: true
                 },
                 chartInstance: null,
+                paginaActual: 1,
+                porPagina: 10,
                 // NUEVAS PROPIEDADES
                 usuarioSeleccionado: null,
                 modalDetalle: null,
@@ -777,6 +804,10 @@
                 this.modalEditar = new bootstrap.Modal(modalEditarElement);
             }
         },
+        watch: {
+            filtro() { this.paginaActual = 1; },
+            filtroRol() { this.paginaActual = 1; }
+        },
         computed: {
             usuariosFiltrados() {
                 return this.usuarios.filter(u => {
@@ -784,6 +815,13 @@
                     const coincideRol = this.filtroRol === 'Todos' || u.rol === this.filtroRol;
                     return coincideNombre && coincideRol && u.rol !== 'Administrador';
                 });
+            },
+            usuariosPaginados() {
+                const inicio = (this.paginaActual - 1) * this.porPagina;
+                return this.usuariosFiltrados.slice(inicio, inicio + this.porPagina);
+            },
+            totalPaginas() {
+                return Math.ceil(this.usuariosFiltrados.length / this.porPagina);
             }
         },
         methods: {
@@ -815,15 +853,15 @@
             },
 
             editarUsuario(usuario) {
-                const nombreParts = usuario.nombre.split(' ');
                 this.formEditar = {
                     id: usuario.id,
-                    nombres: nombreParts[0] || '',
-                    apellidos: nombreParts.slice(1).join(' ') || '',
-                    correo: usuario.correo,
-                    telefono: usuario.telefono || '',
+                    // Usar campos separados si vienen del servidor, sino partir el nombre
+                    nombres:    usuario.nombres   || (usuario.nombre ? usuario.nombre.split(' ')[0] : ''),
+                    apellidos:  usuario.apellidos || (usuario.nombre ? usuario.nombre.split(' ').slice(1).join(' ') : ''),
+                    correo:     usuario.correo    || '',
+                    telefono:   usuario.telefono  || '',
                     especialidad: usuario.especialidad || '',
-                    rol: usuario.rol
+                    rol:        usuario.rol       || ''
                 };
                 this.modalEditar?.show();
             },
@@ -860,26 +898,36 @@
             },
 
             async cambiarEstadoUsuario(usuario) {
+                // Proteccion: si recibe solo numero, usar usuarioSeleccionado
+                if (typeof usuario === 'number') usuario = this.usuarioSeleccionado;
+                if (!usuario || usuario.id === undefined) return;
+
                 const accion = usuario.activo ? 'deshabilitar' : 'habilitar';
-                if (!confirm(`¿Está seguro que desea ${accion} este usuario?`)) return;
+                const nombreMostrar = usuario.nombre || usuario.nombres || 'este usuario';
+                if (!confirm('Seguro que desea ' + accion + ' a ' + nombreMostrar + '?')) return;
 
                 try {
                     const response = await fetch('/Admin/CambiarEstadoUsuario', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: usuario.id })
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'id=' + encodeURIComponent(usuario.id)
                     });
 
                     const data = await response.json();
 
                     if (data.success) {
+                        // Reactividad Vue correcta con splice
                         const index = this.usuarios.findIndex(u => u.id === usuario.id);
                         if (index !== -1) {
-                            this.usuarios[index].activo = data.nuevoEstado;
+                            this.usuarios.splice(index, 1, { ...this.usuarios[index], activo: data.nuevoEstado });
+                        }
+                        // Actualizar modal de detalle si esta abierto
+                        if (this.usuarioSeleccionado && this.usuarioSeleccionado.id === usuario.id) {
+                            this.usuarioSeleccionado = { ...this.usuarioSeleccionado, activo: data.nuevoEstado };
                         }
                         alert(data.message);
                     } else {
-                        alert(data.message);
+                        alert('Error: ' + data.message);
                     }
                 } catch (error) {
                     console.error('Error:', error);
