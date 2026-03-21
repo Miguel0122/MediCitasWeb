@@ -260,9 +260,10 @@
                                 </p>
                                 <p class="mb-1">
                                     <strong>Estado:</strong>
-                                    <span :class="usuarioSeleccionado.activo ? 'text-success' : 'text-danger'">
-                                        <i :class="usuarioSeleccionado.activo ? 'bi-check-circle' : 'bi-x-circle'"></i>
-                                        {{ usuarioSeleccionado.activo ? 'Activo' : 'Inactivo' }}
+                                    <span :class="usuarioSeleccionado.activo ? 'btn-outline-danger' : 'btn-outline-success'"
+                                          @@click="cambiarEstadoUsuario(u)">
+                                        <i :class="usuarioSeleccionado.activo ? 'bi-x-circle' : 'bi-check-circle'"></i>
+                                        {{ usuarioSeleccionado.activo ? 'Desactivar' : 'Activar' }}
                                     </span>
                                 </p>
                                 <p class="mb-1"><strong>Especialidad:</strong> {{ usuarioSeleccionado.especialidad || 'N/A' }}</p>
