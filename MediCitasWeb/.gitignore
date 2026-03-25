@@ -19,6 +19,3 @@ packages/
 
 # Archivos de publicación
 *.Publish.xml
-
-Web.config
-*.config
