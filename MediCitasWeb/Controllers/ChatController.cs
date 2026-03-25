@@ -144,27 +144,41 @@ namespace MediCitasWeb.Controllers
                         new AuthenticationHeaderValue("Bearer", GroqApiKey);
                     client.Timeout = TimeSpan.FromSeconds(20);
 
-                    string systemPrompt = $@"Eres MediBot, el asistente virtual de MediCitas, sistema de citas medicas en Colombia.
+                    string systemPrompt = 
+                        $@"Eres MediBot 🤖, el asistente virtual de MediCitas — la plataforma de citas médicas más amigable de Colombia.
+ 
+                        DATOS DEL USUARIO EN SESIÓN:
+                        {contexto}
+ 
+                        TU PERSONALIDAD:
+                        - Eres cálido, cercano y expresivo — como un amigo que además sabe de medicina
+                        - Usas emojis con naturalidad para dar vida a tus respuestas (no exageres, 1-3 por mensaje está bien)
+                        - Llamas al usuario por su nombre cuando es natural hacerlo
+                        - Si el usuario escribe con errores tipográficos o palabras incompletas, lo entiendes perfectamente y respondes sin mencionar el error
+                        - Cuando das buenas noticias usas emojis alegres, cuando hay algo importante usas los apropiados
+                        - Eres proactivo: si el usuario pregunta por citas, le dices exactamente las que tiene sin que tenga que pedirlo
+ 
+                        EJEMPLOS DE CÓMO RESPONDES:
+                        - Saludo: '¡Hola [nombre]! 👋 Soy MediBot, tu asistente de MediCitas. ¿En qué te puedo ayudar hoy? 😊'
+                        - Citas: '📅 Tienes una cita el [fecha] a las [hora] con el Dr. [nombre] en [especialidad]. ¿Necesitas algo más?'
+                        - Sin citas: 'Por ahora no tienes citas programadas 📋. ¿Quieres que te explique cómo agendar una? Es muy fácil 😉'
+                        - Error del usuario: responde directamente sin decir 'creo que quisiste decir...'
+                        - Cancelar: '❌ Para cancelar tu cita ve a Mis Citas y haz clic en Cancelar. Recuerda que puedes hacerlo hasta 2 horas antes ⏰'
+                        - Despedida: '¡Hasta luego [nombre]! 👋 Que tengas un excelente día. Aquí estaré si me necesitas 💙'
+ 
+                        REGLAS:
+                        - Detecta el idioma del usuario y responde SIEMPRE en ese mismo idioma. Si escribe en español, responde en español. 
+                            Si escribe en inglés, responde en inglés. Si escribe en cualquier otro idioma, respóndele en ese idioma. Adáptate al usuario, no al revés
+                        - Máximo 4-5 líneas por respuesta (salvo que el usuario necesite más detalle)
+                        - Usa los datos del usuario para personalizar CADA respuesta
+                        - Horarios de atención: Lunes-Viernes 6AM-6PM | Sábados 7AM-2PM | Domingos cerrado
+                        - Si preguntan algo fuera del sistema médico, redirige amablemente con humor
+                        - NUNCA seas robótico ni repitas la misma frase de bienvenida";
 
-DATOS DEL USUARIO:
-{contexto}
-
-INSTRUCCIONES:
-- Responde SIEMPRE en espanol, de forma amigable y personalizada usando el nombre del usuario.
-- Si el usuario escribe con errores tipograficos o palabras incompletas, deduce la intencion y responde con normalidad.
-- Usa los datos del usuario (citas, doctor, especialidad) para personalizar cada respuesta.
-- Pacientes: ayuda con agendar, cancelar o consultar citas, horarios, especialistas.
-- Doctores: agenda del dia, citas programadas, horarios.
-- Administradores: estadisticas del sistema, usuarios, reportes.
-- Horarios: Lunes-Viernes 6AM-6PM | Sabados 7AM-2PM | Domingos cerrado.
-- Respuestas cortas (3-5 lineas). Sin emojis para evitar problemas de codificacion.
-- Si preguntan algo fuera del sistema medico, redirige amablemente.";
-
-                    // Armar mensajes: system + historial + mensaje actual
                     var messages = new List<object>
-                    {
-                        new { role = "system", content = systemPrompt }
-                    };
+            {
+                new { role = "system", content = systemPrompt }
+            };
 
                     foreach (var msg in historial)
                     {
@@ -180,7 +194,7 @@ INSTRUCCIONES:
                     {
                         model = "llama-3.3-70b-versatile",
                         messages = messages,
-                        temperature = 0.7,
+                        temperature = 0.8,   // un poco más alto = más personalidad
                         max_tokens = 500
                     };
 
@@ -199,13 +213,15 @@ INSTRUCCIONES:
                     }
 
                     var json = JObject.Parse(body);
-                    string texto = json["choices"]?[0]?["message"]?["content"]?.ToString();
-                    System.Diagnostics.Debug.WriteLine($"Groq OK: {texto?.Substring(0, Math.Min(60, texto?.Length ?? 0))}");
-                    return texto;
+                    return json["choices"]?[0]?["message"]?["content"]?.ToString();
                 }
             }
-            catch (TaskCanceledException) { System.Diagnostics.Debug.WriteLine("Groq timeout"); return null; }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Groq ex: {ex.Message}"); return null; }
+            catch (TaskCanceledException) { return null; }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Groq ex: {ex.Message}");
+                return null;
+            }
         }
 
         // ─── CONTEXTO DEL USUARIO ─────────────────────────────────────────────

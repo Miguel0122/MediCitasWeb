@@ -1,75 +1,308 @@
 @{
-    ViewBag.Title = "Centro de Inteligencia de Datos";
+    ViewBag.Title = "Centro de Reportes";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="reportApp" class="container py-4">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="fw-bold"><i class="bi bi-file-earmark-bar-graph text-primary me-2"></i>Centro de Reportes</h2>
-            <p class="text-muted">Configure los parámetros para generar reportes oficiales vía Crystal Reports.</p>
+<div id="reportApp" class="container-fluid py-4 px-4">
+
+    @* ── HEADER ────────────────────────────────────────────────────────────── *@
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">
+                    <i class="bi bi-shield-shaded me-1"></i>Centro de Inteligencia
+                </span>
+            </div>
+            <h2 class="fw-bold m-0">Centro de Reportes</h2>
+            <p class="text-muted mt-1">Genera, filtra y exporta informes del sistema en PDF o Excel.</p>
+        </div>
+        <div class="col-auto">
+            <a href="@Url.Action("PanelAdmin", "Admin")" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="bi bi-arrow-left me-2"></i>Volver al Panel
+            </a>
         </div>
     </div>
 
     <div class="row g-4">
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm p-4">
-                <h5 class="fw-bold mb-4">Configuración del Reporte</h5>
 
-                <form action="@Url.Action("GenerarCrystalReport", "Admin")" method="get">
+        @* ── PANEL DE FILTROS ──────────────────────────────────────────────── *@
+        <div class="col-xl-3 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-dark text-white p-4 border-0">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-sliders me-2"></i>Configurar Reporte</h6>
+                </div>
+                <div class="card-body p-4">
+
+                    @* Tipo de reporte *@
                     <div class="mb-4">
-                        <label class="form-label small fw-bold text-uppercase">Tipo de Informe</label>
-                        <select name="tipoReporte" class="form-select bg-light border-0" v-model="config.tipo">
-                            <option value="Citas">Informe de Citas Médicas</option>
-                            <option value="Usuarios">Directorio de Usuarios</option>
-                            <option value="Financiero">Resumen de Copagos (Simulado)</option>
-                        </select>
+                        <label class="form-label small fw-bold text-uppercase text-muted">Tipo de Informe</label>
+                        <div class="d-flex flex-column gap-2">
+                            <label v-for="tipo in tiposReporte" :key="tipo.value"
+                                   class="tipo-card p-3 rounded border cursor-pointer"
+                                   :class="{ 'border-primary bg-primary-subtle': filtros.tipo === tipo.value, 'border-light': filtros.tipo !== tipo.value }"
+                                   style="cursor:pointer">
+                                <input type="radio" v-model="filtros.tipo" :value="tipo.value" class="d-none">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i :class="['bi', tipo.icono, filtros.tipo === tipo.value ? 'text-primary' : 'text-muted']"></i>
+                                    <div>
+                                        <div class="fw-bold small" :class="filtros.tipo === tipo.value ? 'text-primary' : ''">{{ tipo.label }}</div>
+                                        <div class="text-muted" style="font-size:11px">{{ tipo.desc }}</div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
+                    @* Rango de fechas *@
                     <div class="mb-4">
-                        <label class="form-label small fw-bold text-uppercase">Periodo</label>
-                        <div class="input-group mb-2">
-                            <span class="input-group-text bg-white"><i class="bi bi-calendar-event"></i></span>
-                            <input type="date" name="fechaInicio" class="form-control" v-model="config.inicio">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Periodo</label>
+                        <div class="mb-2">
+                            <label class="form-label small text-muted mb-1">Desde</label>
+                            <input type="date" v-model="filtros.fechaInicio" class="form-control bg-light border-0">
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white"><i class="bi bi-calendar-check"></i></span>
-                            <input type="date" name="fechaFin" class="form-control" v-model="config.fin">
+                        <div>
+                            <label class="form-label small text-muted mb-1">Hasta</label>
+                            <input type="date" v-model="filtros.fechaFin" class="form-control bg-light border-0">
+                        </div>
+                        <div class="d-flex gap-1 mt-2 flex-wrap">
+                            <button class="btn btn-xs btn-outline-secondary btn-sm py-0 px-2" style="font-size:11px"
+                                    @@click="setPeriodo('hoy')">
+                                Hoy
+                            </button>
+                            <button class="btn btn-xs btn-outline-secondary btn-sm py-0 px-2" style="font-size:11px"
+                                    @@click="setPeriodo('semana')">
+                                Semana
+                            </button>
+                            <button class="btn btn-xs btn-outline-secondary btn-sm py-0 px-2" style="font-size:11px"
+                                    @@click="setPeriodo('mes')">
+                                Mes
+                            </button>
+                            <button class="btn btn-xs btn-outline-secondary btn-sm py-0 px-2" style="font-size:11px"
+                                    @@click="setPeriodo('año')">
+                                Año
+                            </button>
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold text-uppercase">Filtros Especializados</label>
-                        <div class="form-check form-switch mb-2">
-                            <input class="form-check-input" type="checkbox" name="soloActivos" checked>
-                            <label class="form-check-label small">Solo personal activo</label>
+                    @* Filtros por tipo *@
+                    <div class="mb-4" v-if="filtros.tipo === 'Citas'">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Filtros de Citas</label>
+                        <div class="mb-2">
+                            <label class="form-label small text-muted mb-1">Especialidad</label>
+                            <select v-model="filtros.especialidad" class="form-select form-select-sm bg-light border-0">
+                                <option value="">Todas las especialidades</option>
+                                <option>Medicina General</option>
+                                <option>Pediatría</option>
+                                <option>Cardiología</option>
+                                <option>Odontología</option>
+                                <option>Dermatología</option>
+                                <option>Ginecología</option>
+                            </select>
                         </div>
-                        <select name="especialidad" class="form-select form-select-sm bg-light border-0" v-if="config.tipo === 'Citas'">
+                        <div>
+                            <label class="form-label small text-muted mb-1">Estado</label>
+                            <select v-model="filtros.estadoCita" class="form-select form-select-sm bg-light border-0">
+                                <option value="">Todos los estados</option>
+                                <option>Activa</option>
+                                <option>Atendida</option>
+                                <option>Cancelada</option>
+                                <option>Inasistencia</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4" v-if="filtros.tipo === 'Usuarios'">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Filtros de Usuarios</label>
+                        <div class="mb-2">
+                            <label class="form-label small text-muted mb-1">Rol</label>
+                            <select v-model="filtros.rol" class="form-select form-select-sm bg-light border-0">
+                                <option value="">Todos los roles</option>
+                                <option>Paciente</option>
+                                <option>Doctor</option>
+                                <option>Administrador</option>
+                            </select>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" v-model="filtros.soloActivos" id="switchActivos">
+                            <label class="form-check-label small" for="switchActivos">Solo usuarios activos</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4" v-if="filtros.tipo === 'Doctores'">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Filtros de Doctores</label>
+                        <select v-model="filtros.especialidad" class="form-select form-select-sm bg-light border-0">
                             <option value="">Todas las especialidades</option>
                             <option>Medicina General</option>
                             <option>Pediatría</option>
+                            <option>Cardiología</option>
+                            <option>Odontología</option>
+                            <option>Dermatología</option>
+                            <option>Ginecología</option>
                         </select>
                     </div>
 
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary py-3 fw-bold shadow">
-                            <i class="bi bi-printer me-2"></i>Generar en Crystal Reports
+                    @* Formato de exportación *@
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Formato de Exportación</label>
+                        <div class="d-flex gap-2">
+                            <label class="flex-fill text-center p-2 rounded border cursor-pointer"
+                                   :class="filtros.formato === 'pdf' ? 'border-danger bg-danger-subtle text-danger' : 'border-light'"
+                                   style="cursor:pointer">
+                                <input type="radio" v-model="filtros.formato" value="pdf" class="d-none">
+                                <i class="bi bi-file-earmark-pdf d-block fs-4"></i>
+                                <small class="fw-bold">PDF</small>
+                            </label>
+                            <label class="flex-fill text-center p-2 rounded border cursor-pointer"
+                                   :class="filtros.formato === 'excel' ? 'border-success bg-success-subtle text-success' : 'border-light'"
+                                   style="cursor:pointer">
+                                <input type="radio" v-model="filtros.formato" value="excel" class="d-none">
+                                <i class="bi bi-file-earmark-excel d-block fs-4"></i>
+                                <small class="fw-bold">Excel</small>
+                            </label>
+                        </div>
+                    </div>
+
+                    @* Botones de acción *@
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary fw-bold py-2"
+                                @@click="previsualizarReporte"
+                                :disabled="cargando">
+                            <span v-if="cargando" class="spinner-border spinner-border-sm me-2"></span>
+                            <i v-else class="bi bi-eye me-2"></i>
+                            {{ cargando ? 'Cargando...' : 'Previsualizar' }}
+                        </button>
+                        <button class="btn fw-bold py-2"
+                                :class="filtros.formato === 'pdf' ? 'btn-danger' : 'btn-success'"
+                                @@click="descargarReporte"
+                                :disabled="!datosReporte || cargando">
+                            <i :class="['bi', filtros.formato === 'pdf' ? 'bi-file-earmark-pdf' : 'bi-file-earmark-excel', 'me-2']"></i>
+                            Descargar {{ filtros.formato === 'pdf' ? 'PDF' : 'Excel' }}
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
 
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm p-5 text-center bg-light">
-                <div v-if="!generando">
-                    <i class="bi bi-file-earmark-pdf text-muted display-1"></i>
-                    <h4 class="mt-4 fw-bold">Vista Previa de Generación</h4>
-                    <p class="text-muted">
-                        Seleccione los filtros a la izquierda para procesar los datos.<br>
-                        El sistema conectará con el motor de Crystal Reports para exportar en formato .PDF o .XLS
+        @* ── PANEL DE PREVISUALIZACIÓN ──────────────────────────────────────── *@
+        <div class="col-xl-9 col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+
+                @* Estado vacío *@
+                <div v-if="!datosReporte && !cargando" class="card-body d-flex flex-column align-items-center justify-content-center py-5 text-center" style="min-height:500px">
+                    <div class="mb-4" style="width:80px;height:80px;background:#f0f4ff;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                        <i class="bi bi-bar-chart-line text-primary fs-2"></i>
+                    </div>
+                    <h5 class="fw-bold">Listo para generar</h5>
+                    <p class="text-muted" style="max-width:380px">
+                        Configura los filtros a la izquierda y haz clic en <strong>Previsualizar</strong>
+                        para ver los datos antes de exportar.
                     </p>
+                    <div class="d-flex gap-3 mt-2 text-muted" style="font-size:13px">
+                        <span><i class="bi bi-check-circle text-success me-1"></i>PDF con logo</span>
+                        <span><i class="bi bi-check-circle text-success me-1"></i>Excel con formato</span>
+                        <span><i class="bi bi-check-circle text-success me-1"></i>Filtros en tiempo real</span>
+                    </div>
                 </div>
+
+                @* Loading *@
+                <div v-if="cargando" class="card-body d-flex align-items-center justify-content-center" style="min-height:500px">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
+                        <p class="text-muted">Consultando datos...</p>
+                    </div>
+                </div>
+
+                @* Previsualización *@
+                <div v-if="datosReporte && !cargando" class="card-body p-0">
+
+                    @* Header del reporte *@
+                    <div class="p-4 border-bottom" style="background:linear-gradient(135deg,#0d6efd,#0b5ed7);color:white;border-radius:12px 12px 0 0">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-bold fs-5 mb-1">
+                                    <i class="bi bi-hospital me-2"></i>MediCitas — {{ tituloReporte }}
+                                </div>
+                                <div style="opacity:0.85;font-size:13px">
+                                    Generado: {{ fechaGeneracion }} &nbsp;|&nbsp;
+                                    Periodo: {{ filtros.fechaInicio || 'Inicio' }} al {{ filtros.fechaFin || 'Hoy' }}
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold fs-4">{{ datosReporte.length }}</div>
+                                <div style="font-size:12px;opacity:0.85">registros</div>
+                            </div>
+                        </div>
+
+                        @* KPIs en el header *@
+                        <div class="row g-2 mt-3" v-if="kpis.length > 0">
+                            <div class="col-auto" v-for="kpi in kpis" :key="kpi.label">
+                                <div class="px-3 py-2 rounded" style="background:rgba(255,255,255,0.15);font-size:12px">
+                                    <div style="opacity:0.8">{{ kpi.label }}</div>
+                                    <div class="fw-bold">{{ kpi.valor }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Tabla de datos *@
+                    <div class="table-responsive" style="max-height:520px;overflow-y:auto">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="sticky-top bg-white border-bottom" style="top:0;z-index:1">
+                                <tr class="text-muted small text-uppercase">
+                                    <th v-for="col in columnas" :key="col.key" class="py-3 px-4"
+                                        style="cursor:pointer;white-space:nowrap"
+                                        @@click="ordenarPor(col.key)">
+                                        {{ col.label }}
+                                        <i v-if="orden.key === col.key"
+                                           :class="['bi', orden.asc ? 'bi-arrow-up' : 'bi-arrow-down', 'ms-1']"
+                                           style="font-size:10px"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(fila, i) in datosPaginados" :key="i" class="border-bottom">
+                                    <td v-for="col in columnas" :key="col.key" class="py-3 px-4">
+                                        <span v-if="col.tipo === 'badge'"
+                                              :class="['badge', 'rounded-pill', 'px-3', getBadgeClass(fila[col.key])]">
+                                            {{ fila[col.key] }}
+                                        </span>
+                                        <span v-else>{{ fila[col.key] || '—' }}</span>
+                                    </td>
+                                </tr>
+                                <tr v-if="datosOrdenados.length === 0">
+                                    <td :colspan="columnas.length" class="text-center py-5 text-muted">
+                                        <i class="bi bi-inbox display-4 d-block mb-2"></i>
+                                        No hay registros con los filtros aplicados
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @* Paginación de la preview *@
+                    <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light"
+                         style="border-radius:0 0 12px 12px">
+                        <small class="text-muted">
+                            Mostrando {{ Math.min((pagina-1)*porPagina+1, datosOrdenados.length) }}–{{ Math.min(pagina*porPagina, datosOrdenados.length) }}
+                            de {{ datosOrdenados.length }} registros
+                        </small>
+                        <nav v-if="totalPaginasPreview > 1">
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item" :class="{disabled: pagina===1}">
+                                    <a class="page-link" href="#" @@click.prevent="pagina--"><i class="bi bi-chevron-left"></i></a>
+                                </li>
+                                <li v-for="p in totalPaginasPreview" :key="p"
+                                    class="page-item" :class="{active: p===pagina}">
+                                    <a class="page-link" href="#" @@click.prevent="pagina=p">{{ p }}</a>
+                                </li>
+                                <li class="page-item" :class="{disabled: pagina===totalPaginasPreview}">
+                                    <a class="page-link" href="#" @@click.prevent="pagina++"><i class="bi bi-chevron-right"></i></a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -81,12 +314,131 @@
         createApp({
             data() {
                 return {
-                    config: {
+                    cargando: false,
+                    datosReporte: null,
+                    columnas: [],
+                    kpis: [],
+                    pagina: 1,
+                    porPagina: 15,
+                    orden: { key: '', asc: true },
+                    fechaGeneracion: '',
+                    filtros: {
                         tipo: 'Citas',
-                        inicio: '',
-                        fin: ''
+                        fechaInicio: '',
+                        fechaFin: '',
+                        especialidad: '',
+                        estadoCita: '',
+                        rol: '',
+                        soloActivos: true,
+                        formato: 'pdf'
                     },
-                    generando: false
+                    tiposReporte: [
+                        { value: 'Citas', label: 'Informe de Citas', icono: 'bi-calendar-check', desc: 'Todas las citas con filtros' },
+                        { value: 'Usuarios', label: 'Directorio de Usuarios', icono: 'bi-people-fill', desc: 'Pacientes y personal' },
+                        { value: 'Doctores', label: 'Equipo Médico', icono: 'bi-person-badge', desc: 'Doctores y especialidades' }
+                    ]
+                };
+            },
+            computed: {
+                tituloReporte() {
+                    const t = this.tiposReporte.find(t => t.value === this.filtros.tipo);
+                    return t ? t.label : '';
+                },
+                datosOrdenados() {
+                    if (!this.datosReporte) return [];
+                    if (!this.orden.key) return this.datosReporte;
+                    return [...this.datosReporte].sort((a, b) => {
+                        const va = (a[this.orden.key] || '').toString().toLowerCase();
+                        const vb = (b[this.orden.key] || '').toString().toLowerCase();
+                        return this.orden.asc ? va.localeCompare(vb) : vb.localeCompare(va);
+                    });
+                },
+                datosPaginados() {
+                    const ini = (this.pagina - 1) * this.porPagina;
+                    return this.datosOrdenados.slice(ini, ini + this.porPagina);
+                },
+                totalPaginasPreview() {
+                    return Math.ceil((this.datosOrdenados.length || 0) / this.porPagina);
+                }
+            },
+            watch: {
+                'filtros.tipo'() { this.datosReporte = null; this.pagina = 1; }
+            },
+            methods: {
+                setPeriodo(p) {
+                    const hoy = new Date();
+                    const fmt = d => d.toISOString().split('T')[0];
+                    this.filtros.fechaFin = fmt(hoy);
+                    if (p === 'hoy') this.filtros.fechaInicio = fmt(hoy);
+                    if (p === 'semana') { const d = new Date(hoy); d.setDate(d.getDate() - 7); this.filtros.fechaInicio = fmt(d); }
+                    if (p === 'mes') { const d = new Date(hoy); d.setMonth(d.getMonth() - 1); this.filtros.fechaInicio = fmt(d); }
+                    if (p === 'año') { const d = new Date(hoy); d.setFullYear(d.getFullYear() - 1); this.filtros.fechaInicio = fmt(d); }
+                },
+
+                async previsualizarReporte() {
+                    this.cargando = true;
+                    this.datosReporte = null;
+                    this.pagina = 1;
+                    try {
+                        const params = new URLSearchParams({
+                            tipo: this.filtros.tipo,
+                            fechaInicio: this.filtros.fechaInicio,
+                            fechaFin: this.filtros.fechaFin,
+                            especialidad: this.filtros.especialidad,
+                            estadoCita: this.filtros.estadoCita,
+                            rol: this.filtros.rol,
+                            soloActivos: this.filtros.soloActivos
+                        });
+                        const res = await fetch('/Admin/ObtenerDatosReporte?' + params);
+                        const data = await res.json();
+                        if (data.success) {
+                            this.datosReporte = data.filas;
+                            this.columnas = data.columnas;
+                            this.kpis = data.kpis || [];
+                            this.fechaGeneracion = new Date().toLocaleString('es-CO');
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    } catch (e) {
+                        alert('Error de conexion al servidor');
+                    } finally {
+                        this.cargando = false;
+                    }
+                },
+
+                ordenarPor(key) {
+                    if (this.orden.key === key) this.orden.asc = !this.orden.asc;
+                    else { this.orden.key = key; this.orden.asc = true; }
+                },
+
+                descargarReporte() {
+                    if (!this.datosReporte) return;
+                    const params = new URLSearchParams({
+                        tipo: this.filtros.tipo,
+                        fechaInicio: this.filtros.fechaInicio,
+                        fechaFin: this.filtros.fechaFin,
+                        especialidad: this.filtros.especialidad,
+                        estadoCita: this.filtros.estadoCita,
+                        rol: this.filtros.rol,
+                        soloActivos: this.filtros.soloActivos,
+                        formato: this.filtros.formato
+                    });
+                    window.location.href = '/Admin/DescargarReporte?' + params;
+                },
+
+                getBadgeClass(val) {
+                    const map = {
+                        'Activa': 'bg-primary-subtle text-primary',
+                        'Atendida': 'bg-success-subtle text-success',
+                        'Cancelada': 'bg-danger-subtle text-danger',
+                        'Inasistencia': 'bg-warning-subtle text-warning',
+                        'Doctor': 'bg-info-subtle text-info',
+                        'Paciente': 'bg-primary-subtle text-primary',
+                        'Administrador': 'bg-dark text-white',
+                        'Activo': 'bg-success-subtle text-success',
+                        'Inactivo': 'bg-secondary-subtle text-secondary'
+                    };
+                    return map[val] || 'bg-secondary-subtle text-secondary';
                 }
             }
         }).mount('#reportApp');
