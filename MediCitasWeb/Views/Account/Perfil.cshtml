@@ -5,6 +5,9 @@
 }
 
 <div id="perfilApp" class="container mt-4">
+    @* Token de seguridad necesario para la petición POST *@
+    @Html.AntiForgeryToken()
+
     <div class="row">
         <div class="col-md-4 mb-4">
             <div class="card border-0 shadow-sm text-center p-4 rounded-4">
@@ -12,7 +15,7 @@
                     <i class="bi bi-person-circle text-primary display-1"></i>
                 </div>
                 <h4 class="fw-bold">@Model.nombres_usuario @Model.apellidos_usuario</h4>
-                <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill">
+                <span class="badge bg-primary text-white px-3 py-2 rounded-pill">
                     <i class="bi bi-shield-check"></i> @Model.rol_usuario
                 </span>
                 <hr>
@@ -21,93 +24,203 @@
         </div>
 
         <div class="col-md-8">
-            @if (TempData["Exito"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["Exito"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
+            <div class="card border-0 shadow-sm p-4 rounded-4 mb-4">
+                <h5 class="fw-bold mb-4"><i class="bi bi-person-gear me-2"></i>Información Personal</h5>
 
-            <div class="card border-0 shadow-sm rounded-4 mb-4">
-                <div class="card-header bg-white border-0 pt-4 px-4">
-                    <h5 class="fw-bold mb-0"><i class="bi bi-person-lines-fill me-2"></i> Datos de Contacto</h5>
-                </div>
-                <div class="card-body p-4">
-                    @using (Html.BeginForm("ActualizarDatos", "Account", FormMethod.Post))
-                    {
-                        @Html.AntiForgeryToken()
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold">Número de Documento</label>
-                                <input type="text" class="form-control bg-light" value="@Model.numero_documento" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold">Correo Electrónico</label>
-                                <input type="email" name="correo" class="form-control" value="@Model.correo_usuario" required>
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label text-muted small fw-bold">Teléfono / Celular</label>
-                                <input type="text" name="telefono" class="form-control" value="@Model.telefono_usuario" placeholder="Ej: 300 123 4567">
-                            </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Correo Electrónico</label>
+                        <input type="email"
+                               v-model="email"
+                               class="form-control bg-light border-0"
+                               :readonly="!editandoDatos"
+                               placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Teléfono</label>
+                        <input type="text"
+                               v-model="phone"
+                               class="form-control bg-light border-0"
+                               :readonly="!editandoDatos"
+                               placeholder="Número de contacto">
+                    </div>
+                    <div class="col-12 text-end">
+                        <button v-if="!editandoDatos"
+                                class="btn btn-outline-primary px-4 rounded-pill"
+                                @@click="activarEdicionDatos">
+                            <i class="bi bi-pencil-square me-2"></i>Editar
+                        </button>
+
+                        <div v-else class="d-inline-flex gap-2">
+                            <button class="btn btn-secondary px-4 rounded-pill"
+                                    @@click="cancelarEdicionDatos"
+                                    :disabled="cargando">
+                                Cancelar
+                            </button>
+                            <button class="btn btn-primary px-4 rounded-pill"
+                                    @@click="actualizarDatos"
+                                    :disabled="cargando">
+                                <span v-if="cargando" class="spinner-border spinner-border-sm me-2"></span>
+                                <i v-else class="bi bi-save me-2"></i>Guardar
+                            </button>
                         </div>
-                        <div class="mt-4 text-end">
-                            <button type="submit" class="btn btn-primary px-4 rounded-pill">Actualizar Información</button>
-                        </div>
-                    }
+                    </div>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-header bg-white border-0 pt-4 px-4">
-                    <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-lock-fill me-2"></i> Seguridad</h5>
-                </div>
-                <div class="card-body p-4">
-                    @using (Html.BeginForm("CambiarPassword", "Account", FormMethod.Post))
-                    {
-                        @Html.AntiForgeryToken()
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold">Contraseña Actual</label>
-                                <input type="password" name="passwordActual" class="form-control" required placeholder="••••••••">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold">Nueva Contraseña</label>
-                                <input type="password" name="nuevaPassword" class="form-control" required placeholder="Mínimo 6 caracteres">
-                            </div>
-                        </div>
-                        <div class="mt-4 text-end">
-                            <button type="submit" class="btn btn-outline-danger px-4 rounded-pill">Cambiar Contraseña</button>
-                        </div>
-                    }
+            <div class="card border-0 shadow-sm p-4 rounded-4">
+                <h5 class="fw-bold mb-4"><i class="bi bi-lock me-2"></i>Seguridad</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="password"
+                               v-model="passwordActual"
+                               class="form-control bg-light border-0"
+                               placeholder="Contraseña actual">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="password"
+                               v-model="nuevaPassword"
+                               class="form-control bg-light border-0"
+                               placeholder="Nueva contraseña">
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-dark w-100 rounded-pill"
+                                @@click="cambiarPassword"
+                                :disabled="cargandoPassword">
+                            Actualizar Contraseña
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .bg-soft-primary {
-        background-color: #e7f1ff;
-    }
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    // Inicializamos con los datos del Modelo de C#
+                    email: '@Model.correo_usuario',
+                    phone: '@(Model.telefono_usuario ?? "")',
+                    passwordActual: '',
+                    nuevaPassword: '',
+                    cargando: false,
+                    cargandoPassword: false,
+                    editandoDatos: false,
+                    emailOriginal: '@Model.correo_usuario',
+                    phoneOriginal: '@(Model.telefono_usuario ?? "")'
+                }
+            },
+            methods: {
+                activarEdicionDatos() {
+                    this.editandoDatos = true;
+                    this.email = this.emailOriginal;
+                    this.phone = this.phoneOriginal;
+                },
 
-    .card {
-        transition: all 0.3s ease;
-    }
+                cancelarEdicionDatos() {
+                    this.email = this.emailOriginal;
+                    this.phone = this.phoneOriginal;
+                    this.editandoDatos = false;
+                },
 
-    .form-control:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
-    }
+                async actualizarDatos() {
+                    if (!this.email) {
+                        Swal.fire('Atención', 'El correo es obligatorio', 'warning');
+                        return;
+                    }
 
-    .rounded-4 {
-        border-radius: 1rem !important;
-    }
-</style>
+                    // Validación básica de formato de correo en cliente
+                    const regexCorreo = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                    if (!regexCorreo.test(this.email)) {
+                        Swal.fire('Atención', 'El correo no tiene un formato válido.', 'warning');
+                        return;
+                    }
+
+                    this.cargando = true;
+
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                    try {
+                        const response = await fetch('@Url.Action("ActualizarDatos", "Account")', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: new URLSearchParams({
+                                correo: this.email,
+                                telefono: this.phone,
+                                __RequestVerificationToken: token
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            Swal.fire('Éxito', data.message, 'success');
+                            this.emailOriginal = this.email;
+                            this.phoneOriginal = this.phone;
+                            this.editandoDatos = false;
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'No se pudo procesar la solicitud', 'error');
+                    } finally {
+                        this.cargando = false;
+                    }
+                },
+
+                async cambiarPassword() {
+                    if (!this.passwordActual || !this.nuevaPassword) {
+                        Swal.fire('Atención', 'Debes ingresar la contraseña actual y la nueva.', 'warning');
+                        return;
+                    }
+
+                    if (this.nuevaPassword.length < 6) {
+                        Swal.fire('Atención', 'La nueva contraseña debe tener al menos 6 caracteres.', 'warning');
+                        return;
+                    }
+
+                    this.cargandoPassword = true;
+
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                    try {
+                        const response = await fetch('@Url.Action("CambiarPassword", "Account")', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: new URLSearchParams({
+                                passwordActual: this.passwordActual,
+                                nuevaPassword: this.nuevaPassword,
+                                __RequestVerificationToken: token
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            Swal.fire('Éxito', data.message, 'success');
+                            this.passwordActual = '';
+                            this.nuevaPassword = '';
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'No se pudo procesar la solicitud', 'error');
+                    } finally {
+                        this.cargandoPassword = false;
+                    }
+                }
+            }
+        }).mount('#perfilApp');
+    </script>
+}
