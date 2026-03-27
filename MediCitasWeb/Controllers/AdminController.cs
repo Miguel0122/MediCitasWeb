@@ -1,15 +1,18 @@
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using MediCitasWeb.Filters;
 using MediCitasWeb.Models;
 using MediCitasWeb.Services.Security;
-using MediCitasWeb.Filters;
+using Microsoft.Win32;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Drawing;
 using System.Linq;
 using System.Web.Mvc;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
+using System.Xml.Linq;
 using SysColor = System.Drawing.Color;
 
 namespace MediCitasWeb.Controllers
@@ -53,6 +56,15 @@ namespace MediCitasWeb.Controllers
         #region Gestión de Doctores
         // ════════════════════════════════════════════════════════════════════
 
+        //Valida que documento y correo sean únicos
+
+        //Hashea la contraseña
+
+        //Crea el usuario con rol "Doctor"
+
+        //Crea el registro en tabla Doctor con especialidad
+
+        //Redirige al panel
         /// <summary>Crea un doctor desde formulario tradicional (no AJAX).</summary>
         [HttpPost]
         [ValidateAntiForgeryToken]

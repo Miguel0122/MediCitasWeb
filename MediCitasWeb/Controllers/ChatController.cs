@@ -64,8 +64,9 @@ namespace MediCitasWeb.Controllers
         }
 
         // ─── ENVIAR MENSAJE (llama a Groq + guarda en BD) ─────────────────────
+
         [HttpPost]
-        public async Task<JsonResult> EnviarMensaje(int sesionId, string mensaje)
+        public async Task<JsonResult> EnviarMensaje(int sesionId, string mensaje, string pagina = "")
         {
             try
             {
@@ -77,7 +78,7 @@ namespace MediCitasWeb.Controllers
 
                 int usuarioId = ObtenerUsuarioId();
 
-                // 1. Historial previo para dar contexto a Groq
+                // 1. Obtener historial previo para contexto
                 var historial = db.ChatMensajes
                     .Where(m => m.id_sesion == sesionId)
                     .OrderByDescending(m => m.fecha_envio)
@@ -99,18 +100,23 @@ namespace MediCitasWeb.Controllers
                 // 3. Construir contexto del usuario
                 string contexto = ConstruirContextoUsuario(usuarioId);
 
-                // 4. Llamar a Groq (gratis)
-                string respuesta = await LlamarGroq(contexto, historial
-                    .Select(h => new {
+                // 4. Construir historial para Groq
+                var historialGroq = historial
+                    .Select(h => new
+                    {
                         role = h.remitente == "user" ? "user" : "assistant",
                         content = h.contenido
-                    }).ToList<dynamic>(), mensaje);
+                    })
+                    .ToList<dynamic>();
 
-                // 5. Fallback si Groq falla
+                // 5. Llamar a Groq (gratis) - CORREGIDO
+                string respuesta = await LlamarGroq(contexto, historialGroq, mensaje, pagina);
+
+                // 6. Fallback si Groq falla
                 if (string.IsNullOrEmpty(respuesta))
                     respuesta = GenerarRespuestaLocal(mensaje);
 
-                // 6. Guardar respuesta del bot
+                // 7. Guardar respuesta del bot
                 db.ChatMensajes.Add(new ChatMensaje
                 {
                     id_sesion = sesionId,
@@ -134,7 +140,8 @@ namespace MediCitasWeb.Controllers
         }
 
         // ─── LLAMADA A GROQ (GRATIS) ───────────────────────────────────────────
-        private async Task<string> LlamarGroq(string contexto, List<dynamic> historial, string mensajeActual)
+
+        private async Task<string> LlamarGroq(string contexto, List<dynamic> historial, string mensajeActual, string pagina = "")
         {
             try
             {
@@ -144,37 +151,73 @@ namespace MediCitasWeb.Controllers
                         new AuthenticationHeaderValue("Bearer", GroqApiKey);
                     client.Timeout = TimeSpan.FromSeconds(20);
 
-                    string systemPrompt = 
-                        $@"Eres MediBot 🤖, el asistente virtual de MediCitas — la plataforma de citas médicas más amigable de Colombia.
- 
-                        DATOS DEL USUARIO EN SESIÓN:
-                        {contexto}
- 
-                        TU PERSONALIDAD:
-                        - Eres cálido, cercano y expresivo — como un amigo que además sabe de medicina
-                        - Usas emojis con naturalidad para dar vida a tus respuestas (no exageres, 1-3 por mensaje está bien)
-                        - Llamas al usuario por su nombre cuando es natural hacerlo
-                        - Si el usuario escribe con errores tipográficos o palabras incompletas, lo entiendes perfectamente y respondes sin mencionar el error
-                        - Cuando das buenas noticias usas emojis alegres, cuando hay algo importante usas los apropiados
-                        - Eres proactivo: si el usuario pregunta por citas, le dices exactamente las que tiene sin que tenga que pedirlo
- 
-                        EJEMPLOS DE CÓMO RESPONDES:
-                        - Saludo: '¡Hola [nombre]! 👋 Soy MediBot, tu asistente de MediCitas. ¿En qué te puedo ayudar hoy? 😊'
-                        - Citas: '📅 Tienes una cita el [fecha] a las [hora] con el Dr. [nombre] en [especialidad]. ¿Necesitas algo más?'
-                        - Sin citas: 'Por ahora no tienes citas programadas 📋. ¿Quieres que te explique cómo agendar una? Es muy fácil 😉'
-                        - Error del usuario: responde directamente sin decir 'creo que quisiste decir...'
-                        - Cancelar: '❌ Para cancelar tu cita ve a Mis Citas y haz clic en Cancelar. Recuerda que puedes hacerlo hasta 2 horas antes ⏰'
-                        - Despedida: '¡Hasta luego [nombre]! 👋 Que tengas un excelente día. Aquí estaré si me necesitas 💙'
- 
-                        REGLAS:
-                        - Detecta el idioma del usuario y responde SIEMPRE en ese mismo idioma. Si escribe en español, responde en español. 
-                            Si escribe en inglés, responde en inglés. Si escribe en cualquier otro idioma, respóndele en ese idioma. Adáptate al usuario, no al revés
-                        - Máximo 4-5 líneas por respuesta (salvo que el usuario necesite más detalle)
-                        - Usa los datos del usuario para personalizar CADA respuesta
-                        - Horarios de atención: Lunes-Viernes 6AM-6PM | Sábados 7AM-2PM | Domingos cerrado
-                        - Si preguntan algo fuera del sistema médico, redirige amablemente con humor
-                        - NUNCA seas robótico ni repitas la misma frase de bienvenida";
+                    string contextoEnriquecido = contexto;
 
+                    if (!string.IsNullOrWhiteSpace(pagina))
+                        contextoEnriquecido += $"\nPágina actual del usuario: {pagina}. Ofrece ayuda contextual si es relevante.";
+
+                    string systemPrompt =
+                        $@"Eres MediBot 🤖, el asistente virtual inteligente de MediCitas — la plataforma de gestión de citas médicas más amigable de Colombia.
+
+                ═══════════════════════════════════
+                IDENTIDAD DEL PROYECTO
+                ═══════════════════════════════════
+                MediCitas es un sistema de salud digital desarrollado en Cartagena de Indias, Colombia,
+                con el apoyo del Centro para la Industria Petroquímica del SENA Regional Bolívar.
+
+                Equipo principal:
+                - Miguel Ángel Mercado Herrera — Propietario de la empresa MediCitas, fundador e ideólogo del proyecto.
+                    Es quien tuvo la visión original del sistema y lidera la empresa.
+                - Samuel Javier Avilez Verbel — Desarrollador principal del proyecto. Arquitecto del sistema,
+                    responsable de toda la implementación técnica, la IA integrada y el diseño de la plataforma.
+                - Rafael Eduardo Pino Narváez — Parte del equipo de desarrollo principal junto a Samuel.
+
+                Si alguien pregunta quién es Samuel, di que es Samuel Javier Avilez Verbel, el desarrollador principal y creador técnico de MediCitas.
+                Si preguntan por Miguel, di que es Miguel Ángel Mercado Herrera, el fundador, propietario y mente detrás de la idea de MediCitas.
+                Si preguntan por Rafael, di que es Rafael Eduardo Pino Narváez, parte del equipo de desarrollo principal del proyecto.
+                Si preguntan quién hizo MediCitas, menciona al equipo completo con sus roles.
+                Si preguntan por el SENA, menciona el apoyo del Centro para la Industria Petroquímica del SENA Regional Bolívar.
+
+                ═══════════════════════════════════
+                DATOS DEL USUARIO EN SESIÓN
+                ═══════════════════════════════════
+
+                {contextoEnriquecido}
+
+                ═══════════════════════════════════
+                TU PERSONALIDAD
+                ═══════════════════════════════════
+                - Eres cálido, cercano y expresivo — como un amigo que además sabe de medicina
+                - Usas emojis con naturalidad (1-3 por mensaje, nunca en exceso)
+                - Llamas al usuario por su nombre cuando es natural
+                - Si el usuario escribe con errores tipográficos, lo entiendes perfectamente y respondes sin mencionarlo
+                - Eres proactivo: si el usuario pregunta por citas, le dices exactamente cuáles tiene sin que tenga que pedirlo
+                - Si el usuario está en una página específica del sistema, ofreces ayuda contextual para esa pantalla
+
+                ═══════════════════════════════════
+                EJEMPLOS DE RESPUESTAS
+                ═══════════════════════════════════
+                Saludo:     '¡Hola [nombre]! 👋 Soy MediBot, tu asistente de MediCitas. ¿En qué te puedo ayudar hoy? 😊'
+                Citas:      '📅 Tienes una cita el [fecha] a las [hora] con el Dr. [nombre] en [especialidad]. ¿Necesitas algo más?'
+                Sin citas:  'Por ahora no tienes citas programadas 📋. ¿Quieres que te explique cómo agendar una? Es muy fácil 😉'
+                Cancelar:   '❌ Para cancelar ve a Mis Citas y haz clic en Cancelar. Puedes hacerlo hasta 2 horas antes ⏰'
+                Despedida:  '¡Hasta luego [nombre]! 👋 Que tengas un excelente día. Aquí estaré si me necesitas 💙'
+                Contexto:   Si está en AgendarCita → '¿Necesitas ayuda para elegir especialidad o doctor? 🩺'
+                            Si está en MisCitas    → '¿Quieres cancelar alguna cita o tienes dudas sobre alguna? 📋'
+                            Si está en el Panel    → '¿En qué puedo ayudarte hoy con tu gestión? 🏥'
+
+                ═══════════════════════════════════
+                REGLAS
+                ═══════════════════════════════════
+                - Detecta el idioma del usuario y responde SIEMPRE en ese mismo idioma. Adáptate al usuario, no al revés.
+                - Máximo 4-5 líneas por respuesta (más detalle solo si el usuario lo necesita)
+                - Usa los datos del usuario para personalizar CADA respuesta
+                - Horarios de atención: Lunes-Viernes 6AM-6PM | Sábados 7AM-2PM | Domingos cerrado
+                - Si preguntan algo fuera del sistema médico, redirige amablemente con humor
+                - NUNCA seas robótico ni repitas la misma frase de bienvenida
+                - NUNCA inventes datos del usuario — usa solo los que tienes en contexto";
+
+                    // Construir mensajes con historial
                     var messages = new List<object>
             {
                 new { role = "system", content = systemPrompt }
@@ -194,7 +237,7 @@ namespace MediCitasWeb.Controllers
                     {
                         model = "llama-3.3-70b-versatile",
                         messages = messages,
-                        temperature = 0.8,   // un poco más alto = más personalidad
+                        temperature = 0.8,
                         max_tokens = 500
                     };
 
@@ -213,10 +256,16 @@ namespace MediCitasWeb.Controllers
                     }
 
                     var json = JObject.Parse(body);
-                    return json["choices"]?[0]?["message"]?["content"]?.ToString();
+                    string texto = json["choices"]?[0]?["message"]?["content"]?.ToString();
+                    System.Diagnostics.Debug.WriteLine($"Groq OK: {texto?.Substring(0, Math.Min(80, texto?.Length ?? 0))}");
+                    return texto;
                 }
             }
-            catch (TaskCanceledException) { return null; }
+            catch (TaskCanceledException)
+            {
+                System.Diagnostics.Debug.WriteLine("Groq timeout");
+                return null;
+            }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Groq ex: {ex.Message}");
@@ -281,9 +330,47 @@ namespace MediCitasWeb.Controllers
                     if (doctor != null)
                     {
                         var hoy = DateTime.Today;
-                        int citasHoy = db.Citas.Count(c => c.id_doctor == doctor.id_doctor && c.fecha_cita == hoy && c.estado == "Activa");
-                        int citasSemana = db.Citas.Count(c => c.id_doctor == doctor.id_doctor && c.fecha_cita >= hoy && c.fecha_cita <= hoy.AddDays(7) && c.estado == "Activa");
-                        sb.AppendLine($"Especialidad: {doctor.especialidad}. Citas hoy: {citasHoy} | Proximos 7 dias: {citasSemana}.");
+
+                        // Obtener todas las citas del doctor (no solo activas)
+                        var todasCitas = db.Citas
+                            .Where(c => c.id_doctor == doctor.id_doctor)
+                            .ToList();
+
+                        int citasHoy = todasCitas.Count(c => c.fecha_cita == hoy);
+                        int citasActivas = todasCitas.Count(c => c.estado == "Activa" && c.fecha_cita >= hoy);
+                        int citasSemana = todasCitas.Count(c => c.fecha_cita >= hoy && c.fecha_cita <= hoy.AddDays(7));
+
+                        // Obtener citas de hoy con detalles
+                        var citasHoyDetalle = todasCitas
+                            .Where(c => c.fecha_cita == hoy)
+                            .OrderBy(c => c.hora_cita)
+                            .Select(c => new
+                            {
+                                c.hora_cita,
+                                c.especialidad,
+                                c.estado,
+                                Paciente = db.Usuario
+                                    .Where(u => db.Paciente.Where(p => p.id_paciente == c.id_paciente)
+                                        .Select(p => p.id_usuario).Contains(u.id_usuario))
+                                    .Select(u => u.nombres_usuario + " " + u.apellidos_usuario)
+                                    .FirstOrDefault() ?? "N/A"
+                            }).ToList();
+
+                        sb.AppendLine($"Especialidad: {doctor.especialidad}.");
+                        sb.AppendLine($"Citas hoy: {citasHoy} | Próximos 7 días: {citasSemana} | Activas: {citasActivas}.");
+
+                        if (citasHoyDetalle.Any())
+                        {
+                            sb.AppendLine("Citas de hoy:");
+                            foreach (var c in citasHoyDetalle)
+                            {
+                                sb.AppendLine($"  - {c.hora_cita} - {c.Paciente} ({c.especialidad}) - Estado: {c.estado}");
+                            }
+                        }
+                        else
+                        {
+                            sb.AppendLine("No tienes citas programadas para hoy.");
+                        }
                     }
                 }
                 else if (rol == "Administrador")

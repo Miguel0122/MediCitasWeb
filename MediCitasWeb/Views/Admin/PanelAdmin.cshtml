@@ -1,4 +1,4 @@
-﻿@model List<MediCitasWeb.Models.Usuario>
+﻿﻿@model List<MediCitasWeb.Models.Usuario>
 @using Newtonsoft.Json
 @{
     ViewBag.Title = "Admin Command Center";
@@ -6,7 +6,7 @@
 }
 
 <div id="adminApp" class="container py-4">
-    <!-- Header con gradiente y efectos -->
+    <!-- Header -->
     <div class="row align-items-center mb-5">
         <div class="col">
             <div class="d-flex align-items-center gap-2 mb-2">
@@ -22,10 +22,10 @@
         </div>
         <div class="col-auto d-flex gap-2">
             <a href="@Url.Action("Reportes", "Admin")"
-               class="btn btn-outline-dark rounded-pill shadow-sm px-4 hover-scale">
+               class="btn btn-outline-dark rounded-pill shadow-sm px-4">
                 <i class="bi bi-file-earmark-bar-graph me-2"></i>Centro de Reportes
             </a>
-            <button class="btn btn-primary rounded-pill shadow px-4 hover-scale"
+            <button class="btn btn-primary rounded-pill shadow px-4"
                     @@click="abrirModal"
                     :disabled="loading">
                 <i class="bi bi-person-plus-fill me-2"></i>Registrar Doctor
@@ -33,71 +33,87 @@
         </div>
     </div>
 
-    <!-- Stats Cards con efecto glassmorphism -->
+    <!-- ALERTAS IA -->
+    <div class="row mb-4" v-if="alertasIA.length > 0">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius:12px">
+                <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-robot fs-4 text-primary"></i>
+                        <h6 class="fw-bold mb-0">Inteligencia del sistema</h6>
+                        <span class="badge bg-primary-subtle text-primary px-3 rounded-pill ms-1">
+                            IA en tiempo real
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body px-4 pb-4 pt-3">
+                    <div class="row g-2">
+                        <div class="col-md-6" v-for="alerta in alertasIA" :key="alerta.titulo">
+                            <div class="alert mb-0 d-flex align-items-start gap-3 border-0"
+                                 :class="'alert-' + alerta.tipo"
+                                 style="border-radius:10px">
+                                <i :class="['bi', alerta.icono, 'fs-5 mt-1']"></i>
+                                <div>
+                                    <div class="fw-bold small">{{ alerta.titulo }}</div>
+                                    <div class="small opacity-75">{{ alerta.mensaje }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
     <div class="row g-4 mb-5">
-        <div class="col-md-4" v-for="(stat, index) in stats" :key="stat.titulo"
-             v-bind:style="{ animationDelay: (index * 0.1) + 's' }"
-             class="animate__animated animate__fadeInUp">
+        <div class="col-md-4" v-for="(stat, index) in stats" :key="stat.titulo">
             <div class="card border-0 shadow-sm h-100 p-2 stat-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-3">
-                        <div :class="'rounded-circle p-3 ' + stat.bgClass + ' icon-wrapper'">
+                        <div :class="'rounded-circle p-3 ' + stat.bgClass">
                             <i :class="'bi ' + stat.icono + ' text-white fs-4'"></i>
                         </div>
-                        <span class="text-success small fw-bold mt-1 live-badge">
+                        <span class="text-success small fw-bold mt-1">
                             <span class="live-dot"></span>En tiempo real
                         </span>
                     </div>
                     <h6 class="text-muted text-uppercase small mb-1">{{ stat.titulo }}</h6>
-                    <h2 class="fw-bold mb-0 counter">{{ stat.valor }}</h2>
+                    <h2 class="fw-bold mb-0">{{ stat.valor }}</h2>
                     <small class="text-muted">{{ stat.trend }}</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Sección principal con gráfico y tabla -->
+    <!-- Gráfico y Tabla -->
     <div class="row g-4">
-        <!-- Gráfico de citas -->
         <div class="col-lg-5">
             <div class="card border-0 shadow-sm p-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-bold mb-0">Análisis de Operaciones</h5>
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-light border-0 rounded-circle" type="button"
-                                data-bs-toggle="dropdown">
-                            <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#" @@click.prevent="exportarGrafico">Exportar gráfico</a></li>
-                            <li><a class="dropdown-item" href="#" @@click.prevent="verDetalleGrafico">Ver detalle</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div style="height: 300px;" class="chart-container">
+                <h5 class="fw-bold mb-4">Análisis de Operaciones</h5>
+                <div style="height: 300px;">
                     <canvas id="graficaCitasPro"></canvas>
                 </div>
                 <div class="row mt-4 g-2">
-                    <div class="col-4">
-                        <div class="text-center">
-                            <span class="badge bg-primary-subtle text-primary px-3 py-2 w-100">Activas: @ViewBag.CitasPendientes</span>
-                        </div>
+                    <div class="col-4 text-center">
+                        <span class="badge bg-primary-subtle text-primary px-3 py-2 w-100">
+                            Activas: @ViewBag.CitasPendientes
+                        </span>
                     </div>
-                    <div class="col-4">
-                        <div class="text-center">
-                            <span class="badge bg-success-subtle text-success px-3 py-2 w-100">Completadas: @ViewBag.CitasCompletadas</span>
-                        </div>
+                    <div class="col-4 text-center">
+                        <span class="badge bg-success-subtle text-success px-3 py-2 w-100">
+                            Completadas: @ViewBag.CitasCompletadas
+                        </span>
                     </div>
-                    <div class="col-4">
-                        <div class="text-center">
-                            <span class="badge bg-danger-subtle text-danger px-3 py-2 w-100">Canceladas: @ViewBag.CitasCanceladas</span>
-                        </div>
+                    <div class="col-4 text-center">
+                        <span class="badge bg-danger-subtle text-danger px-3 py-2 w-100">
+                            Canceladas: @ViewBag.CitasCanceladas
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tabla de usuarios mejorada -->
         <div class="col-lg-7">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-0 py-4 px-4">
@@ -107,27 +123,24 @@
                             Directorio de Usuarios
                             <span class="badge bg-secondary ms-2">{{ usuariosFiltrados.length }}</span>
                         </h5>
-                        <div class="d-flex gap-2">
-                            <div class="input-group" style="width: 250px;">
-                                <span class="input-group-text bg-light border-0">
-                                    <i class="bi bi-search"></i>
-                                </span>
-                                <input type="text"
-                                       v-model="filtro"
-                                       class="form-control bg-light border-0"
-                                       placeholder="Buscar por nombre..."
-                                       @@keyup.esc="filtro = ''">
-                                <button v-if="filtro"
-                                        class="btn btn-light border-0"
-                                        @@click="filtro = ''"
-                                        type="button">
-                                    <i class="bi bi-x"></i>
-                                </button>
-                            </div>
+                        <div class="input-group" style="width: 250px;">
+                            <span class="input-group-text bg-light border-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text"
+                                   v-model="filtro"
+                                   class="form-control bg-light border-0"
+                                   placeholder="Buscar por nombre..."
+                                   @@keyup.esc="filtro = ''">
+                            <button v-if="filtro"
+                                    class="btn btn-light border-0"
+                                    @@click="filtro = ''"
+                                    type="button">
+                                <i class="bi bi-x"></i>
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Filtros por rol -->
                     <div class="d-flex gap-2 mt-3 flex-wrap">
                         <button class="btn btn-sm rounded-pill px-4 filter-btn"
                                 :class="filtroRol === 'Todos' ? 'btn-dark' : 'btn-outline-dark'"
@@ -148,7 +161,8 @@
                 </div>
 
                 <!-- Paginación -->
-                <div v-if="totalPaginas > 1" class="d-flex justify-content-between align-items-center px-4 pb-3">
+                <div v-if="totalPaginas > 1"
+                     class="d-flex justify-content-between align-items-center px-4 pb-3">
                     <small class="text-muted">
                         Mostrando {{ (paginaActual-1)*porPagina+1 }}-{{ Math.min(paginaActual*porPagina, usuariosFiltrados.length) }}
                         de {{ usuariosFiltrados.length }} usuarios
@@ -171,6 +185,7 @@
                         </ul>
                     </nav>
                 </div>
+
                 <div class="table-responsive px-4 pb-4">
                     <table class="table table-hover align-middle">
                         <thead class="text-muted small text-uppercase bg-light">
@@ -182,15 +197,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Estado vacío -->
                             <tr v-if="usuariosFiltrados.length === 0">
                                 <td colspan="4" class="text-center py-5">
                                     <i class="bi bi-inbox display-4 text-muted"></i>
                                     <p class="text-muted mt-3">No se encontraron usuarios</p>
                                 </td>
                             </tr>
-
-                            <!-- Lista de usuarios -->
                             <tr v-for="u in usuariosPaginados" :key="u.documento" class="user-row">
                                 <td class="fw-bold ps-3">
                                     <span class="badge bg-light text-dark">#{{ u.documento }}</span>
@@ -258,7 +270,7 @@
         </div>
     </div>
 
-    <!-- MODAL PARA VER DETALLE DE USUARIO -->
+    <!-- MODAL DETALLE USUARIO -->
     <div class="modal fade" id="modalDetalleUsuario" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
@@ -271,7 +283,6 @@
                 </div>
                 <div class="modal-body p-4">
                     <div v-if="usuarioSeleccionado" class="row g-4">
-                        <!-- Información básica -->
                         <div class="col-md-6">
                             <div class="bg-light p-3 rounded">
                                 <h6 class="fw-bold mb-3">Información Personal</h6>
@@ -283,24 +294,13 @@
                                     <strong>Rol:</strong>
                                     <span :class="getBadgeClass(usuarioSeleccionado.rol)">{{ usuarioSeleccionado.rol }}</span>
                                 </p>
-                                <p class="mb-1">
-                                    <strong>Estado:</strong>
-                                    <span :class="usuarioSeleccionado.activo ? 'btn-outline-danger' : 'btn-outline-success'"
-                                          @@click="cambiarEstadoUsuario(u)">
-                                        <i :class="usuarioSeleccionado.activo ? 'bi-x-circle' : 'bi-check-circle'"></i>
-                                        {{ usuarioSeleccionado.activo ? 'Desactivar' : 'Activar' }}
-                                    </span>
-                                </p>
                                 <p class="mb-1"><strong>Especialidad:</strong> {{ usuarioSeleccionado.especialidad || 'N/A' }}</p>
                             </div>
                         </div>
-
-                        <!-- Estadísticas -->
                         <div class="col-md-6">
                             <div class="bg-light p-3 rounded">
                                 <h6 class="fw-bold mb-3">Estadísticas</h6>
                                 <p class="mb-1"><strong>Fecha Registro:</strong> {{ usuarioSeleccionado.fechaRegistro }}</p>
-                                <p class="mb-1"><strong>Total Citas:</strong> {{ usuarioSeleccionado.totalCitas || 0 }}</p>
                                 <div class="mt-3">
                                     <button class="btn btn-sm btn-outline-primary me-2" @@click="editarUsuario(usuarioSeleccionado)">
                                         <i class="bi bi-pencil"></i> Editar
@@ -314,46 +314,13 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Historial de citas -->
-                        <div class="col-12" v-if="usuarioSeleccionado.historialCitas && usuarioSeleccionado.historialCitas.length">
-                            <div class="bg-light p-3 rounded">
-                                <h6 class="fw-bold mb-3">Últimas Citas</h6>
-                                <div class="table-responsive">
-                                    <table class="table table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>Fecha</th>
-                                                <th>Hora</th>
-                                                <th>Especialidad</th>
-                                                <th>Estado</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="cita in usuarioSeleccionado.historialCitas" :key="cita.fecha + cita.hora">
-                                                <td>{{ cita.fecha }}</td>
-                                                <td>{{ cita.hora }}</td>
-                                                <td>{{ cita.especialidad }}</td>
-                                                <td>
-                                                    <span class="badge" :class="{
-                                                        'bg-success': cita.estado === 'Completada',
-                                                        'bg-primary': cita.estado === 'Activa',
-                                                        'bg-danger': cita.estado === 'Cancelada'
-                                                    }">{{ cita.estado }}</span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL PARA EDITAR USUARIO -->
+    <!-- MODAL EDITAR USUARIO -->
     <div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
@@ -393,11 +360,7 @@
                                 </select>
                             </div>
                         </div>
-
-                        <div v-if="mensajeEditar" class="alert alert-danger mt-3">
-                            {{ mensajeEditar }}
-                        </div>
-
+                        <div v-if="mensajeEditar" class="alert alert-danger mt-3">{{ mensajeEditar }}</div>
                         <div class="mt-4 d-flex gap-2">
                             <button type="submit" class="btn btn-primary" :disabled="loadingEditar">
                                 <span v-if="loadingEditar" class="spinner-border spinner-border-sm me-2"></span>
@@ -411,7 +374,7 @@
         </div>
     </div>
 
-    <!-- Modal para registrar doctor (COMPLETAMENTE FUNCIONAL) -->
+    <!-- MODAL REGISTRAR DOCTOR -->
     <div class="modal fade" id="modalDoctor" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
@@ -420,16 +383,10 @@
                         <i class="bi bi-person-badge me-2"></i>
                         Registrar Nuevo Especialista
                     </h5>
-                    <button type="button" class="btn-close btn-close-white"
-                            data-bs-dismiss="modal"
-                            :disabled="loading"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" :disabled="loading"></button>
                 </div>
-
                 <div class="modal-body p-4">
-                    <!-- Toast de éxito -->
-                    <div v-if="showSuccessToast"
-                         class="alert alert-success alert-dismissible fade show animate__animated animate__fadeInDown"
-                         role="alert">
+                    <div v-if="showSuccessToast" class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="bi bi-check-circle-fill me-2"></i>
                         <strong>¡Perfecto!</strong> Doctor registrado exitosamente
                         <button type="button" class="btn-close" @@click="showSuccessToast = false"></button>
@@ -438,90 +395,45 @@
                     <form @@submit.prevent="guardarDoctor">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-uppercase">
-                                    <i class="bi bi-person me-1"></i>Nombres
-                                </label>
-                                <input type="text"
-                                       class="form-control form-control-lg bg-light border-0"
-                                       v-model="form.nombres"
-                                       :class="{ 'is-invalid': errors.nombres }"
-                                       required
-                                       placeholder="Ej: Carlos">
-                                <div v-if="errors.nombres" class="invalid-feedback">
-                                    {{ errors.nombres }}
-                                </div>
+                                <label class="form-label fw-bold small text-uppercase">Nombres</label>
+                                <input type="text" class="form-control form-control-lg bg-light border-0"
+                                       v-model="form.nombres" :class="{ 'is-invalid': errors.nombres }"
+                                       required placeholder="Ej: Carlos">
+                                <div v-if="errors.nombres" class="invalid-feedback">{{ errors.nombres }}</div>
                             </div>
-
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-uppercase">
-                                    <i class="bi bi-person me-1"></i>Apellidos
-                                </label>
-                                <input type="text"
-                                       class="form-control form-control-lg bg-light border-0"
-                                       v-model="form.apellidos"
-                                       :class="{ 'is-invalid': errors.apellidos }"
-                                       required
-                                       placeholder="Ej: Rodríguez">
-                                <div v-if="errors.apellidos" class="invalid-feedback">
-                                    {{ errors.apellidos }}
-                                </div>
+                                <label class="form-label fw-bold small text-uppercase">Apellidos</label>
+                                <input type="text" class="form-control form-control-lg bg-light border-0"
+                                       v-model="form.apellidos" :class="{ 'is-invalid': errors.apellidos }"
+                                       required placeholder="Ej: Rodríguez">
+                                <div v-if="errors.apellidos" class="invalid-feedback">{{ errors.apellidos }}</div>
                             </div>
-
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-uppercase">
-                                    <i class="bi bi-card-text me-1"></i>Documento
-                                </label>
-                                <input type="text"
-                                       class="form-control form-control-lg bg-light border-0"
-                                       v-model="form.numero_documento"
-                                       @@input="soloNumeros"
+                                <label class="form-label fw-bold small text-uppercase">Documento</label>
+                                <input type="text" class="form-control form-control-lg bg-light border-0"
+                                       v-model="form.numero_documento" @@input="soloNumeros"
                                        :class="{ 'is-invalid': errors.numero_documento }"
-                                       required
-                                       placeholder="Ej: 12345678">
-                                <div v-if="errors.numero_documento" class="invalid-feedback">
-                                    {{ errors.numero_documento }}
-                                </div>
+                                       required placeholder="Ej: 12345678">
+                                <div v-if="errors.numero_documento" class="invalid-feedback">{{ errors.numero_documento }}</div>
                             </div>
-
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-uppercase">
-                                    <i class="bi bi-envelope me-1"></i>Correo
-                                </label>
-                                <input type="email"
-                                       class="form-control form-control-lg bg-light border-0"
-                                       v-model="form.correo"
-                                       :class="{ 'is-invalid': errors.correo }"
-                                       required
-                                       placeholder="ejemplo@medicinas.com">
-                                <div v-if="errors.correo" class="invalid-feedback">
-                                    {{ errors.correo }}
-                                </div>
+                                <label class="form-label fw-bold small text-uppercase">Correo</label>
+                                <input type="email" class="form-control form-control-lg bg-light border-0"
+                                       v-model="form.correo" :class="{ 'is-invalid': errors.correo }"
+                                       required placeholder="ejemplo@medicinas.com">
+                                <div v-if="errors.correo" class="invalid-feedback">{{ errors.correo }}</div>
                             </div>
-
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-uppercase">
-                                    <i class="bi bi-telephone me-1"></i>Teléfono (opcional)
-                                </label>
-                                <input type="tel"
-                                       class="form-control form-control-lg bg-light border-0"
-                                       v-model="form.telefono"
-                                       @@input="soloNumerosTelefono"
-                                       :class="{ 'is-invalid': errors.telefono }"
+                                <label class="form-label fw-bold small text-uppercase">Teléfono (opcional)</label>
+                                <input type="tel" class="form-control form-control-lg bg-light border-0"
+                                       v-model="form.telefono" @@input="soloNumerosTelefono"
                                        placeholder="Ej: 3001234567">
-                                <div v-if="errors.telefono" class="invalid-feedback">
-                                    {{ errors.telefono }}
-                                </div>
                                 <small class="text-muted">Mínimo 7 dígitos</small>
                             </div>
-
                             <div class="col-md-12">
-                                <label class="form-label fw-bold small text-uppercase">
-                                    <i class="bi bi-briefcase me-1"></i>Especialidad
-                                </label>
+                                <label class="form-label fw-bold small text-uppercase">Especialidad</label>
                                 <select class="form-select form-select-lg bg-light border-0"
-                                        v-model="form.especialidad"
-                                        :class="{ 'is-invalid': errors.especialidad }"
-                                        required>
+                                        v-model="form.especialidad" :class="{ 'is-invalid': errors.especialidad }" required>
                                     <option value="" disabled>Seleccione especialidad...</option>
                                     <option value="Medicina General">🏥 Medicina General</option>
                                     <option value="Pediatría">👶 Pediatría</option>
@@ -530,18 +442,11 @@
                                     <option value="Dermatología">🧴 Dermatología</option>
                                     <option value="Ginecología">👩 Ginecología</option>
                                 </select>
-                                <div v-if="errors.especialidad" class="invalid-feedback">
-                                    {{ errors.especialidad }}
-                                </div>
+                                <div v-if="errors.especialidad" class="invalid-feedback">{{ errors.especialidad }}</div>
                             </div>
-
                             <div class="col-12 mt-3">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox"
-                                           v-model="form.activo"
-                                           id="activoSwitch"
-                                           true-value="true"
-                                           false-value="false">
+                                    <input class="form-check-input" type="checkbox" v-model="form.activo" id="activoSwitch">
                                     <label class="form-check-label fw-bold" for="activoSwitch">
                                         <i class="bi bi-check-circle-fill text-success me-1"></i>
                                         Usuario activo (puede iniciar sesión)
@@ -549,39 +454,23 @@
                                 </div>
                                 <small class="text-muted d-block mt-1">Los usuarios inactivos no pueden acceder al sistema</small>
                             </div>
-
-                            <!-- Password automático (info) -->
                             <div class="col-md-12">
                                 <div class="alert alert-info bg-light border-0 small">
                                     <i class="bi bi-info-circle me-2"></i>
                                     La contraseña por defecto será: <strong>MediCitas2026</strong>
                                 </div>
                             </div>
-
-                            <!-- Mensaje de error general -->
                             <div v-if="mensaje" class="col-12">
-                                <div class="alert alert-danger animate__animated animate__shakeX">
-                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                    {{ mensaje }}
-                                </div>
+                                <div class="alert alert-danger">{{ mensaje }}</div>
                             </div>
                         </div>
-
                         <div class="mt-4 d-grid gap-2">
-                            <button type="submit"
-                                    class="btn btn-primary py-3 fw-bold shadow-lg"
-                                    :disabled="loading">
+                            <button type="submit" class="btn btn-primary py-3 fw-bold shadow-lg" :disabled="loading">
                                 <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
                                 <i v-else class="bi bi-check2-circle me-2"></i>
                                 {{ loading ? 'Registrando Especialista...' : 'Confirmar Registro' }}
                             </button>
-
-                            <button type="button"
-                                    class="btn btn-light py-2"
-                                    data-bs-dismiss="modal"
-                                    :disabled="loading">
-                                Cancelar
-                            </button>
+                            <button type="button" class="btn btn-light py-2" data-bs-dismiss="modal" :disabled="loading">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -589,7 +478,6 @@
         </div>
     </div>
 
-    <!-- Loading overlay para operaciones -->
     <div v-if="loading" class="loading-overlay">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Cargando...</span>
@@ -602,7 +490,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
-        /* Estilos personalizados */
         .hover-scale {
             transition: transform 0.3s ease;
         }
@@ -613,7 +500,7 @@
 
         .stat-card {
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255,255,255,0.9);
             backdrop-filter: blur(10px);
         }
 
@@ -642,15 +529,15 @@
 
         @@keyframes pulseLive {
             0% {
-                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+                box-shadow: 0 0 0 0 rgba(40,167,69,0.7);
             }
 
             70% {
-                box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+                box-shadow: 0 0 0 10px rgba(40,167,69,0);
             }
 
             100% {
-                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+                box-shadow: 0 0 0 0 rgba(40,167,69,0);
             }
         }
 
@@ -674,7 +561,7 @@
         }
 
             .user-row:hover {
-                background-color: rgba(13, 110, 253, 0.05);
+                background-color: rgba(13,110,253,0.05);
             }
 
         .bg-gradient-primary {
@@ -687,7 +574,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255,255,255,0.8);
             backdrop-filter: blur(3px);
             display: flex;
             align-items: center;
@@ -719,7 +606,6 @@
             }
         }
 
-        /* Responsive */
         @@media (max-width: 768px) {
             .input-group {
                 width: 100% !important;
@@ -728,342 +614,172 @@
     </style>
 
     <script>
-    const { createApp } = Vue;
-
-    createApp({
-        data() {
-            return {
-                filtro: '',
-                filtroRol: 'Todos',
-                loading: false,
-                modalInstance: null,
-                showSuccessToast: false,
-                mensaje: '',
-                errors: {},
-                usuarios: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
-                    Model.Select(u => new {
-                        id      = u.id_usuario,
-                        documento = u.numero_documento,
-                        nombre  = u.nombres_usuario + " " + u.apellidos_usuario,
-                        nombres = u.nombres_usuario,
-                        apellidos = u.apellidos_usuario,
-                        correo  = u.correo_usuario,
-                        rol     = u.rol_usuario,
-                        activo  = u.activo
-                    }).ToList()
-                )),
-                stats: [
-                    { titulo: 'Citas Programadas', valor: '@ViewBag.TotalCitas', icono: 'bi-calendar-check', bgClass: 'bg-primary', trend: '+12% vs ayer' },
-                    { titulo: 'Pacientes Activos', valor: '@ViewBag.TotalPacientes', icono: 'bi-people', bgClass: 'bg-info', trend: '👥 3 nuevos hoy' },
-                    { titulo: 'Equipo Médico', valor: '@ViewBag.TotalDoctores', icono: 'bi-person-badge', bgClass: 'bg-success', trend: '⚕️ @ViewBag.TotalDoctores especialistas' }
-                ],
-                form: {
-                    nombres: '', apellidos: '', numero_documento: '', correo: '', telefono: '', especialidad: '', activo: true
-                },
-                chartInstance: null,
-                paginaActual: 1,
-                porPagina: 10,
-                // NUEVAS PROPIEDADES
-                usuarioSeleccionado: null,
-                modalDetalle: null,
-                modalEditar: null,
-                loadingEditar: false,
-                mensajeEditar: '',
-                formEditar: {
-                    id: 0,
-                    nombres: '',
-                    apellidos: '',
-                    correo: '',
-                    telefono: '',
-                    especialidad: '',
-                    rol: ''
-                }
-            }
-        },
-        mounted() {
-            this.renderChart();
-
-            // MODAL DOCTOR - Una sola vez
-            const modalElement = document.getElementById('modalDoctor');
-            if (modalElement) {
-                this.modalInstance = new bootstrap.Modal(modalElement);
-                modalElement.addEventListener('hidden.bs.modal', () => {
-                    this.resetForm();
-                });
-            }
-
-            // MODAL DETALLE
-            const modalDetalleElement = document.getElementById('modalDetalleUsuario');
-            if (modalDetalleElement) {
-                this.modalDetalle = new bootstrap.Modal(modalDetalleElement);
-            }
-
-            // MODAL EDITAR
-            const modalEditarElement = document.getElementById('modalEditarUsuario');
-            if (modalEditarElement) {
-                this.modalEditar = new bootstrap.Modal(modalEditarElement);
-            }
-        },
-        watch: {
-            filtro() { this.paginaActual = 1; },
-            filtroRol() { this.paginaActual = 1; }
-        },
-        computed: {
-            usuariosFiltrados() {
-                return this.usuarios.filter(u => {
-                    const coincideNombre = u.nombre.toLowerCase().includes(this.filtro.toLowerCase());
-                    const coincideRol = this.filtroRol === 'Todos' || u.rol === this.filtroRol;
-                    return coincideNombre && coincideRol && u.rol !== 'Administrador';
-                });
-            },
-            usuariosPaginados() {
-                const inicio = (this.paginaActual - 1) * this.porPagina;
-                return this.usuariosFiltrados.slice(inicio, inicio + this.porPagina);
-            },
-            totalPaginas() {
-                return Math.ceil(this.usuariosFiltrados.length / this.porPagina);
-            }
-        },
-        methods: {
-            // --- GESTIÓN DE USUARIOS ---
-            async verDetalle(usuario) {
-                this.loading = true;
-                try {
-                    const response = await fetch(`/Admin/ObtenerUsuario?id=${usuario.id}`, {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                    const data = await response.json();
-
-                    if (data.success) {
-                        this.usuarioSeleccionado = {
-                            ...data.user,
-                            nombre: `${data.user.nombres} ${data.user.apellidos}`
-                        };
-                        this.modalDetalle?.show();
-                    } else {
-                        alert(data.message);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error al cargar detalles del usuario');
-                } finally {
-                    this.loading = false;
-                }
-            },
-
-            editarUsuario(usuario) {
-                this.formEditar = {
-                    id: usuario.id,
-                    // Usar campos separados si vienen del servidor, sino partir el nombre
-                    nombres:    usuario.nombres   || (usuario.nombre ? usuario.nombre.split(' ')[0] : ''),
-                    apellidos:  usuario.apellidos || (usuario.nombre ? usuario.nombre.split(' ').slice(1).join(' ') : ''),
-                    correo:     usuario.correo    || '',
-                    telefono:   usuario.telefono  || '',
-                    especialidad: usuario.especialidad || '',
-                    rol:        usuario.rol       || ''
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    filtro: '',
+                    filtroRol: 'Todos',
+                    loading: false,
+                    modalInstance: null,
+                    showSuccessToast: false,
+                    mensaje: '',
+                    errors: {},
+                    usuarios: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                        Model.Select(u => new {
+                            id = u.id_usuario,
+                            documento = u.numero_documento,
+                            nombre = u.nombres_usuario + " " + u.apellidos_usuario,
+                            nombres = u.nombres_usuario,
+                            apellidos = u.apellidos_usuario,
+                            correo = u.correo_usuario,
+                            rol = u.rol_usuario,
+                            activo = u.activo
+                        }).ToList()
+                    )),
+                    stats: [
+                        { titulo: 'Citas Programadas', valor: '@ViewBag.TotalCitas', icono: 'bi-calendar-check', bgClass: 'bg-primary', trend: '+12% vs ayer' },
+                        { titulo: 'Pacientes Activos', valor: '@ViewBag.TotalPacientes', icono: 'bi-people', bgClass: 'bg-info', trend: '👥 3 nuevos hoy' },
+                        { titulo: 'Equipo Médico', valor: '@ViewBag.TotalDoctores', icono: 'bi-person-badge', bgClass: 'bg-success', trend: '⚕️ @ViewBag.TotalDoctores especialistas' }
+                    ],
+                    form: { nombres: '', apellidos: '', numero_documento: '', correo: '', telefono: '', especialidad: '', activo: true },
+                    chartInstance: null,
+                    paginaActual: 1,
+                    porPagina: 10,
+                    usuarioSeleccionado: null,
+                    modalDetalle: null,
+                    modalEditar: null,
+                    loadingEditar: false,
+                    mensajeEditar: '',
+                    formEditar: { id: 0, nombres: '', apellidos: '', correo: '', telefono: '', especialidad: '', rol: '' },
+                    alertasIA: [],
+                    cargandoAlertas: true
                 };
-                this.modalEditar?.show();
             },
+            mounted() {
+                this.renderChart();
+                this.cargarAlertasIA();
 
-            async guardarEdicion() {
-                this.loadingEditar = true;
-                this.mensajeEditar = '';
-
-                try {
-                    const response = await fetch('/Admin/ActualizarUsuario', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(this.formEditar)
+                const modalElement = document.getElementById('modalDoctor');
+                if (modalElement) {
+                    this.modalInstance = new bootstrap.Modal(modalElement);
+                    modalElement.addEventListener('hidden.bs.modal', () => { this.resetForm(); });
+                }
+                const modalDetalleElement = document.getElementById('modalDetalleUsuario');
+                if (modalDetalleElement) { this.modalDetalle = new bootstrap.Modal(modalDetalleElement); }
+                const modalEditarElement = document.getElementById('modalEditarUsuario');
+                if (modalEditarElement) { this.modalEditar = new bootstrap.Modal(modalEditarElement); }
+            },
+            watch: { filtro() { this.paginaActual = 1; }, filtroRol() { this.paginaActual = 1; } },
+            computed: {
+                usuariosFiltrados() {
+                    return this.usuarios.filter(u => {
+                        const coincideNombre = u.nombre.toLowerCase().includes(this.filtro.toLowerCase());
+                        const coincideRol = this.filtroRol === 'Todos' || u.rol === this.filtroRol;
+                        return coincideNombre && coincideRol && u.rol !== 'Administrador';
                     });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        const index = this.usuarios.findIndex(u => u.id === data.user.id);
-                        if (index !== -1) {
-                            this.usuarios[index] = data.user;
-                        }
-                        this.modalEditar?.hide();
-                        alert('Usuario actualizado correctamente');
-                    } else {
-                        this.mensajeEditar = data.message;
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    this.mensajeEditar = 'Error al actualizar usuario';
-                } finally {
-                    this.loadingEditar = false;
-                }
+                },
+                usuariosPaginados() { const inicio = (this.paginaActual - 1) * this.porPagina; return this.usuariosFiltrados.slice(inicio, inicio + this.porPagina); },
+                totalPaginas() { return Math.ceil(this.usuariosFiltrados.length / this.porPagina); }
             },
-
-            async cambiarEstadoUsuario(usuario) {
-                // Proteccion: si recibe solo numero, usar usuarioSeleccionado
-                if (typeof usuario === 'number') usuario = this.usuarioSeleccionado;
-                if (!usuario || usuario.id === undefined) return;
-
-                const accion = usuario.activo ? 'deshabilitar' : 'habilitar';
-                const nombreMostrar = usuario.nombre || usuario.nombres || 'este usuario';
-                if (!confirm('Seguro que desea ' + accion + ' a ' + nombreMostrar + '?')) return;
-
-                try {
-                    const response = await fetch('/Admin/CambiarEstadoUsuario', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: 'id=' + encodeURIComponent(usuario.id)
+            methods: {
+                async cargarAlertasIA() {
+                    this.cargandoAlertas = true;
+                    try {
+                        const res = await fetch('/IA/AlertasAdmin');
+                        const data = await res.json();
+                        if (data.success && data.alertas) { this.alertasIA = data.alertas; }
+                    } catch (e) { console.error('Error cargando alertas IA:', e); }
+                    finally { this.cargandoAlertas = false; }
+                },
+                async verDetalle(usuario) {
+                    this.loading = true;
+                    try {
+                        const response = await fetch(`/Admin/ObtenerUsuario?id=${usuario.id}`);
+                        const data = await response.json();
+                        if (data.success) {
+                            this.usuarioSeleccionado = { ...data.user, nombre: `${data.user.nombres} ${data.user.apellidos}` };
+                            this.modalDetalle?.show();
+                        } else { alert(data.message); }
+                    } catch (error) { alert('Error al cargar detalles'); }
+                    finally { this.loading = false; }
+                },
+                editarUsuario(usuario) {
+                    this.formEditar = {
+                        id: usuario.id,
+                        nombres: usuario.nombres || (usuario.nombre ? usuario.nombre.split(' ')[0] : ''),
+                        apellidos: usuario.apellidos || (usuario.nombre ? usuario.nombre.split(' ').slice(1).join(' ') : ''),
+                        correo: usuario.correo || '',
+                        telefono: usuario.telefono || '',
+                        especialidad: usuario.especialidad || '',
+                        rol: usuario.rol || ''
+                    };
+                    this.modalEditar?.show();
+                },
+                async guardarEdicion() {
+                    this.loadingEditar = true;
+                    try {
+                        const response = await fetch('/Admin/ActualizarUsuario', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(this.formEditar) });
+                        const data = await response.json();
+                        if (data.success) {
+                            const index = this.usuarios.findIndex(u => u.id === data.user.id);
+                            if (index !== -1) { this.usuarios[index] = data.user; }
+                            this.modalEditar?.hide();
+                            alert('Usuario actualizado');
+                        } else { this.mensajeEditar = data.message; }
+                    } catch (error) { this.mensajeEditar = 'Error al actualizar'; }
+                    finally { this.loadingEditar = false; }
+                },
+                async cambiarEstadoUsuario(usuario) {
+                    if (typeof usuario === 'number') { usuario = this.usuarioSeleccionado; }
+                    if (!usuario || usuario.id === undefined) return;
+                    if (!confirm(`¿Seguro que desea ${usuario.activo ? 'deshabilitar' : 'habilitar'} a ${usuario.nombre || 'este usuario'}?`)) return;
+                    try {
+                        const response = await fetch('/Admin/CambiarEstadoUsuario', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'id=' + encodeURIComponent(usuario.id) });
+                        const data = await response.json();
+                        if (data.success) {
+                            const index = this.usuarios.findIndex(u => u.id === usuario.id);
+                            if (index !== -1) { this.usuarios.splice(index, 1, { ...this.usuarios[index], activo: data.nuevoEstado }); }
+                            if (this.usuarioSeleccionado && this.usuarioSeleccionado.id === usuario.id) { this.usuarioSeleccionado = { ...this.usuarioSeleccionado, activo: data.nuevoEstado }; }
+                            alert(data.message);
+                        } else { alert('Error: ' + data.message); }
+                    } catch (error) { alert('Error al cambiar estado'); }
+                },
+                verHistorial(usuario) { window.location.href = `/Admin/Reportes?usuarioId=${usuario.id}`; },
+                exportarGrafico() { const canvas = document.getElementById('graficaCitasPro'); if (canvas) { const link = document.createElement('a'); link.download = 'reporte-operaciones.png'; link.href = canvas.toDataURL(); link.click(); } },
+                verDetalleGrafico() { alert('Reporte detallado de citas'); },
+                abrirModal() { this.resetForm(); this.modalInstance?.show(); },
+                resetForm() { this.form = { nombres: '', apellidos: '', numero_documento: '', correo: '', telefono: '', especialidad: '', activo: true }; this.errors = {}; this.mensaje = ''; this.showSuccessToast = false; },
+                soloNumeros() { this.form.numero_documento = this.form.numero_documento.replace(/[^0-9]/g, ''); },
+                soloNumerosTelefono() { if (this.form.telefono) { this.form.telefono = this.form.telefono.replace(/[^0-9]/g, '').slice(0, 15); } },
+                validateForm() { this.errors = {}; if (!this.form.nombres || this.form.nombres.length < 2) this.errors.nombres = 'Nombre requerido'; if (!this.form.apellidos || this.form.apellidos.length < 2) this.errors.apellidos = 'Apellido requerido'; if (!this.form.numero_documento) this.errors.numero_documento = 'Documento requerido'; if (!this.form.correo || !this.form.correo.includes('@@')) this.errors.correo = 'Email inválido'; if (!this.form.especialidad) this.errors.especialidad = 'Seleccione especialidad'; return Object.keys(this.errors).length === 0; },
+                async guardarDoctor() {
+                    if (!this.validateForm()) return;
+                    this.loading = true;
+                    try {
+                        const response = await fetch('@Url.Action("CrearDoctorAjax", "Admin")', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(this.form) });
+                        const data = await response.json();
+                        if (data.success) {
+                            this.usuarios.push(data.user);
+                            this.showSuccessToast = true;
+                            setTimeout(() => { this.modalInstance?.hide(); this.resetForm(); }, 1000);
+                        } else { this.mensaje = data.message; }
+                    } catch (error) { this.mensaje = "Error de comunicación"; }
+                    finally { this.loading = false; }
+                },
+                renderChart() {
+                    const ctx = document.getElementById('graficaCitasPro')?.getContext('2d');
+                    if (!ctx) return;
+                    this.chartInstance = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: { labels: ['Activas', 'Completadas', 'Canceladas'], datasets: [{ data: [@ViewBag.CitasPendientes, @ViewBag.CitasCompletadas, @ViewBag.CitasCanceladas], backgroundColor: ['#0d6efd', '#198754', '#dc3545'], borderWidth: 0 }] },
+                        options: { maintainAspectRatio: false, cutout: '70%' }
                     });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        // Reactividad Vue correcta con splice
-                        const index = this.usuarios.findIndex(u => u.id === usuario.id);
-                        if (index !== -1) {
-                            this.usuarios.splice(index, 1, { ...this.usuarios[index], activo: data.nuevoEstado });
-                        }
-                        // Actualizar modal de detalle si esta abierto
-                        if (this.usuarioSeleccionado && this.usuarioSeleccionado.id === usuario.id) {
-                            this.usuarioSeleccionado = { ...this.usuarioSeleccionado, activo: data.nuevoEstado };
-                        }
-                        alert(data.message);
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error al cambiar estado del usuario');
-                }
-            },
-
-            verHistorial(usuario) {
-                // Redirigir a reportes con el ID del usuario
-                window.location.href = `/Admin/Reportes?usuarioId=${usuario.id}`;
-            },
-
-            // --- GESTIÓN DEL GRÁFICO ---
-            exportarGrafico() {
-                const canvas = document.getElementById('graficaCitasPro');
-                if (canvas) {
-                    const link = document.createElement('a');
-                    link.download = 'reporte-operaciones.png';
-                    link.href = canvas.toDataURL();
-                    link.click();
-                }
-            },
-
-            verDetalleGrafico() {
-                alert('Aquí iría un reporte detallado de citas');
-            },
-
-            // --- LÓGICA EXISTENTE ---
-            abrirModal() {
-                this.resetForm();
-                this.modalInstance?.show();
-            },
-
-            resetForm() {
-                this.form = { nombres: '', apellidos: '', numero_documento: '', correo: '', telefono: '', especialidad: '', activo: true };
-                this.errors = {};
-                this.mensaje = '';
-                this.showSuccessToast = false;
-            },
-
-            soloNumeros() {
-                this.form.numero_documento = this.form.numero_documento.replace(/[^0-9]/g, '');
-            },
-
-            soloNumerosTelefono() {
-                if (this.form.telefono) {
-                    this.form.telefono = this.form.telefono.replace(/[^0-9]/g, '').slice(0, 15);
-                }
-            },
-
-            validateForm() {
-                this.errors = {};
-                if (!this.form.nombres || this.form.nombres.length < 2) this.errors.nombres = 'Nombre requerido';
-                if (!this.form.apellidos || this.form.apellidos.length < 2) this.errors.apellidos = 'Apellido requerido';
-                if (!this.form.numero_documento) this.errors.numero_documento = 'Documento requerido';
-                if (!this.form.correo || !this.form.correo.includes('@@')) this.errors.correo = 'Email inválido';
-                if (!this.form.especialidad) this.errors.especialidad = 'Seleccione especialidad';
-                return Object.keys(this.errors).length === 0;
-            },
-
-            async guardarDoctor() {
-                if (!this.validateForm()) return;
-                this.loading = true;
-                this.mensaje = '';
-
-                try {
-                    const response = await fetch('@Url.Action("CrearDoctorAjax", "Admin")', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(this.form)
-                    });
-                    const data = await response.json();
-
-                    if (data.success) {
-                        this.usuarios.push(data.user);
-                        this.showSuccessToast = true;
-                        setTimeout(() => {
-                            this.modalInstance?.hide();
-                            this.resetForm();
-                        }, 1000);
-                    } else {
-                        this.mensaje = data.message;
-                    }
-                } catch (error) {
-                    this.mensaje = "Error de comunicación";
-                } finally {
-                    this.loading = false;
-                }
-            },
-
-            renderChart() {
-                const ctx = document.getElementById('graficaCitasPro')?.getContext('2d');
-                if (!ctx) return;
-
-                this.chartInstance = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Activas', 'Completadas', 'Canceladas'],
-                        datasets: [{
-                            data: [@ViewBag.CitasPendientes, @ViewBag.CitasCompletadas, @ViewBag.CitasCanceladas],
-                            backgroundColor: ['#0d6efd', '#198754', '#dc3545'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        maintainAspectRatio: false,
-                        cutout: '70%',
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    label: (context) => {
-                                        const label = context.label || '';
-                                        const value = context.raw || 0;
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
-                                        return `${label}: ${value} (${percentage}%)`;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            },
-
-            getInitial(n) {
-                return n ? n.charAt(0).toUpperCase() : '?';
-            },
-
-            getRoleIcon(r) {
-                return r === 'Doctor' ? 'bi-briefcase-fill' : 'bi-person-heart';
-            },
-
-            getBadgeClass(r) {
-                return r === 'Doctor' ? 'bg-primary-subtle text-primary' : 'bg-info-subtle text-info';
+                },
+                getInitial(n) { return n ? n.charAt(0).toUpperCase() : '?'; },
+                getRoleIcon(r) { return r === 'Doctor' ? 'bi-briefcase-fill' : 'bi-person-heart'; },
+                getBadgeClass(r) { return r === 'Doctor' ? 'bg-primary-subtle text-primary' : 'bg-info-subtle text-info'; }
             }
-        }
-    }).mount('#adminApp');
+        }).mount('#adminApp');
     </script>
 }

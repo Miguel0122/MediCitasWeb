@@ -20,6 +20,7 @@ namespace MediCitasWeb.Models
         public string tipo_consulta { get; set; }
         public string estado { get; set; }
         public string observaciones { get; set; }
+        public DateTime fecha_registro { get; set; }
         // Navegación
         [ForeignKey("id_paciente")]
         public virtual Paciente Paciente { get; set; }

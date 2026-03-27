@@ -11,6 +11,11 @@
 </head>
 <body>
 
+    @* ── CONTEXTO IA: cada vista define ViewBag.CurrentView ─────────────────── *@
+    <script>
+        window.currentView = "@(ViewBag.CurrentView ?? "general")";
+    </script>
+
     @* ── SPLASH SCREEN ─────────────────────────────────────────────────────── *@
     <div id="mediSplash">
         <div class="splash-rings">
@@ -117,7 +122,7 @@
 
                 <div class="text-white border-start ps-3 d-flex align-items-center">
                     <span class="small me-3 d-none d-md-inline">@Session["usuario"]</span>
-                    <a href="@Url.Action("Login", "Auth")" class="btn btn-sm btn-light text-danger fw-bold rounded-pill">
+                    <a href="@Url.Action("Logout", "Auth")" class="btn btn-sm btn-light text-danger fw-bold rounded-pill">
                         <i class="bi bi-box-arrow-right"></i> Salir
                     </a>
                 </div>

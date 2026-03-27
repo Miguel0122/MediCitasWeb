@@ -1,143 +1,443 @@
-@@model MediCitasWeb.Models.Usuario
+@model MediCitasWeb.Models.Usuario
 @{
-    ViewBag.Title = "Asignación de Citas";
-    Layout = null;
+    ViewBag.Title = ViewBag.EsReprogramacion == true ? "Reprogramar Cita" : "Agendar Cita";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var esReprogramacion = ViewBag.EsReprogramacion == true;
+    var citaId = ViewBag.CitaId;
+    var especialidadPrecargada = ViewBag.EspecialidadPrecargada as string;
+    var doctorPrecargado = ViewBag.DoctorPrecargado;
+    var fechaPrecargada = ViewBag.FechaPrecargada as string;
+    var horaPrecargada = ViewBag.HoraPrecargada as string;
+    var tipoPrecargado = ViewBag.TipoPrecargado as string;
 }
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="utf-8" />
-    <title>Agendar Cita - MediCitas</title>
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/Content/paciente-style.css" rel="stylesheet" />
-</head>
-<body>
+<div id="agendarApp" data-page="agendar-cita" data-reprogramacion="@esReprogramacion.ToString().ToLower()" data-cita-id="@citaId">
 
-    <!-- HEADER con Asistente y Mis Citas juntos -->
-    <div class="app-header">
-        <div class="logo">MediCitas | Paciente</div>
-
-        <div style="display:flex; align-items:center; gap:15px;">
-            <!-- Cerrar Sesión al lado del Asistente -->
-            <a href="@Url.Action("Login","Auth")" class="btn btn-danger btn-sm">
-                ❌ Cerrar sesión
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-1">
+                <i class="bi bi-calendar-plus-fill me-2"></i>
+                @(esReprogramacion ? "Reprogramar Cita Médica" : "Nueva Cita Médica")
+            </h2>
+            <p class="text-muted mb-0">
+                @(esReprogramacion ? "Selecciona una nueva fecha y hora para tu cita" : "Completa el formulario para agendar tu cita")
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("MisCitas", "Paciente")" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="bi bi-arrow-left me-2"></i>Mis Citas
+            </a>
+            <a href="@Url.Action("Dashboard", "Home")" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="bi bi-house me-2"></i>Dashboard
             </a>
         </div>
     </div>
 
-    <div id="agendarApp" class="app-container">
-
-        <h2 class="app-title">
-            @if (ViewBag.CitaEditar != null)
-            {
-                @:REPROGRAMAR CITA MÉDICA
-            }
-            else
-            {
-                @:NUEVA CITA MÉDICA
-            }
-        </h2>
-
-        <div class="section">
-            <div class="section-title">
-                Información del Paciente
-                @if (ViewBag.CitaEditar != null)
-                {
-                    <span class="badge bg-info ms-2">Reprogramando cita</span>
-                }
-            </div>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Documento</label>
-                    <input value="@Model.numero_documento" readonly class="bg-light" />
+    <!-- BLOQUE IA: RECOMENDADOR DE ESPECIALIDAD (solo para nueva cita) -->
+    @if (!esReprogramacion)
+    {
+        <div class="card border-0 shadow-sm mb-4" style="border-left: 4px solid #0d6efd !important; border-radius: 12px;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="bg-primary-subtle rounded-circle p-2">
+                        <i class="bi bi-robot fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold">Asistente de triaje inteligente</div>
+                        <div class="text-muted small">Describe tus síntomas y la IA te recomienda la especialidad correcta</div>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary ms-auto px-3 py-2 rounded-pill">
+                        <i class="bi bi-stars me-1"></i>Powered by IA
+                    </span>
                 </div>
-                <div class="form-group">
-                    <label>Nombre Completo</label>
-                    <input value="@Model.nombres_usuario @Model.apellidos_usuario" readonly class="bg-light" />
+
+                <div class="d-flex gap-2">
+                    <input type="text"
+                           v-model="sintomas"
+                           class="form-control"
+                           placeholder="Ej: me duele el pecho al respirar, tengo fiebre hace 3 días..."
+                           @@keyup.enter="recomendarEspecialidad"
+                           :disabled="cargandoIA"
+                           style="border-radius:8px">
+                    <button class="btn btn-primary px-4"
+                            @@click="recomendarEspecialidad"
+                            :disabled="cargandoIA || !sintomas.trim()"
+                            style="border-radius:8px;white-space:nowrap">
+                        <span v-if="cargandoIA">
+                            <span class="spinner-border spinner-border-sm me-1"></span>Analizando...
+                        </span>
+                        <span v-else>
+                            <i class="bi bi-search-heart me-1"></i>Analizar
+                        </span>
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label>Correo</label>
-                    <input value="@Model.correo_usuario" readonly class="bg-light" />
+
+                <!-- Resultado de la recomendación -->
+                <div v-if="recomendacion" class="mt-3 p-4 rounded-3"
+                     :class="{'bg-success-subtle border border-success-subtle': recomendacion.confianza === 'alta',
+              'bg-warning-subtle border border-warning-subtle': recomendacion.confianza === 'media',
+              'bg-info-subtle border border-info-subtle': recomendacion.confianza === 'baja'}">
+
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="bg-primary rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-robot text-white fs-5"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold text-primary mb-2">Asistente IA</div>
+                            <div class="mb-3" style="white-space: pre-line; line-height: 1.5;">
+                                {{ recomendacion.mensaje }}
+                            </div>
+                            <div class="d-flex align-items-center gap-2 mt-2">
+                                <span class="badge bg-primary rounded-pill px-3 py-2">
+                                    <i class="bi bi-stars me-1"></i>Especialidad sugerida: {{ recomendacion.especialidad }}
+                                </span>
+                                <span class="badge ms-1"
+                                      :class="{'bg-success': recomendacion.confianza === 'alta',
+                               'bg-warning text-dark': recomendacion.confianza === 'media',
+                               'bg-info text-dark': recomendacion.confianza === 'baja'}">
+                                    <i class="bi bi-shield-check"></i> {{ recomendacion.confianza === 'alta' ? 'Alta confianza' : recomendacion.confianza === 'media' ? 'Confianza media' : 'Sugerencia' }}
+                                </span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary rounded-pill mt-3"
+                                    @@click="aplicarRecomendacion">
+                                <i class="bi bi-check2 me-1"></i>Usar esta especialidad
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+    }
+    else
+    {
+        <div class="alert alert-info border-0 shadow-sm mb-4" style="border-radius:12px">
+            <i class="bi bi-info-circle me-2"></i>
+            Estás reprogramando tu cita. Selecciona una nueva fecha y hora disponibles.
+        </div>
+    }
 
-        <div class="section">
-            <div class="section-title">Detalles de la Cita</div>
+    <!-- INFORMACIÓN DEL PACIENTE -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius:12px">
+        <div class="card-body p-4">
+            <h6 class="fw-bold text-muted text-uppercase mb-3 small">INFORMACIÓN DEL PACIENTE</h6>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">Documento</label>
+                    <input value="@Model.numero_documento" readonly class="form-control bg-light border-0">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">Nombre completo</label>
+                    <input value="@Model.nombres_usuario @Model.apellidos_usuario" readonly class="form-control bg-light border-0">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">Correo</label>
+                    <input value="@Model.correo_usuario" readonly class="form-control bg-light border-0">
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <form method="post" action="@Url.Action("GuardarCita","Paciente")" @@submit="validarFormulario">
+    <!-- FORMULARIO DE CITA -->
+    <div class="card border-0 shadow-sm" style="border-radius:12px">
+        <div class="card-body p-4">
+            <h6 class="fw-bold text-muted text-uppercase mb-3 small">DETALLES DE LA CITA</h6>
+
+            <form method="post" action="@Url.Action("GuardarCita","Paciente")">
                 @Html.AntiForgeryToken()
-                @if (ViewBag.CitaEditar != null)
+
+                @if (esReprogramacion)
                 {
-                    <input type="hidden" name="idCita" value="@ViewBag.CitaEditar.id_cita" />
+                    <input type="hidden" name="idCita" value="@citaId" />
                 }
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Especialidad</label>
-                        <select name="especialidad" v-model="form.especialidad" required>
-                            <option value="">Seleccione...</option>
-                            <option>Medicina General</option>
-                            <option>Pediatría</option>
-                            <option>Cardiología</option>
-                            <option>Odontología</option>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Especialidad</label>
+                        <select name="especialidad" v-model="form.especialidad"
+                                class="form-select border-0 bg-light" required>
+                            <option value="">Seleccione especialidad...</option>
+                            <option value="Medicina General">🏥 Medicina General</option>
+                            <option value="Pediatría">👶 Pediatría</option>
+                            <option value="Cardiología">❤️ Cardiología</option>
+                            <option value="Odontología">🦷 Odontología</option>
+                            <option value="Dermatología">🧴 Dermatología</option>
+                            <option value="Ginecología">👩 Ginecología</option>
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label>Tipo de Consulta</label>
-                        <select name="tipoConsulta" v-model="form.tipoConsulta">
-                            <option>Primera vez</option>
-                            <option>Seguimiento / Control</option>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Tipo de Consulta</label>
+                        <select name="tipoConsulta" v-model="form.tipoConsulta"
+                                class="form-select border-0 bg-light">
+                            <option value="Primera vez">🆕 Primera vez</option>
+                            <option value="Seguimiento / Control">📋 Seguimiento / Control</option>
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label>Fecha</label>
-                        <input type="date"
-                               name="fechaCita"
-                               v-model="form.fecha"
-                               @@change="actualizarHoras"
-                               required
-                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Hora</label>
-                        <select name="horaCita" v-model="form.hora" required :disabled="horasDisponibles.length === 0">
-                            <option value="">{{ horasDisponibles.length ? 'Seleccione hora...' : 'Seleccione una fecha primero' }}</option>
-                            <option v-for="h in horasDisponibles" :value="h.valor">{{ h.texto }}</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Doctor</label>
-                        <select name="idDoctor" v-model="form.idDoctor" required :disabled="!form.especialidad">
-                            <option value="">{{ form.especialidad ? 'Seleccione un doctor...' : 'Primero elija una especialidad' }}</option>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Doctor</label>
+                        <select name="idDoctor" v-model="form.idDoctor"
+                                :disabled="!form.especialidad"
+                                class="form-select border-0 bg-light" required>
+                            <option value="">
+                                {{ form.especialidad ? 'Seleccione un doctor...' : 'Primero elija especialidad' }}
+                            </option>
                             <option v-for="doc in doctoresFiltrados" :key="doc.IdDoctor" :value="doc.IdDoctor">
                                 {{ doc.NombreDoctor }}
                             </option>
                         </select>
                     </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Fecha</label>
+                        <input type="date" name="fechaCita" v-model="form.fecha"
+                               @@change="actualizarHoras"
+                               :min="fechaMinima"
+                               class="form-control border-0 bg-light" required>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Hora</label>
+                        <select name="horaCita" v-model="form.hora"
+                                :disabled="horasDisponibles.length === 0"
+                                class="form-select border-0 bg-light" required>
+                            <option value="">
+                                {{ mensajeHora }}
+                            </option>
+                            <option v-for="h in horasDisponibles" :value="h.valor">{{ h.texto }}</option>
+                        </select>
+                    </div>
                 </div>
 
-                <!-- Botones con espacio entre ellos -->
-                <div style="margin-top:25px; text-align:center; display:flex; justify-content:center; gap:15px;">
-                    <button type="submit" class="btn btn-primary px-5" :disabled="loading">
-                        {{ loading ? 'Procesando...' : 'Confirmar Agendamiento' }}
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger mt-3 mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+                    </div>
+                }
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary px-5 fw-bold" :disabled="loading" style="border-radius:8px">
+                        <span v-if="loading"><span class="spinner-border spinner-border-sm me-2"></span>Procesando...</span>
+                        <span v-else>
+                            <i class="bi @(esReprogramacion ? "bi-arrow-repeat" : "bi-check-circle") me-2"></i>
+                            @(esReprogramacion ? "Confirmar Reprogramación" : "Confirmar Cita")
+                        </span>
                     </button>
-                    <a href="@Url.Action("MisCitas", "Paciente")" class="btn btn-secondary px-5">Ver Mis Citas</a>
+                    <a href="@Url.Action("MisCitas","Paciente")" class="btn btn-outline-secondary" style="border-radius:8px">
+                        <i class="bi bi-journal-medical me-2"></i>Mis Citas
+                    </a>
                 </div>
             </form>
         </div>
     </div>
+</div>
 
+<script>
+    window.listaDoctoresBase = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Doctores));
+    window.esReprogramacion = @esReprogramacion.ToString().ToLower();
+    window.especialidadPrecargada = '@Html.Raw(especialidadPrecargada ?? "")';
+    window.doctorPrecargado = @(doctorPrecargado?.ToString() ?? "null");
+    window.fechaPrecargada = '@(fechaPrecargada ?? "")';
+    window.horaPrecargada = '@(horaPrecargada ?? "")';
+    window.tipoPrecargado = '@(tipoPrecargado ?? "Primera vez")';
+</script>   
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
     <script>
-        window.listaDoctoresBase = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Doctores));
-        window.citaEditar = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.CitaEditar));
-    </script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="~/Scripts/app/agendar-app.js"></script>
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    sintomas: '',
+                    recomendacion: null,
+                    cargandoIA: false,
+                    loading: false,
+                    form: {
+                        especialidad: window.especialidadPrecargada || '',
+                        tipoConsulta: window.tipoPrecargado || 'Primera vez',
+                        idDoctor: window.doctorPrecargado || '',
+                        fecha: window.fechaPrecargada || '',
+                        hora: window.horaPrecargada || ''
+                    },
+                    horasDisponibles: [],
+                    horasOcupadas: [], // Nuevo: horas ya ocupadas por el doctor
+                    doctores: window.listaDoctoresBase || [],
+                    mensajeHora: 'Seleccione fecha primero'
+                };
+            },
+            computed: {
+                doctoresFiltrados() {
+                    if (!this.form.especialidad) return [];
+                    return this.doctores.filter(d => d.Especialidad === this.form.especialidad);
+                },
+                fechaMinima() {
+                    const hoy = new Date();
+                    return hoy.toISOString().split('T')[0];
+                },
+                esDomingoSeleccionado() {
+                    if (!this.form.fecha) return false;
+                    const f = new Date(this.form.fecha + 'T00:00:00');
+                    return f.getDay() === 0; // 0 = domingo
+                }
+            },
+            watch: {
+                // Cuando cambia el doctor, recargar horas ocupadas
+                'form.idDoctor': function (newDoctorId) {
+                    if (newDoctorId && this.form.fecha) {
+                        this.cargarHorasOcupadas();
+                    }
+                },
+                // Cuando cambia la fecha, recargar horas ocupadas y actualizar horas disponibles
+                'form.fecha': function (newFecha) {
+                    if (!newFecha) {
+                        this.horasDisponibles = [];
+                        this.form.hora = '';
+                        this.mensajeHora = 'Seleccione fecha primero';
+                        return;
+                    }
 
-</body>
-</html>
+                    // Si es domingo: sin horas, deshabilitar
+                    if (this.esDomingoSeleccionado) {
+                        this.horasDisponibles = [];
+                        this.form.hora = '';
+                        this.mensajeHora = 'No hay citas los domingos';
+                        return;
+                    }
+
+                    // Día normal
+                    this.mensajeHora = this.form.idDoctor ? 'Seleccione hora...' : 'Seleccione fecha primero';
+
+                    if (this.form.idDoctor) {
+                        this.cargarHorasOcupadas();
+                    } else {
+                        this.actualizarHoras();
+                    }
+                }
+            },
+            mounted() {
+                if (window.esReprogramacion && this.form.fecha) {
+                    this.cargarHorasOcupadas();
+                }
+            },
+            methods: {
+                async recomendarEspecialidad() {
+                    if (!this.sintomas.trim()) return;
+                    this.cargandoIA = true;
+                    this.recomendacion = null;
+                    try {
+                        const res = await fetch('/IA/RecomendarEspecialidad', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: 'sintomas=' + encodeURIComponent(this.sintomas)
+                        });
+                        const data = await res.json();
+                        if (data.success) this.recomendacion = data.recomendacion;
+                    } catch (e) {
+                        console.error(e);
+                    } finally {
+                        this.cargandoIA = false;
+                    }
+                },
+                aplicarRecomendacion() {
+                    if (this.recomendacion) {
+                        this.form.especialidad = this.recomendacion.especialidad;
+                        this.recomendacion = null;
+                        this.sintomas = '';
+                    }
+                },
+                async cargarHorasOcupadas() {
+                    if (!this.form.idDoctor || !this.form.fecha) return;
+
+                    try {
+                        const res = await fetch(`/IA/ObtenerHorasOcupadas?idDoctor=${this.form.idDoctor}&fecha=${this.form.fecha}`);
+                        const data = await res.json();
+                        if (data.success) {
+                            this.horasOcupadas = data.horasOcupadas;
+                            this.actualizarHoras();
+                        }
+                    } catch (e) {
+                        console.error('Error cargando horas ocupadas:', e);
+                        this.horasOcupadas = [];
+                        this.actualizarHoras();
+                    }
+                },
+                actualizarHoras() {
+                    if (!this.form.fecha) {
+                        this.horasDisponibles = [];
+                        this.form.hora = '';
+                        this.mensajeHora = 'Seleccione fecha primero';
+                        return;
+                    }
+
+                    const fechaSeleccionada = new Date(this.form.fecha + 'T00:00:00');
+                    const hoy = new Date();
+                    hoy.setHours(0, 0, 0, 0);
+
+                    // No permitir domingos
+                    if (fechaSeleccionada.getDay() === 0) {
+                        this.horasDisponibles = [];
+                        this.form.hora = '';
+                        this.mensajeHora = 'No hay citas los domingos';
+                        return;
+                    }
+
+                    const esHoy = fechaSeleccionada.toDateString() === hoy.toDateString();
+                    const ahora = new Date();
+                    const horaActual = ahora.getHours();
+                    const minutoActual = ahora.getMinutes();
+
+                    const horas = [];
+
+                    // Horario de 6:00 AM a 5:30 PM
+                    for (let h = 6; h <= 17; h++) {
+                        for (let m of [0, 30]) {
+                            const hStr = String(h).padStart(2, '0');
+                            const mStr = String(m).padStart(2, '0');
+                            const horaKey = `${hStr}:${mStr}`;
+
+                            let mostrar = true;
+
+                            // 1. Si es hoy, no mostrar horas que ya pasaron
+                            if (esHoy) {
+                                if (h < horaActual || (h === horaActual && m <= minutoActual)) {
+                                    mostrar = false;
+                                }
+                            }
+
+                            // 2. Si la hora está ocupada por este doctor, no mostrar
+                            if (mostrar && this.horasOcupadas.includes(horaKey)) {
+                                mostrar = false;
+                            }
+
+                            if (mostrar) {
+                                const ampm = h < 12 ? 'AM' : 'PM';
+                                horas.push({
+                                    valor: `${hStr}:${mStr}:00`,
+                                    texto: `${hStr}:${mStr} ${ampm}`
+                                });
+                            }
+                        }
+                    }
+
+                    this.horasDisponibles = horas;
+
+                    if (this.horasDisponibles.length === 0) {
+                        this.mensajeHora = 'No hay horarios disponibles';
+                    } else {
+                        this.mensajeHora = 'Seleccione hora...';
+                    }
+
+                    // Si la hora precargada sigue disponible, mantenerla
+                    if (window.horaPrecargada && this.horasDisponibles.some(h => h.valor === window.horaPrecargada)) {
+                        this.form.hora = window.horaPrecargada;
+                    } else {
+                        this.form.hora = '';
+                    }
+                }
+            }
+        }).mount('#agendarApp');
+    </script>
+}
