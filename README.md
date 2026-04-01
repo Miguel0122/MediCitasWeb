@@ -130,7 +130,7 @@ Proyecto académico con fines educativos y demostrativos.
 
 **Samuel Verbel**
 💼 Desarrollador de Software en formación
-🔗 LinkedIn: *(próximamente)*
+🔗 LinkedIn: *(https://www.linkedin.com/in/samuel-avilez-verbel/)*
 📧 Contacto profesional disponible bajo solicitud.
 
 ---
