@@ -20,7 +20,7 @@
         <h1>MediCitas | Panel Administrativo</h1>
         <div style="display:flex; gap:10px; align-items:center;">
             <span>Bienvenido, @Session["usuario"]</span>
-            <a href="@Url.Action("Login","Auth")" class="btn-logout">Cerrar sesión</a>
+            <a href="@Url.Action("Logout","Admin")" class="btn-logout">Cerrar sesión</a>
         </div>
     </header>
 
@@ -119,6 +119,6 @@
 
     </div>
 
-    <script src="~/Scripts/admin-panel.js"></script>
+    <script src="~/Scripts/app/admin-panel.js"></script>
 </body>
 </html>

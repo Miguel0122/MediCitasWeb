@@ -1,4 +1,6 @@
-﻿using MediCitasWeb.Models;
+using MediCitasWeb.Models;
+using MediCitasWeb.Services.Security;
+using MediCitasWeb.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +9,13 @@ using System.Web.Mvc;
 
 namespace MediCitasWeb.Controllers
 {
+    [SessionAuthorize(Roles = "Administrador")]
     public class AdminController : Controller
     {
         MediCitasContext db = new MediCitasContext();
 
         public ActionResult PanelAdmin()
         {
-            if (Session["usuario"] == null) return RedirectToAction("Login", "Auth");
-            if (Session["rol"] as string != "Administrador") return RedirectToAction("Login", "Auth");
-
             ViewBag.TotalCitas = db.Citas.Count();
             ViewBag.CitasPendientes = db.Citas.Count(c => c.estado == "Activa");
             ViewBag.CitasCompletadas = db.Citas.Count(c => c.estado == "Completada");
@@ -32,9 +32,6 @@ namespace MediCitasWeb.Controllers
         // ==============================
         public ActionResult CrearDoctor()
         {
-            if (Session["rol"] as string != "Administrador")
-                return RedirectToAction("Login", "Auth");
-
             return View();
         }
 
@@ -42,14 +39,12 @@ namespace MediCitasWeb.Controllers
         // CREAR DOCTOR - Guardar
         // ==============================
         [HttpPost]
-        public ActionResult CrearDoctor(string nombres, string apellidos,
-                                        string numero_documento, string correo,
-                                        string password, string especialidad)
+        [ValidateAntiForgeryToken]
+        public ActionResult CrearDoctor(CrearDoctorViewModel model)
         {
-            if (string.IsNullOrWhiteSpace(nombres) || string.IsNullOrWhiteSpace(especialidad))
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Todos los campos son obligatorios.");
-                return View();
+                return View(model);
             }
 
             try
@@ -57,11 +52,11 @@ namespace MediCitasWeb.Controllers
                 // 1. Crear el usuario con rol Doctor
                 Usuario nuevoUsuario = new Usuario
                 {
-                    nombres_usuario = nombres,
-                    apellidos_usuario = apellidos,
-                    numero_documento = numero_documento,
-                    correo_usuario = correo,
-                    password_usuario = password,
+                    nombres_usuario = model.nombres,
+                    apellidos_usuario = model.apellidos,
+                    numero_documento = model.numero_documento,
+                    correo_usuario = model.correo,
+                    password_usuario = PasswordHasher.Hash(model.password),
                     rol_usuario = "Doctor",
                     fecha_registro = DateTime.Now
                 };
@@ -73,7 +68,7 @@ namespace MediCitasWeb.Controllers
                 Doctor nuevoDoctor = new Doctor
                 {
                     id_usuario = nuevoUsuario.id_usuario,
-                    especialidad = especialidad
+                    especialidad = model.especialidad
                 };
 
                 db.Doctor.Add(nuevoDoctor);
@@ -94,9 +89,6 @@ namespace MediCitasWeb.Controllers
         // ==============================
         public ActionResult ListaUsuarios()
         {
-            if (Session["rol"] as string != "Administrador")
-                return RedirectToAction("Login", "Auth");
-
             var usuarios = db.Usuario.ToList();
             return View(usuarios);
         }

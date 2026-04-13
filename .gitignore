@@ -1,0 +1,11 @@
+# Visual Studio archivos temporales
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.sln.docstates
+
+# Paquetes NuGet
+packages/
+!packages/repository.config

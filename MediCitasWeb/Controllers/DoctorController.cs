@@ -1,22 +1,20 @@
-﻿using MediCitasWeb.Models;
+using MediCitasWeb.Models;
+using MediCitasWeb.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using MediCitasWeb.Models;
 
 namespace MediCitasWeb.Controllers
 {
+    [SessionAuthorize(Roles = "Doctor")]
     public class DoctorController : Controller
     {
         private MediCitasContext db = new MediCitasContext();
 
         public ActionResult CitasDoctor()
         {
-            if (Session["usuario"] == null) return RedirectToAction("Login", "Auth");
-            if (Session["rol"] as string != "Doctor") return RedirectToAction("Login", "Auth");
-
             int idUsuario = Convert.ToInt32(Session["id_usuario"]);
 
             var doctor = db.Doctor.FirstOrDefault(d => d.id_usuario == idUsuario);
@@ -39,7 +37,7 @@ namespace MediCitasWeb.Controllers
                              Tipo = c.tipo_consulta
                          }).ToList();
 
-            return View(citas);
+            return View("PanelDoctor",citas);
         }
 
         [HttpPost]

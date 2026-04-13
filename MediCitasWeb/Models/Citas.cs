@@ -19,5 +19,9 @@ namespace MediCitasWeb.Models
         public string especialidad { get; set; }
         public string tipo_consulta { get; set; }
         public string estado { get; set; }
+        
+        // Navegación
+        public virtual Paciente Paciente { get; set; }
+        public virtual Doctor Doctor { get; set; }
     }
 }

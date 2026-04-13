@@ -1,11 +1,21 @@
 # Visual Studio archivos temporales
 .vs/
 [Bb]in/
-[Oo]bj/
+[Obj]/
 *.user
+*.suo
 *.userosscache
 *.sln.docstates
 
+# Archivos de configuración con secretos
+AppSettings.secrets.config
+
+# Bases de datos locales (si usas LocalDB)
+App_Data/*.mdf
+App_Data/*.ldf
+
 # Paquetes NuGet
 packages/
-!packages/repository.config
+
+# Archivos de publicación
+*.Publish.xml

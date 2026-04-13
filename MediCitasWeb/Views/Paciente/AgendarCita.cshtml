@@ -1,0 +1,147 @@
+@model MediCitasWeb.Models.Usuario
+@{
+    ViewBag.Title = "Asignación de Citas";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Agendar Cita - MediCitas</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/paciente-style.css" rel="stylesheet" />
+</head>
+<body>
+
+    <!-- HEADER con Asistente y Mis Citas juntos -->
+    <div class="app-header">
+        <div class="logo">MediCitas | Paciente</div>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <!-- Botón Asistente -->
+            <a href="@Url.Action("ChatBot", "chat")" class="btn-asistente">
+                <span class="dot"></span> 🤖 Asistente
+            </a>
+            <!-- Cerrar Sesión al lado del Asistente -->
+            <a href="@Url.Action("Login","Auth")"
+               class="btn btn-danger btn-sm">
+                ❌ Cerrar sesión
+            </a>
+        </div>
+    </div>
+
+    <div id="agendarApp" class="app-container">
+
+        <h2 class="app-title">
+            @if (ViewBag.CitaEditar != null)
+            {
+                @:REPROGRAMAR CITA MÉDICA
+            }
+            else
+            {
+                @:NUEVA CITA MÉDICA
+            }
+        </h2>
+
+        <div class="section">
+            <div class="section-title">
+                Información del Paciente
+                @if (ViewBag.CitaEditar != null)
+                {
+                    <span class="badge bg-info ms-2">Reprogramando cita</span>
+                }
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Documento</label>
+                    <input value="@Model.numero_documento" readonly class="bg-light" />
+                </div>
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input value="@Model.nombres_usuario @Model.apellidos_usuario" readonly class="bg-light" />
+                </div>
+                <div class="form-group">
+                    <label>Correo</label>
+                    <input value="@Model.correo_usuario" readonly class="bg-light" />
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Detalles de la Cita</div>
+
+            <form method="post" action="@Url.Action("GuardarCita","Paciente")" @@submit="validarFormulario">
+                @Html.AntiForgeryToken()
+                @if (ViewBag.CitaEditar != null)
+                {
+                    <input type="hidden" name="idCita" value="@ViewBag.CitaEditar.id_cita" />
+                }
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Especialidad</label>
+                        <select name="especialidad" v-model="form.especialidad" required>
+                            <option value="">Seleccione...</option>
+                            <option>Medicina General</option>
+                            <option>Pediatría</option>
+                            <option>Cardiología</option>
+                            <option>Odontología</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tipo de Consulta</label>
+                        <select name="tipoConsulta" v-model="form.tipoConsulta">
+                            <option>Primera vez</option>
+                            <option>Seguimiento / Control</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date"
+                               name="fechaCita"
+                               v-model="form.fecha"
+                               @@change="actualizarHoras"
+                               required
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hora</label>
+                        <select name="horaCita" v-model="form.hora" required :disabled="horasDisponibles.length === 0">
+                            <option value="">{{ horasDisponibles.length ? 'Seleccione hora...' : 'Seleccione una fecha primero' }}</option>
+                            <option v-for="h in horasDisponibles" :value="h.valor">{{ h.texto }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Doctor</label>
+                        <select name="idDoctor" v-model="form.idDoctor" required :disabled="!form.especialidad">
+                            <option value="">{{ form.especialidad ? 'Seleccione un doctor...' : 'Primero elija una especialidad' }}</option>
+                            <option v-for="doc in doctoresFiltrados" :key="doc.IdDoctor" :value="doc.IdDoctor">
+                                {{ doc.NombreDoctor }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Botones con espacio entre ellos -->
+                <div style="margin-top:25px; text-align:center; display:flex; justify-content:center; gap:15px;">
+                    <button type="submit" class="btn btn-primary px-5" :disabled="loading">
+                        {{ loading ? 'Procesando...' : 'Confirmar Agendamiento' }}
+                    </button>
+                    <a href="@Url.Action("MisCitas", "Paciente")" class="btn btn-secondary px-5">Ver Mis Citas</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        window.listaDoctoresBase = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Doctores));
+        window.citaEditar = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.CitaEditar));
+    </script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="~/Scripts/app/agendar-app.js"></script>
+
+</body>
+</html>
